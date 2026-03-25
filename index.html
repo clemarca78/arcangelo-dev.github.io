@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcangelo Clemente | Knowledge Architect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b1120;
+            --text: #f1f5f9;
+            --accent: #38bdf8;
+            --purple: #a855f7;
+            --pink: #ec4899;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+            --nav-bg: rgba(11, 17, 32, 0.8);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+        
+        body { 
+            background-color: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%), 
+                radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.1) 0px, transparent 50%),
+                radial-gradient(at 50% 100%, rgba(236, 72, 153, 0.12) 0px, transparent 50%);
+            background-attachment: fixed; line-height: 1.6;
+        }
+
+        /* MENU DI NAVIGAZIONE */
+        nav {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+            background: var(--nav-bg); backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 0;
+        }
+        .nav-container {
+            max-width: 1000px; margin: 0 auto; padding: 0 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .nav-logo { font-family: 'Pacifico', cursive; font-size: 1.5rem; color: #fff; text-decoration: none; }
+        .nav-logo span { color: var(--accent); }
+        .nav-links { display: flex; gap: 1.5rem; }
+        .nav-links a { 
+            text-decoration: none; color: var(--text); font-size: 0.85rem; font-weight: 600; 
+            text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; opacity: 0.7;
+        }
+        .nav-links a:hover { opacity: 1; color: var(--accent); }
+
+        .container { max-width: 1000px; margin: 0 auto; padding: 100px 2rem 0; }
+
+        header { padding: 60px 0 40px; text-align: center; }
+
+        /* BIO SECTION */
+        .bio-section {
+            background: var(--glass); border: 1px solid var(--border);
+            padding: 3rem; border-radius: 32px; backdrop-filter: blur(20px);
+            margin-bottom: 50px; text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+        .bio-section h2 { font-size: 1.8rem; margin-bottom: 1.5rem; color: var(--accent); font-weight: 800; }
+        .bio-section p { font-size: 1.1rem; color: #cbd5e1; font-weight: 300; line-height: 1.8; }
+
+        section { padding: 60px 0; scroll-margin-top: 80px; }
+        .section-title { 
+            font-size: 2.2rem; font-weight: 800; margin-bottom: 30px; 
+            display: flex; align-items: center; gap: 15px;
+            background: linear-gradient(to right, #fff, var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--glass); border: 1px solid var(--border);
+            padding: 2.2rem; border-radius: 24px; backdrop-filter: blur(12px);
+            margin-bottom: 25px; transition: 0.4s;
+        }
+        .card:hover { border-color: var(--accent); transform: translateY(-5px); }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; }
+        .badge { background: rgba(56, 189, 248, 0.15); color: var(--accent); padding: 5px 15px; border-radius: 100px; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; }
+        .edu-badge { background: rgba(168, 85, 247, 0.2); color: #d8b4fe; }
+
+        .title-main { font-size: 1.4rem; font-weight: 800; color: #fff; margin-bottom: 5px; }
+        .subtitle-sub { color: var(--accent); font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; display: block; }
+        
+        .tech-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
+        .tag { background: rgba(255,255,255,0.05); padding: 4px 12px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; border: 1px solid var(--border); }
+
+        /* PASSIONI */
+        .passions-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px; margin-top: 30px;
+        }
+        .passion-item {
+            background: var(--glass); border: 1px solid var(--border);
+            padding: 1.5rem; border-radius: 20px; text-align: center; transition: 0.3s;
+        }
+        .passion-item:hover { background: rgba(236, 72, 153, 0.1); border-color: var(--pink); }
+        .p-icon { font-size: 2rem; margin-bottom: 8px; display: block; }
+
+        footer { padding: 80px 0; text-align: center; border-top: 1px solid var(--border); }
+        .contact { font-size: 1.8rem; font-weight: 800; color: #fff; text-decoration: none; border-bottom: 3px solid var(--accent); }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; } /* Per semplicità in questa demo, nascondiamo su mobile */
+            .card-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="nav-logo">Arcangelo<span>.</span></a>
+            <div class="nav-links">
+                <a href="#bio">Chi Sono</a>
+                <a href="#istruzione">Istruzione</a>
+                <a href="#esperienza">Esperienza</a>
+                <a href="#passioni">Passioni</a>
+                <a href="#contatti">Contatti</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <section id="bio">
+            <header>
+                <div class="logo">Arcangelo<span>.</span></div>
+                <p style="font-size: 1.1rem; opacity: 0.7;">Software Architect & Knowledge Engineer</p>
+            </header>
+            <div class="bio-section">
+                <h2>L'Incrocio tra Logica e Codice</h2>
+                <p>
+                    Sono un **Analista e Software Engineer** con oltre vent'anni di esperienza nella modellazione della complessità. La mia carriera è guidata da una profonda curiosità verso i sistemi logici: dai motori inferenziali dei sistemi esperti alle moderne architetture a microservizi. Mi definisco un **"Ingegnere della Conoscenza"**, capace di tradurre domini informativi intricati in soluzioni software eleganti, stabili e scalabili. Adotto il pensiero strategico di *László Mérő* e il rigore geometrico di *Escher* per sfidare l'entropia digitale.
+                </p>
+            </div>
+        </section>
+
+        <section id="istruzione">
+            <h2 class="section-title">🎓 Istruzione & Master</h2>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="title-main">Master Specialistico in Business Intelligence</h3>
+                    <span class="badge edu-badge">Post-Laurea</span>
+                </div>
+                <span class="subtitle-sub">Analisi Strategica & Decision Support</span>
+                <p>Specializzazione nell'estrazione di valore strategico dai dati. Focus su modellazione Data Warehouse, tecniche di Data Mining e architetture per il supporto alle decisioni aziendali.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="title-main">Laurea in Informatica</h3>
+                    <span class="badge edu-badge">Università degli Studi di Bari</span>
+                </div>
+                <span class="subtitle-sub">Sistemi Esperti e AI</span>
+                <p>Tesi Sperimentale sulla risoluzione di problemi NP-Difficili (Nurse Rostering). Ricerca su algoritmi A*, logica CLIPS e programmazione a vincoli.</p>
+            </div>
+        </section>
+
+        <section id="esperienza">
+            <h2 class="section-title">🚀 Esperienze Professionali</h2>
+
+            <div class="card">
+                <div class="card-header"><h3>Senior Software Engineer</h3> <span class="badge">2021 — OGGI</span></div>
+                <span class="subtitle-sub">Code Architects Srl</span>
+                <p>Architetture a microservizi per Fintech e sistemi MES industriali. Gestione sistemi distribuiti e automazione CI/CD avanzata.</p>
+                <div class="tech-tags"><span class="tag">.NET 8</span> <span class="tag">Python</span> <span class="tag">Kubernetes</span> <span class="tag">Docker</span></div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><h3>Core Developer (IoT)</h3> <span class="badge">2018 — 2021</span></div>
+                <span class="subtitle-sub">Zucchetti / Mac&Nil</span>
+                <p>Ingegnerizzazione sistemi di localizzazione satellitare GT Alarm. Gestione flussi dati real-time e automazione con Puppet e Jenkins.</p>
+                <div class="tech-tags"><span class="tag">C#</span> <span class="tag">Puppet</span> <span class="tag">SQL Server</span> <span class="tag">IoT Protocols</span></div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><h3>Enterprise Developer (Java)</h3> <span class="badge">2011 — 2018</span></div>
+                <span class="subtitle-sub">Consulenza Specialistica</span>
+                <p>Backend bancari/assicurativi in Spring Boot e sviluppo applicazioni Android per monitoraggio industriale.</p>
+                <div class="tech-tags"><span class="tag">Java J2EE</span> <span class="tag">Spring Boot</span> <span class="tag">Android SDK</span> <span class="tag">Hibernate</span></div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><h3>Software Engineer & Consultant</h3> <span class="badge">2005 — 2011</span></div>
+                <span class="subtitle-sub">Desktop Era</span>
+                <p>Progettazione di software gestionali e motori di calcolo specialistici in ambienti Client-Server.</p>
+                <div class="tech-tags"><span class="tag">Delphi</span> <span class="tag">VB6</span> <span class="tag">C++</span> <span class="tag">PL/SQL</span></div>
+            </div>
+        </section>
+
+        <section id="passioni">
+            <h2 class="section-title">🎨 Modelli Mentali & Passioni</h2>
+            <div class="passions-grid">
+                <div class="passion-item"><span class="p-icon">♟️</span><h4>Teoria dei Giochi</h4></div>
+                <div class="passion-item"><span class="p-icon">🧠</span><h4>Mnemotecniche</h4></div>
+                <div class="passion-item"><span class="p-icon">📻</span><h4>Radiantismo</h4></div>
+                <div class="passion-item"><span class="p-icon">🚴</span><h4>Ciclismo</h4></div>
+                <div class="passion-item"><span class="p-icon">☁️</span><h4>Meteorologia</h4></div>
+                <div class="passion-item"><span class="p-icon">🏓</span><h4>Tennis Tavolo</h4></div>
+                <div class="passion-item"><span class="p-icon">🎸</span><h4>Chitarra</h4></div>
+                <div class="passion-item"><span class="p-icon">🍷</span><h4>Enologia</h4></div>
+            </div>
+        </section>
+
+        <section id="contatti">
+            <footer>
+                <a href="mailto:clemarca@gmail.com" class="contact">clemarca@gmail.com</a>
+                <p style="margin-top: 30px; font-size: 0.9rem; color: #94a3b8;">
+                    Ginosa (TA) | +39 320 7079066 | LinkedIn<br>
+                    © 2026 Arcangelo Clemente • Seniority, Logica e Passione.
+                </p>
+            </footer>
+        </section>
+    </div>
+
+</body>
+</html>
