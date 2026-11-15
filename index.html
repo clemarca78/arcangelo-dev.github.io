@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arcangelo Clemente | Knowledge Architect</title>
+    <title>Arcangelo Clemente | Software Architect & Knowledge Engineer</title>
+    <meta name="description" content="Arcangelo Clemente: Analista e Software Engineer con oltre vent'anni di esperienza in architetture a microservizi, sistemi distribuiti, IoT e Business Intelligence.">
+    <meta property="og:title" content="Arcangelo Clemente | Software Architect & Knowledge Engineer">
+    <meta property="og:description" content="Oltre vent'anni di esperienza: microservizi, sistemi distribuiti, IoT, Business Intelligence.">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#0b1120">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Pacifico&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -51,6 +56,9 @@
         .container { max-width: 1000px; margin: 0 auto; padding: 100px 2rem 0; }
 
         header { padding: 60px 0 40px; text-align: center; }
+        .hero-name { font-size: clamp(2.2rem, 6vw, 3.6rem); font-weight: 800; line-height: 1.1; }
+        .hero-role { font-size: 1.1rem; opacity: 0.7; margin-top: 10px; }
+        .bio-section strong { color: #fff; font-weight: 600; }
 
         /* BIO SECTION */
         .bio-section {
@@ -104,8 +112,18 @@
         .contact { font-size: 1.8rem; font-weight: 800; color: #fff; text-decoration: none; border-bottom: 3px solid var(--accent); }
 
         @media (max-width: 768px) {
-            .nav-links { display: none; } /* Per semplicità in questa demo, nascondiamo su mobile */
+            .nav-container { padding: 0 1rem; gap: 1rem; }
+            .nav-logo { font-size: 1.2rem; }
+            .nav-links { gap: 1rem; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+            .nav-links a { font-size: 0.72rem; }
+            .container { padding: 90px 1.2rem 0; }
+            .bio-section { padding: 1.8rem; }
+            .contact { font-size: 1.2rem; }
             .card-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { scroll-behavior: auto !important; transition: none !important; }
         }
     </style>
 </head>
@@ -128,13 +146,13 @@
         
         <section id="bio">
             <header>
-                <div class="logo">Arcangelo<span>.</span></div>
-                <p style="font-size: 1.1rem; opacity: 0.7;">Software Architect & Knowledge Engineer</p>
+                <h1 class="hero-name">Arcangelo Clemente</h1>
+                <p class="hero-role">Software Architect & Knowledge Engineer</p>
             </header>
             <div class="bio-section">
                 <h2>L'Incrocio tra Logica e Codice</h2>
                 <p>
-                    Sono un **Analista e Software Engineer** con oltre vent'anni di esperienza nella modellazione della complessità. La mia carriera è guidata da una profonda curiosità verso i sistemi logici: dai motori inferenziali dei sistemi esperti alle moderne architetture a microservizi. Mi definisco un **"Ingegnere della Conoscenza"**, capace di tradurre domini informativi intricati in soluzioni software eleganti, stabili e scalabili. Adotto il pensiero strategico di *László Mérő* e il rigore geometrico di *Escher* per sfidare l'entropia digitale.
+                    Sono un <strong>Analista e Software Engineer</strong> con oltre vent'anni di esperienza nella modellazione della complessità. La mia carriera è guidata da una profonda curiosità verso i sistemi logici: dai motori inferenziali dei sistemi esperti alle moderne architetture a microservizi. Mi definisco un <strong>"Ingegnere della Conoscenza"</strong>, capace di tradurre domini informativi intricati in soluzioni software eleganti, stabili e scalabili. Adotto il pensiero strategico di <em>László Mérő</em> e il rigore geometrico di <em>Escher</em> per sfidare l'entropia digitale.
                 </p>
             </div>
         </section>
@@ -165,28 +183,28 @@
             <h2 class="section-title">🚀 Esperienze Professionali</h2>
 
             <div class="card">
-                <div class="card-header"><h3>Senior Software Engineer</h3> <span class="badge">2021 — OGGI</span></div>
+                <div class="card-header"><h3 class="title-main">Senior Software Engineer</h3> <span class="badge">2021 — OGGI</span></div>
                 <span class="subtitle-sub">Code Architects Srl</span>
                 <p>Architetture a microservizi per Fintech e sistemi MES industriali. Gestione sistemi distribuiti e automazione CI/CD avanzata.</p>
                 <div class="tech-tags"><span class="tag">.NET 8</span> <span class="tag">Python</span> <span class="tag">Kubernetes</span> <span class="tag">Docker</span></div>
             </div>
 
             <div class="card">
-                <div class="card-header"><h3>Core Developer (IoT)</h3> <span class="badge">2018 — 2021</span></div>
+                <div class="card-header"><h3 class="title-main">Core Developer (IoT)</h3> <span class="badge">2018 — 2021</span></div>
                 <span class="subtitle-sub">Zucchetti / Mac&Nil</span>
                 <p>Ingegnerizzazione sistemi di localizzazione satellitare GT Alarm. Gestione flussi dati real-time e automazione con Puppet e Jenkins.</p>
                 <div class="tech-tags"><span class="tag">C#</span> <span class="tag">Puppet</span> <span class="tag">SQL Server</span> <span class="tag">IoT Protocols</span></div>
             </div>
 
             <div class="card">
-                <div class="card-header"><h3>Enterprise Developer (Java)</h3> <span class="badge">2011 — 2018</span></div>
+                <div class="card-header"><h3 class="title-main">Enterprise Developer (Java)</h3> <span class="badge">2011 — 2018</span></div>
                 <span class="subtitle-sub">Consulenza Specialistica</span>
                 <p>Backend bancari/assicurativi in Spring Boot e sviluppo applicazioni Android per monitoraggio industriale.</p>
                 <div class="tech-tags"><span class="tag">Java J2EE</span> <span class="tag">Spring Boot</span> <span class="tag">Android SDK</span> <span class="tag">Hibernate</span></div>
             </div>
 
             <div class="card">
-                <div class="card-header"><h3>Software Engineer & Consultant</h3> <span class="badge">2005 — 2011</span></div>
+                <div class="card-header"><h3 class="title-main">Software Engineer & Consultant</h3> <span class="badge">2005 — 2011</span></div>
                 <span class="subtitle-sub">Desktop Era</span>
                 <p>Progettazione di software gestionali e motori di calcolo specialistici in ambienti Client-Server.</p>
                 <div class="tech-tags"><span class="tag">Delphi</span> <span class="tag">VB6</span> <span class="tag">C++</span> <span class="tag">PL/SQL</span></div>
@@ -211,7 +229,7 @@
             <footer>
                 <a href="mailto:clemarca@gmail.com" class="contact">clemarca@gmail.com</a>
                 <p style="margin-top: 30px; font-size: 0.9rem; color: #94a3b8;">
-                    Ginosa (TA) | +39 320 7079066 | LinkedIn<br>
+                    Ginosa (TA) | <a href="https://www.linkedin.com/in/arcangelo-clemente-62b4736" target="_blank" rel="noopener" style="color: var(--accent);">LinkedIn</a><br>
                     © 2026 Arcangelo Clemente • Seniority, Logica e Passione.
                 </p>
             </footer>
