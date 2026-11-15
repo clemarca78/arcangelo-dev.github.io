@@ -98,7 +98,7 @@
 
         /* PASSIONI */
         .passions-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px; margin-top: 30px;
         }
         .passion-item {
@@ -107,6 +107,7 @@
         }
         .passion-item:hover { background: rgba(236, 72, 153, 0.1); border-color: var(--pink); }
         .p-icon { font-size: 2rem; margin-bottom: 8px; display: block; }
+        .p-desc { font-size: 0.8rem; color: #94a3b8; font-weight: 300; line-height: 1.5; margin-top: 6px; }
 
         footer { padding: 80px 0; text-align: center; border-top: 1px solid var(--border); }
         .contact { font-size: 1.8rem; font-weight: 800; color: #fff; text-decoration: none; border-bottom: 3px solid var(--accent); }
@@ -236,15 +237,16 @@
 
         <section id="passioni">
             <h2 class="section-title">🎨 Modelli Mentali & Passioni</h2>
+            <!-- TODO: descrizioni delle passioni temporanee, da sostituire con testi personali -->
             <div class="passions-grid">
-                <div class="passion-item"><span class="p-icon">♟️</span><h4>Teoria dei Giochi</h4></div>
-                <div class="passion-item"><span class="p-icon">🧠</span><h4>Mnemotecniche</h4></div>
-                <div class="passion-item"><span class="p-icon">📻</span><h4>Radiantismo</h4></div>
-                <div class="passion-item"><span class="p-icon">🚴</span><h4>Ciclismo</h4></div>
-                <div class="passion-item"><span class="p-icon">☁️</span><h4>Meteorologia</h4></div>
-                <div class="passion-item"><span class="p-icon">🏓</span><h4>Tennis Tavolo</h4></div>
-                <div class="passion-item"><span class="p-icon">🎸</span><h4>Chitarra</h4></div>
-                <div class="passion-item"><span class="p-icon">🍷</span><h4>Enologia</h4></div>
+                <div class="passion-item"><span class="p-icon">♟️</span><h4>Teoria dei Giochi</h4><p class="p-desc">Strategia, equilibri e decisioni: il modo più elegante di leggere i problemi.</p></div>
+                <div class="passion-item"><span class="p-icon">🧠</span><h4>Mnemotecniche</h4><p class="p-desc">Allenare la memoria con palazzi mentali e associazioni.</p></div>
+                <div class="passion-item"><span class="p-icon">📻</span><h4>Radiantismo</h4><p class="p-desc">Comunicare via radio: tecnica, antenne e un pizzico di magia.</p></div>
+                <div class="passion-item"><span class="p-icon">🚴</span><h4>Ciclismo</h4><p class="p-desc">Strade, salite e fatica: il miglior debug mentale.</p></div>
+                <div class="passion-item"><span class="p-icon">☁️</span><h4>Meteorologia</h4><p class="p-desc">Leggere le nuvole e i modelli per capire che tempo farà.</p></div>
+                <div class="passion-item"><span class="p-icon">🏓</span><h4>Tennis Tavolo</h4><p class="p-desc">Riflessi e rotazioni su un tavolo da due metri.</p></div>
+                <div class="passion-item"><span class="p-icon">🎸</span><h4>Chitarra</h4><p class="p-desc">Accordi e improvvisazione per staccare dalla logica.</p></div>
+                <div class="passion-item"><span class="p-icon">🍷</span><h4>Enologia</h4><p class="p-desc">Terroir, vitigni e degustazioni, senza fretta.</p></div>
             </div>
         </section>
 
