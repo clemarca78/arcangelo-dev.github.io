@@ -98,7 +98,7 @@
 
         /* PASSIONI */
         .passions-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 15px; margin-top: 30px;
         }
         .passion-item {
@@ -107,7 +107,37 @@
         }
         .passion-item:hover { background: rgba(236, 72, 153, 0.1); border-color: var(--pink); }
         .p-icon { font-size: 2rem; margin-bottom: 8px; display: block; }
-        .p-desc { font-size: 0.8rem; color: #94a3b8; font-weight: 300; line-height: 1.5; margin-top: 6px; }
+        .p-desc { font-size: 0.9rem; color: #94a3b8; font-weight: 300; line-height: 1.6; margin-top: 8px; text-align: left; }
+
+
+        /* PASSIONI: schede cliccabili */
+        button.passion-item { font: inherit; color: inherit; cursor: pointer; width: 100%; display: block; }
+        button.passion-item:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+        .p-more { display: inline-block; margin-top: 12px; font-size: 0.75rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+        button.passion-item:hover .p-more { color: var(--pink); }
+
+        dialog.passion-dialog {
+            border: 1px solid var(--border); border-radius: 28px; padding: 0;
+            background: #111a2e; color: var(--text);
+            width: min(720px, calc(100% - 2rem)); max-height: 88vh; margin: auto;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+        }
+        dialog.passion-dialog::backdrop { background: rgba(5, 8, 16, 0.75); backdrop-filter: blur(6px); }
+        body:has(dialog[open]) { overflow: hidden; }
+        .pd-inner { padding: 2.2rem; position: relative; }
+        .pd-close {
+            position: absolute; top: 1rem; right: 1rem; width: 40px; height: 40px; border-radius: 50%;
+            border: 1px solid var(--border); background: var(--glass); color: var(--text);
+            font-size: 1.2rem; cursor: pointer; line-height: 1;
+        }
+        .pd-close:hover { border-color: var(--accent); color: var(--accent); }
+        .pd-icon { font-size: 2.6rem; display: block; margin-bottom: 8px; }
+        .pd-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 1rem; padding-right: 3rem; color: var(--accent); }
+        .pd-text p { color: #cbd5e1; font-weight: 300; line-height: 1.8; margin-bottom: 1rem; }
+        .pd-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 1.5rem; }
+        .pd-gallery a { display: block; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); }
+        .pd-gallery img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; transition: 0.4s; }
+        .pd-gallery a:hover img { transform: scale(1.05); }
 
         footer { padding: 80px 0; text-align: center; border-top: 1px solid var(--border); }
         .contact { font-size: 1.8rem; font-weight: 800; color: #fff; text-decoration: none; border-bottom: 3px solid var(--accent); }
@@ -239,14 +269,14 @@
             <h2 class="section-title">🎨 Modelli Mentali & Passioni</h2>
             <!-- TODO: descrizioni delle passioni temporanee, da sostituire con testi personali -->
             <div class="passions-grid">
-                <div class="passion-item"><span class="p-icon">♟️</span><h4>Teoria dei Giochi</h4><p class="p-desc">Strategia, equilibri e decisioni: il modo più elegante di leggere i problemi.</p></div>
-                <div class="passion-item"><span class="p-icon">🧠</span><h4>Mnemotecniche</h4><p class="p-desc">Allenare la memoria con palazzi mentali e associazioni.</p></div>
-                <div class="passion-item"><span class="p-icon">📻</span><h4>Radiantismo</h4><p class="p-desc">Comunicare via radio: tecnica, antenne e un pizzico di magia.</p></div>
-                <div class="passion-item"><span class="p-icon">🚴</span><h4>Ciclismo</h4><p class="p-desc">Strade, salite e fatica: il miglior debug mentale.</p></div>
-                <div class="passion-item"><span class="p-icon">☁️</span><h4>Meteorologia</h4><p class="p-desc">Leggere le nuvole e i modelli per capire che tempo farà.</p></div>
-                <div class="passion-item"><span class="p-icon">🏓</span><h4>Tennis Tavolo</h4><p class="p-desc">Riflessi e rotazioni su un tavolo da due metri.</p></div>
-                <div class="passion-item"><span class="p-icon">🎸</span><h4>Chitarra</h4><p class="p-desc">Accordi e improvvisazione per staccare dalla logica.</p></div>
-                <div class="passion-item"><span class="p-icon">🍷</span><h4>Enologia</h4><p class="p-desc">Terroir, vitigni e degustazioni, senza fretta.</p></div>
+                <button type="button" class="passion-item" data-key="teoria-giochi" aria-haspopup="dialog"><span class="p-icon">♟️</span><h4>Teoria dei Giochi</h4><p class="p-desc">Mi affascina il modo in cui scelte individuali, incentivi e conflitti producono equilibri. Dal dilemma del prigioniero agli scacchi, è il mio allenamento al pensiero strategico: anticipare le mosse degli altri prima di decidere le proprie.</p><span class="p-more">Scopri di più →</span></button>
+                <button type="button" class="passion-item" data-key="mnemotecniche" aria-haspopup="dialog"><span class="p-icon">🧠</span><h4>Mnemotecniche</h4><p class="p-desc">Palazzi della memoria, associazioni e immagini mentali per ricordare numeri, liste e concetti. Per me la memoria è una struttura dati da progettare: con il metodo giusto si impara più in fretta e si dimentica meno.</p><span class="p-more">Scopri di più →</span></button>
+                <button type="button" class="passion-item" data-key="radiantismo" aria-haspopup="dialog"><span class="p-icon">📻</span><h4>Radiantismo</h4><p class="p-desc">Costruire e usare apparati radio, studiare propagazione e antenne, parlare con persone lontane senza internet. È la passione che unisce elettronica, protocolli e il piacere di far funzionare qualcosa con le proprie mani.</p><span class="p-more">Scopri di più →</span></button>
+                <button type="button" class="passion-item" data-key="ciclismo" aria-haspopup="dialog"><span class="p-icon">🚴</span><h4>Ciclismo</h4><p class="p-desc">Chilometri in bici tra salite, vento e paesaggi pugliesi. Pedalare è il mio modo di staccare e ragionare: i problemi più intricati spesso si sciolgono a metà di una salita.</p><span class="p-more">Scopri di più →</span></button>
+                <button type="button" class="passion-item" data-key="meteorologia" aria-haspopup="dialog"><span class="p-icon">☁️</span><h4>Meteorologia</h4><p class="p-desc">Leggere carte sinottiche, nuvole e modelli numerici per capire che tempo farà. È un sistema complesso e caotico, e proprio per questo un ottimo terreno di gioco per chi ama modellare l'incertezza.</p><span class="p-more">Scopri di più →</span></button>
+                <button type="button" class="passion-item" data-key="tennis-tavolo" aria-haspopup="dialog"><span class="p-icon">🏓</span><h4>Tennis Tavolo</h4><p class="p-desc">Riflessi, effetti e rotazioni su un tavolo di due metri e mezzo. Una sfida rapida di concentrazione e tattica, perfetta per una pausa intensa e per qualche sana partita con amici e colleghi.</p><span class="p-more">Scopri di più →</span></button>
+                <button type="button" class="passion-item" data-key="chitarra" aria-haspopup="dialog"><span class="p-icon">🎸</span><h4>Chitarra</h4><p class="p-desc">Accordi, arpeggi e improvvisazione per lasciare il lato logico e dare spazio a quello creativo. Suonare è l'unico momento in cui non ottimizzo nulla, e va benissimo così.</p><span class="p-more">Scopri di più →</span></button>
+                <button type="button" class="passion-item" data-key="enologia" aria-haspopup="dialog"><span class="p-icon">🍷</span><h4>Enologia</h4><p class="p-desc">Vitigni, territori e degustazioni, con una predilezione per i vini del Sud. Un modo per rallentare, imparare dai produttori e condividere un buon bicchiere con chi si ha vicino.</p><span class="p-more">Scopri di più →</span></button>
             </div>
         </section>
 
@@ -260,6 +290,83 @@
             </footer>
         </section>
     </div>
+
+    <dialog id="passion-dialog" class="passion-dialog" aria-labelledby="pd-title">
+        <div class="pd-inner">
+            <button type="button" class="pd-close" aria-label="Chiudi">✕</button>
+            <span class="pd-icon" id="pd-icon"></span>
+            <h3 class="pd-title" id="pd-title"></h3>
+            <div class="pd-text" id="pd-text"></div>
+            <div class="pd-gallery" id="pd-gallery"></div>
+        </div>
+    </dialog>
+
+    <script>
+    /* Contenuti delle schede passione.
+       TODO: testi provvisori da sostituire con quelli personali.
+       Foto: copiare i file in img/passioni/<chiave>/ e aggiungerli in "photos",
+       ad esempio { src: "img/passioni/ciclismo/salita.jpg", alt: "Salita in bici" } */
+    window.PASSIONS = {
+        "teoria-giochi": { icon: "♟️", title: "Teoria dei Giochi", photos: [], text: [
+            "Dagli scacchi al dilemma del prigioniero, mi appassiona capire come decisioni individuali e incentivi producano equilibri collettivi. È un linguaggio utile anche nel lavoro: negoziazione, progettazione di sistemi con attori in competizione, scelte di architettura sotto incertezza.",
+            "Tra le letture che mi hanno formato c'è il pensiero strategico di László Mérő, che racconta come la razionalità si scontri spesso con il comportamento reale delle persone." ] },
+        "mnemotecniche": { icon: "🧠", title: "Mnemotecniche", photos: [], text: [
+            "Palazzo della memoria, sistema maggiore, associazioni visive: tecniche antiche per trasformare numeri e liste in immagini facili da ricordare. Le uso per allenare la memoria e per studiare più in fretta.",
+            "Per me la memoria è una struttura dati da progettare: con la codifica giusta il recupero diventa quasi immediato." ] },
+        "radiantismo": { icon: "📻", title: "Radiantismo", photos: [], text: [
+            "Costruire antenne, sperimentare con le frequenze e parlare con persone lontane senza passare da internet. Unisce elettronica, protocolli e il piacere di vedere funzionare qualcosa costruito con le proprie mani.",
+            "È anche un ottimo ponte con il mio lavoro sull'IoT: trasmissioni, canali rumorosi e affidabilità del segnale." ] },
+        "ciclismo": { icon: "🚴", title: "Ciclismo", photos: [], text: [
+            "Uscite in bici tra salite, vento e strade di campagna. Pedalare è il mio modo di staccare e ragionare: i problemi più intricati spesso si sciolgono a metà di una salita.",
+            "Qui raccoglierò i percorsi che preferisco e qualche foto dei posti più belli." ] },
+        "meteorologia": { icon: "☁️", title: "Meteorologia", photos: [], text: [
+            "Leggere carte sinottiche, nuvole e modelli numerici per capire che tempo farà. È un sistema complesso e caotico, e proprio per questo un ottimo terreno di gioco per chi ama modellare l'incertezza.",
+            "Mi piace confrontare le previsioni con ciò che accade davvero: è un allenamento continuo al pensiero probabilistico." ] },
+        "tennis-tavolo": { icon: "🏓", title: "Tennis Tavolo", photos: [], text: [
+            "Riflessi, effetti e rotazioni su un tavolo di due metri e mezzo. Una sfida rapida di concentrazione e tattica, perfetta per una pausa intensa e per qualche partita in compagnia.",
+            "Come negli scacchi, vince spesso chi riesce a leggere in anticipo la mossa dell'avversario." ] },
+        "chitarra": { icon: "🎸", title: "Chitarra", photos: [], text: [
+            "Accordi, arpeggi e improvvisazione per lasciare il lato logico e dare spazio a quello creativo. Suonare è l'unico momento in cui non ottimizzo nulla, e va benissimo così.",
+            "Qui potrò aggiungere i brani che sto studiando e magari qualche registrazione." ] },
+        "enologia": { icon: "🍷", title: "Enologia", photos: [], text: [
+            "Vitigni, territori e degustazioni: un modo per rallentare, imparare dai produttori e condividere un buon bicchiere con chi si ha vicino.",
+            "Mi interessa soprattutto il legame tra un vino e il luogo da cui nasce." ] }
+    };
+
+    (function () {
+        var dlg = document.getElementById('passion-dialog');
+        if (!dlg || typeof dlg.showModal !== 'function') return;
+        var lastTrigger = null;
+
+        function open(key, trigger) {
+            var d = window.PASSIONS[key];
+            if (!d) return;
+            lastTrigger = trigger;
+            document.getElementById('pd-icon').textContent = d.icon;
+            document.getElementById('pd-title').textContent = d.title;
+            var text = document.getElementById('pd-text');
+            text.textContent = '';
+            d.text.forEach(function (t) { var p = document.createElement('p'); p.textContent = t; text.appendChild(p); });
+            var gal = document.getElementById('pd-gallery');
+            gal.textContent = '';
+            (d.photos || []).forEach(function (ph) {
+                var a = document.createElement('a'); a.href = ph.src; a.target = '_blank'; a.rel = 'noopener';
+                var img = document.createElement('img'); img.src = ph.src; img.alt = ph.alt || d.title; img.loading = 'lazy';
+                a.appendChild(img); gal.appendChild(a);
+            });
+            gal.hidden = !(d.photos && d.photos.length);
+            dlg.showModal();
+            dlg.scrollTop = 0;
+        }
+
+        document.querySelectorAll('button.passion-item').forEach(function (b) {
+            b.addEventListener('click', function () { open(b.dataset.key, b); });
+        });
+        dlg.querySelector('.pd-close').addEventListener('click', function () { dlg.close(); });
+        dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+        dlg.addEventListener('close', function () { if (lastTrigger) lastTrigger.focus(); });
+    })();
+    </script>
 
 </body>
 </html>
