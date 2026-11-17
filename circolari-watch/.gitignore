@@ -1,0 +1,4 @@
+__pycache__/
+seen.json
+config.env
+watch.log
