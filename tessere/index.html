@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1120">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Tessere">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>Le mie Tessere</title>
+<style>
+:root{
+  --bg:#0b1120;--card:#162033;--text:#e8edf6;--muted:#8b97ad;--line:#26334d;--accent:#3b82f6;--danger:#ef4444;
+}
+@media (prefers-color-scheme:light){
+  :root{--bg:#f3f5f9;--card:#fff;--text:#111827;--muted:#6b7280;--line:#dde2ec;--accent:#2563eb}
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{padding:env(safe-area-inset-top) 16px calc(96px + env(safe-area-inset-bottom))}
+header{position:sticky;top:0;background:var(--bg);padding:14px 0 10px;z-index:5}
+h1{margin:0 0 10px;font-size:22px}
+input,select,textarea,button{font:inherit;color:inherit}
+input[type=search],input[type=text],select,textarea{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card)}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));margin-top:8px}
+.tile{border:0;border-radius:16px;padding:14px;min-height:96px;text-align:left;color:#fff;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;box-shadow:0 2px 8px #0003}
+.tile b{font-size:17px;word-break:break-word}
+.tile small{opacity:.85;font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.empty{text-align:center;color:var(--muted);margin:64px 16px}
+.fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));width:60px;height:60px;border-radius:30px;border:0;background:var(--accent);color:#fff;font-size:32px;box-shadow:0 4px 14px #0006;cursor:pointer}
+.link{position:fixed;left:16px;bottom:calc(24px + env(safe-area-inset-bottom));background:none;border:0;color:var(--muted);font-size:14px;text-decoration:underline;cursor:pointer}
+dialog{border:0;border-radius:20px;padding:0;width:min(440px,calc(100vw - 24px));max-height:calc(100dvh - 24px);background:var(--card);color:var(--text)}
+dialog::backdrop{background:#000a}
+.pad{padding:20px}
+.row{display:flex;gap:8px;margin-top:10px}
+.row>*{flex:1}
+label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
+.btn{padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.danger{color:var(--danger)}
+.colors{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.colors label{margin:0}
+.colors input{display:none}
+.colors span{display:block;width:32px;height:32px;border-radius:50%;border:3px solid transparent}
+.colors input:checked+span{border-color:var(--text)}
+#show .pad{text-align:center}
+#show .paper{background:#fff;border-radius:14px;padding:16px;margin:14px 0}
+#show svg,#show canvas,#show img{max-width:100%;height:auto}
+#showCode{font-size:20px;letter-spacing:.06em;color:#111;font-variant-numeric:tabular-nums;word-break:break-all}
+#video{width:100%;border-radius:12px;background:#000;aspect-ratio:4/3;object-fit:cover}
+.hint{font-size:13px;color:var(--muted);margin:6px 0 0}
+</style>
+</head>
+<body>
+<header>
+  <h1>💳 Le mie Tessere</h1>
+  <input type="search" id="q" placeholder="Cerca tessera…" autocomplete="off">
+</header>
+
+<main>
+  <div class="grid" id="grid"></div>
+  <p class="empty" id="empty" hidden>Nessuna tessera.<br>Tocca <b>+</b> per aggiungere la prima.</p>
+</main>
+
+<button class="link" id="dataBtn">Backup / Ripristino</button>
+<button class="fab" id="addBtn" aria-label="Aggiungi tessera">+</button>
+
+<!-- Mostra tessera -->
+<dialog id="show">
+  <div class="pad">
+    <h2 id="showName" style="margin:0"></h2>
+    <div class="paper"><div id="showCodeBox"></div><div id="showCode"></div></div>
+    <p class="hint" id="showNotes"></p>
+    <div class="row">
+      <button class="btn" id="editBtn">Modifica</button>
+      <button class="btn primary" id="closeShow">Chiudi</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- Aggiungi / modifica -->
+<dialog id="form">
+  <form class="pad" method="dialog" id="f" autocomplete="off">
+    <h2 style="margin:0" id="formTitle">Nuova tessera</h2>
+    <label>Nome (es. Coop, Esselunga, Decathlon)</label>
+    <input type="text" id="fName" required maxlength="40">
+    <label>Codice</label>
+    <input type="text" id="fCode" required inputmode="text" autocapitalize="off">
+    <div class="row"><button type="button" class="btn" id="scanBtn">📷 Scansiona</button></div>
+    <label>Tipo di codice</label>
+    <select id="fFormat">
+      <option value="auto">Automatico</option>
+      <option value="CODE128">Code 128</option>
+      <option value="EAN13">EAN-13</option>
+      <option value="EAN8">EAN-8</option>
+      <option value="UPC">UPC-A</option>
+      <option value="CODE39">Code 39</option>
+      <option value="ITF">ITF (2 di 5)</option>
+      <option value="QR">QR code</option>
+    </select>
+    <label>Colore</label>
+    <div class="colors" id="fColors"></div>
+    <label>Note (facoltative)</label>
+    <textarea id="fNotes" rows="2" maxlength="200"></textarea>
+    <div class="row">
+      <button type="button" class="btn danger" id="delBtn" hidden>Elimina</button>
+      <button type="button" class="btn" id="cancelForm">Annulla</button>
+      <button class="btn primary" id="saveBtn" value="save">Salva</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Scanner -->
+<dialog id="scan">
+  <div class="pad">
+    <video id="video" playsinline muted></video>
+    <p class="hint" id="scanMsg">Inquadra il codice a barre della tessera.</p>
+    <div class="row"><button class="btn" id="stopScan">Annulla</button></div>
+  </div>
+</dialog>
+
+<!-- Backup -->
+<dialog id="data">
+  <div class="pad">
+    <h2 style="margin:0">Backup</h2>
+    <p class="hint">I dati restano solo su questo dispositivo. Esporta un file per non perderli o per spostarli su un altro telefono.</p>
+    <div class="row"><button class="btn" id="exportBtn">Esporta</button><button class="btn" id="importBtn">Importa</button></div>
+    <input type="file" id="importFile" accept="application/json" hidden>
+    <div class="row"><button class="btn primary" id="closeData">Chiudi</button></div>
+  </div>
+</dialog>
+
+<script src="lib/jsbarcode.min.js"></script>
+<script src="lib/qrcode.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const COLORS = ['#2563eb','#dc2626','#16a34a','#ea580c','#7c3aed','#0891b2','#db2777','#475569'];
+  const KEY = 'tessere.v1';
+  let cards = [];
+  let editingId = null;
+  let color = COLORS[0];
+
+  const load = () => { try { cards = JSON.parse(localStorage.getItem(KEY)) || []; } catch { cards = []; } };
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(cards)); } catch { alert('Impossibile salvare i dati.'); } };
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+
+  // ---- Lista ----
+  function render() {
+    const q = $('q').value.trim().toLowerCase();
+    const list = cards.filter(c => c.name.toLowerCase().includes(q)).sort((a, b) => a.name.localeCompare(b.name, 'it'));
+    $('grid').replaceChildren(...list.map(c => {
+      const b = document.createElement('button');
+      b.className = 'tile'; b.style.background = c.color;
+      const n = document.createElement('b'); n.textContent = c.name;
+      const s = document.createElement('small'); s.textContent = c.code;
+      b.append(n, s);
+      b.onclick = () => openShow(c.id);
+      return b;
+    }));
+    $('empty').hidden = cards.length > 0;
+  }
+
+  // ---- Rendering codice ----
+  function guessFormat(code) {
+    if (/^\d{13}$/.test(code)) return 'EAN13';
+    if (/^\d{8}$/.test(code)) return 'EAN8';
+    if (/^\d{12}$/.test(code)) return 'UPC';
+    if (/^[\x20-\x7e]+$/.test(code)) return 'CODE128';
+    return 'QR';
+  }
+  function drawBar(box, code, fmt) {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    try {
+      JsBarcode(svg, code, { format: fmt, width: 3, height: 110, displayValue: false, margin: 0, valid: ok => { if (!ok) throw 0; } });
+      box.append(svg); return true;
+    } catch { return false; }
+  }
+  function drawCode(box, code, fmt) {
+    box.replaceChildren();
+    if (fmt === 'auto') fmt = guessFormat(code);
+    if (fmt !== 'QR' && (drawBar(box, code, fmt) || (fmt !== 'CODE128' && drawBar(box, code, 'CODE128')))) return;
+    const qr = qrcode(0, 'M'); qr.addData(code); qr.make();
+    const holder = document.createElement('div');
+    holder.innerHTML = qr.createSvgTag({ cellSize: 6, margin: 0, scalable: true });
+    holder.firstChild.style.cssText = 'width:min(240px,100%);height:auto';
+    box.append(holder.firstChild);
+  }
+
+  // ---- Mostra ----
+  let wakeLock = null;
+  async function openShow(id) {
+    const c = cards.find(x => x.id === id); if (!c) return;
+    $('show').dataset.id = id;
+    $('showName').textContent = c.name;
+    $('showCode').textContent = c.code;
+    $('showNotes').textContent = c.notes || '';
+    drawCode($('showCodeBox'), c.code, c.format);
+    $('show').showModal();
+    try { wakeLock = await navigator.wakeLock?.request('screen'); } catch {}
+  }
+  $('show').addEventListener('close', () => { try { wakeLock?.release(); } catch {} wakeLock = null; });
+  $('closeShow').onclick = () => $('show').close();
+  $('editBtn').onclick = () => { const id = $('show').dataset.id; $('show').close(); openForm(id); };
+
+  // ---- Form ----
+  function buildColors() {
+    $('fColors').replaceChildren(...COLORS.map(col => {
+      const l = document.createElement('label');
+      l.innerHTML = '<input type="radio" name="col"><span></span>';
+      l.querySelector('span').style.background = col;
+      l.querySelector('input').value = col;
+      l.querySelector('input').onchange = () => color = col;
+      return l;
+    }));
+  }
+  function setColor(col) {
+    color = col;
+    [...$('fColors').querySelectorAll('input')].forEach(i => i.checked = i.value === col);
+  }
+  function openForm(id) {
+    editingId = id || null;
+    const c = id ? cards.find(x => x.id === id) : null;
+    $('formTitle').textContent = c ? 'Modifica tessera' : 'Nuova tessera';
+    $('fName').value = c?.name || '';
+    $('fCode').value = c?.code || '';
+    $('fFormat').value = c?.format || 'auto';
+    $('fNotes').value = c?.notes || '';
+    $('delBtn').hidden = !c;
+    setColor(c?.color || COLORS[cards.length % COLORS.length]);
+    $('form').showModal();
+  }
+  $('addBtn').onclick = () => openForm();
+  $('cancelForm').onclick = () => $('form').close();
+  $('f').addEventListener('submit', e => {
+    e.preventDefault();
+    const data = { name: $('fName').value.trim(), code: $('fCode').value.trim(), format: $('fFormat').value, notes: $('fNotes').value.trim(), color };
+    if (!data.name || !data.code) return;
+    if (editingId) Object.assign(cards.find(x => x.id === editingId), data);
+    else cards.push({ id: uid(), ...data });
+    save(); render(); $('form').close();
+  });
+  $('delBtn').onclick = () => {
+    if (!confirm('Eliminare questa tessera?')) return;
+    cards = cards.filter(x => x.id !== editingId); save(); render(); $('form').close();
+  };
+
+  // ---- Scanner (BarcodeDetector, Chrome/Android/Safari recenti) ----
+  let stream = null, scanning = false;
+  const FMT_MAP = { ean_13: 'EAN13', ean_8: 'EAN8', upc_a: 'UPC', code_128: 'CODE128', code_39: 'CODE39', itf: 'ITF', qr_code: 'QR' };
+  function stopScan() {
+    scanning = false;
+    stream?.getTracks().forEach(t => t.stop()); stream = null;
+    if ($('scan').open) $('scan').close();
+  }
+  $('stopScan').onclick = stopScan;
+  $('scan').addEventListener('cancel', stopScan);
+  $('scanBtn').onclick = async () => {
+    if (!('BarcodeDetector' in window)) {
+      alert('La scansione con fotocamera non è supportata da questo browser. Digita il codice a mano (o usa Chrome su Android / Safari recente).');
+      return;
+    }
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+    } catch { alert('Accesso alla fotocamera negato.'); return; }
+    const det = new BarcodeDetector({ formats: Object.keys(FMT_MAP) });
+    $('video').srcObject = stream; await $('video').play();
+    $('scan').showModal(); scanning = true;
+    const tick = async () => {
+      if (!scanning) return;
+      try {
+        const r = await det.detect($('video'));
+        if (r.length) {
+          $('fCode').value = r[0].rawValue;
+          if (FMT_MAP[r[0].format]) $('fFormat').value = FMT_MAP[r[0].format];
+          if (navigator.vibrate) navigator.vibrate(60);
+          stopScan(); return;
+        }
+      } catch {}
+      setTimeout(tick, 150);
+    };
+    tick();
+  };
+
+  // ---- Backup ----
+  $('dataBtn').onclick = () => $('data').showModal();
+  $('closeData').onclick = () => $('data').close();
+  $('exportBtn').onclick = () => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(cards, null, 2)], { type: 'application/json' }));
+    a.download = 'tessere-backup.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  };
+  $('importBtn').onclick = () => $('importFile').click();
+  $('importFile').onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    try {
+      const arr = JSON.parse(await f.text());
+      if (!Array.isArray(arr)) throw 0;
+      const ok = arr.filter(c => c && typeof c.name === 'string' && typeof c.code === 'string')
+        .map(c => ({ id: uid(), name: c.name.slice(0, 40), code: c.code, format: c.format || 'auto', notes: String(c.notes || '').slice(0, 200), color: COLORS.includes(c.color) ? c.color : COLORS[0] }));
+      cards = cards.concat(ok.filter(n => !cards.some(c => c.name === n.name && c.code === n.code)));
+      save(); render(); alert(`Importate ${ok.length} tessere.`);
+    } catch { alert('File non valido.'); }
+    e.target.value = '';
+  };
+
+  $('q').oninput = render;
+  buildColors(); load(); render();
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+})();
+</script>
+</body>
+</html>

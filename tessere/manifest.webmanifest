@@ -1,0 +1,13 @@
+{
+  "name": "Le mie Tessere",
+  "short_name": "Tessere",
+  "description": "Salva le tue fidelity card e mostra il codice a barre alla cassa.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b1120",
+  "theme_color": "#0b1120",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
