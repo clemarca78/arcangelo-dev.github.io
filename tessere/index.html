@@ -145,12 +145,25 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
   </div>
 </dialog>
 
+<!-- Import da screenshot -->
+<dialog id="bulk">
+  <div class="pad">
+    <h2 style="margin:0">Importa tessere</h2>
+    <p class="hint" id="bulkMsg"></p>
+    <div id="bulkList"></div>
+    <div class="row"><button class="btn" id="bulkCancel">Annulla</button><button class="btn primary" id="bulkSave">Salva tutte</button></div>
+  </div>
+</dialog>
+
 <!-- Backup -->
 <dialog id="data">
   <div class="pad">
     <h2 style="margin:0">Backup</h2>
     <p class="hint">I dati restano solo su questo dispositivo. Esporta un file per non perderli o per spostarli su un altro telefono.</p>
     <div class="row"><button class="btn" id="exportBtn">Esporta</button><button class="btn" id="importBtn">Importa</button></div>
+    <div class="row"><button class="btn primary" id="bulkBtn">📥 Importa da screenshot</button></div>
+    <p class="hint">Hai tessere in un'altra app? Fai lo screenshot di ognuna e selezionali tutti insieme: leggo io codice e tipo.</p>
+    <input type="file" id="bulkFile" accept="image/*" multiple hidden>
     <input type="file" id="importFile" accept="application/json" hidden>
     <div class="row"><button class="btn primary" id="closeData">Chiudi</button></div>
   </div>
@@ -391,6 +404,75 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
       setTimeout(tick, 150);
     };
     tick();
+  };
+
+  // ---- Import in blocco da screenshot ----
+  let bulkItems = [];
+  const detFormats = Object.keys(FMT_MAP);
+  const ZX_MAP = { EAN_13: 'EAN13', EAN_8: 'EAN8', UPC_A: 'UPC', CODE_128: 'CODE128', CODE_39: 'CODE39', ITF: 'ITF', QR_CODE: 'QR' };
+  let zxP;
+  const loadZX = () => zxP || (zxP = new Promise((res, rej) => {
+    const sc = document.createElement('script'); sc.src = 'lib/zxing.min.js'; sc.onload = () => res(window.ZXing); sc.onerror = rej; document.head.append(sc);
+  }));
+  async function zxDecode(file) {
+    const ZXing = await loadZX();
+    const hints = new Map([[ZXing.DecodeHintType.TRY_HARDER, true],
+      [ZXing.DecodeHintType.POSSIBLE_FORMATS, Object.keys(ZX_MAP).map(k => ZXing.BarcodeFormat[k])]]);
+    const reader = new ZXing.MultiFormatReader(); reader.setHints(hints);
+    const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+    for (const target of [1600, 2400, 1000]) {   // più scale: i codici in uno screenshot possono essere piccoli
+      const k = target / bmp.width;
+      const c = document.createElement('canvas'); c.width = target; c.height = Math.round(bmp.height * k);
+      c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+      try {
+        const r = reader.decode(new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(new ZXing.HTMLCanvasElementLuminanceSource(c))));
+        return { code: r.getText(), format: ZX_MAP[ZXing.BarcodeFormat[r.getBarcodeFormat()]] || 'auto' };
+      } catch {}
+    }
+    return null;
+  }
+  async function readImage(file) {
+    const res = { blob: null, code: '', format: 'auto' };
+    try { res.blob = await shrink(file); } catch { return res; }
+    try {
+      if ('BarcodeDetector' in window) {
+        const r = await new BarcodeDetector({ formats: detFormats }).detect(await createImageBitmap(file, { imageOrientation: 'from-image' }));
+        if (r.length) { res.code = r[0].rawValue; res.format = FMT_MAP[r[0].format] || 'auto'; return res; }
+      }
+    } catch {}
+    try { const z = await zxDecode(file); if (z) Object.assign(res, z); } catch {}
+    return res;
+  }
+  $('bulkBtn').onclick = () => $('bulkFile').click();
+  $('bulkFile').onchange = async e => {
+    const files = [...e.target.files]; e.target.value = ''; if (!files.length) return;
+    $('data').close();
+    $('bulkMsg').textContent = 'Leggo le immagini…'; $('bulkList').replaceChildren(); $('bulk').showModal();
+    bulkItems = [];
+    for (const f of files) { bulkItems.push(await readImage(f)); $('bulkMsg').textContent = `Lette ${bulkItems.length} / ${files.length}…`; }
+    const found = bulkItems.filter(i => i.code).length;
+    $('bulkMsg').textContent = `${found} codici letti su ${bulkItems.length}. Scrivi il nome di ogni tessera (le righe senza nome vengono saltate).` + (found < bulkItems.length ? ' Dove il codice manca, digitalo: l\'immagine resta come foto.' : '');
+    $('bulkList').replaceChildren(...bulkItems.map((it, i) => {
+      const row = document.createElement('div'); row.style.cssText = 'display:flex;gap:8px;margin-top:10px;align-items:center';
+      const im = document.createElement('img'); im.src = URL.createObjectURL(it.blob); im.style.cssText = 'width:64px;height:48px;object-fit:cover;border-radius:8px';
+      const box = document.createElement('div'); box.style.flex = '1';
+      const n = document.createElement('input'); n.type = 'text'; n.placeholder = 'Nome'; n.maxLength = 40; n.oninput = () => it.name = n.value;
+      const c = document.createElement('input'); c.type = 'text'; c.placeholder = 'Codice'; c.value = it.code; c.style.marginTop = '4px'; c.oninput = () => it.code = c.value;
+      box.append(n, c); row.append(im, box); return row;
+    }));
+  };
+  $('bulkCancel').onclick = () => { bulkItems = []; $('bulk').close(); };
+  $('bulkSave').onclick = async () => {
+    let n = 0;
+    for (const it of bulkItems) {
+      const name = (it.name || '').trim(), code = (it.code || '').trim();
+      if (!name || (!code && !it.blob)) continue;
+      const id = uid();
+      await putPhoto(id, 'f', it.blob);
+      cards.push({ id, name, code, format: it.format, notes: '', group: '', hasPhoto: true, uses: 0, lastUsed: 0, color: COLORS[cards.length % COLORS.length] });
+      n++;
+    }
+    bulkItems = []; save(); render(); $('bulk').close(); alert(`Salvate ${n} tessere.`);
   };
 
   // ---- Backup ----
