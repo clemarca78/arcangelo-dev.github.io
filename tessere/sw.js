@@ -1,5 +1,5 @@
-const CACHE = 'tessere-v15';
-const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon.svg', './lib/jsbarcode.min.js', './lib/qrcode.js'];
+const CACHE = 'tessere-v17';
+const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './apple-touch-icon.png', './lib/jsbarcode.min.js', './lib/qrcode.js'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
 });
