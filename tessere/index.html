@@ -247,8 +247,14 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
 
   const textOn = hex => { const v = parseInt(String(hex).slice(1), 16) || 0; return (0.299 * (v >> 16) + 0.587 * ((v >> 8) & 255) + 0.114 * (v & 255)) > 170 ? '#111' : '#fff'; };
   const groups = () => [...new Set(cards.map(c => c.group).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'it'));
+  // gruppi ordinati per uso totale delle loro tessere (il più usato per primo), a parità per nome
+  function groupsByUse() {
+    const use = {};
+    cards.forEach(c => { if (c.group) use[c.group] = (use[c.group] || 0) + (c.uses || 0); });
+    return groups().sort((a, b) => use[b] - use[a] || a.localeCompare(b, 'it'));
+  }
   function renderChips() {
-    const g = groups();
+    const g = groupsByUse();
     $('chips').hidden = !g.length;
     $('chips').replaceChildren(...['', ...g].map(name => {
       const b = document.createElement('button');
@@ -572,7 +578,7 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
 
   try { $('sort').value = localStorage.getItem('tessere.sort') || 'uses'; } catch {}
   $('sort').onchange = () => { try { localStorage.setItem('tessere.sort', $('sort').value); } catch {} render(); };
-  const VERSION = 'v9', BUILD = '24/11/2026 22:31';   // aggiornare a ogni rilascio (e CACHE in sw.js)
+  const VERSION = 'v10', BUILD = '24/11/2026 22:34';   // aggiornare a ogni rilascio (e CACHE in sw.js)
   $('ver').textContent = `Versione ${VERSION} · ${BUILD}`;
   $('q').oninput = render;
   buildColors(); load(); render();
