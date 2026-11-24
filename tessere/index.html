@@ -653,11 +653,17 @@ body.selecting .fab,body.selecting .links{display:none}
     a.download = 'tessere-backup.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   };
   $('importBtn').onclick = () => $('importFile').click();
-  $('importFile').onchange = async e => {
-    const f = e.target.files[0]; if (!f) return;
+  // Importa un backup/condivisione dal testo JSON. ask: chiede conferma elencando i nomi (file ricevuti da altri).
+  async function importText(text, ask) {
     try {
-      const arr = JSON.parse(await f.text());
+      const arr = JSON.parse(text);
       if (!Array.isArray(arr)) throw 0;
+      const valid = arr.filter(c => c && typeof c.name === 'string' && typeof c.code === 'string');
+      if (!valid.length) throw 0;
+      if (ask) {
+        const names = valid.slice(0, 6).map(c => c.name).join(', ') + (valid.length > 6 ? '…' : '');
+        if (!confirm(`Aggiungere ${valid.length === 1 ? '1 tessera ricevuta' : valid.length + ' tessere ricevute'}?\n${names}`)) return;
+      }
       let n = 0, upd = 0;
       for (const c of arr) {
         if (!c || typeof c.name !== 'string' || typeof c.code !== 'string') continue;
@@ -679,15 +685,30 @@ body.selecting .fab,body.selecting .links{display:none}
       }
       save(); render(); alert(`Importate ${n} nuove tessere, aggiornate ${upd} già presenti.`);
     } catch { alert('File non valido.'); }
-    e.target.value = '';
+  }
+  $('importFile').onchange = async e => {
+    const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+    await importText(await f.text(), false);
   };
+
+  // File ricevuto dal menu "Condividi" del telefono (share target, vedi sw.js)
+  async function importShared() {
+    if (!/[?&]shared=1/.test(location.search)) return;
+    history.replaceState(null, '', location.pathname);
+    try {
+      const cache = await caches.open('tessere-share'), r = await cache.match('shared.json');
+      if (!r) return;
+      await cache.delete('shared.json');
+      await importText(await r.text(), true);
+    } catch { alert('Impossibile leggere il file ricevuto.'); }
+  }
 
   try { $('sort').value = localStorage.getItem('tessere.sort') || 'uses'; } catch {}
   $('sort').onchange = () => { try { localStorage.setItem('tessere.sort', $('sort').value); } catch {} render(); };
-  const VERSION = 'v14', BUILD = '24/11/2026 22:55';   // aggiornare a ogni rilascio (e CACHE in sw.js)
+  const VERSION = 'v15', BUILD = '24/11/2026 22:56';   // aggiornare a ogni rilascio (e CACHE in sw.js)
   $('ver').textContent = `Versione ${VERSION} · ${BUILD}`;
   $('q').oninput = render;
-  buildColors(); load(); render();
+  buildColors(); load(); render(); importShared();
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 })();
 </script>
