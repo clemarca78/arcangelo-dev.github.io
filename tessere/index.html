@@ -67,7 +67,8 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
 <body>
 <header>
   <h1>💳 Le mie Tessere</h1>
-  <input type="search" id="q" placeholder="Cerca tessera…" autocomplete="off">
+  <div class="row" style="margin-top:0"><input type="search" id="q" placeholder="Cerca tessera…" autocomplete="off" style="flex:2">
+  <select id="sort" aria-label="Ordina" style="flex:1"><option value="uses">Più usate</option><option value="recent">Recenti</option><option value="name">Nome A-Z</option></select></div>
   <div class="chips" id="chips"></div>
 </header>
 
@@ -197,7 +198,12 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
     const q = $('q').value.trim().toLowerCase();
     if (activeGroup && !cards.some(c => c.group === activeGroup)) activeGroup = '';
     renderChips();
-    const list = cards.filter(c => (!activeGroup || c.group === activeGroup) && c.name.toLowerCase().includes(q)).sort((a, b) => a.name.localeCompare(b.name, 'it'));
+    const list = cards.filter(c => (!activeGroup || c.group === activeGroup) && c.name.toLowerCase().includes(q)).sort((a, b) => {
+      const by = $('sort').value, n = a.name.localeCompare(b.name, 'it');
+      if (by === 'uses') return (b.uses || 0) - (a.uses || 0) || (b.lastUsed || 0) - (a.lastUsed || 0) || n;
+      if (by === 'recent') return (b.lastUsed || 0) - (a.lastUsed || 0) || n;
+      return n;
+    });
     $('grid').replaceChildren(...list.map(c => {
       const b = document.createElement('button');
       b.className = 'tile'; b.style.background = c.color;
@@ -252,9 +258,10 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
   // ---- Mostra ----
   let wakeLock = null, urls = [];
   const freeUrls = () => { urls.forEach(URL.revokeObjectURL); urls = []; };
-  async function openShow(id) {
+  async function openShow(id, fromEdit) {
     const c = cards.find(x => x.id === id); if (!c) return;
     $('show').dataset.id = id;
+    if (!fromEdit) { c.uses = (c.uses || 0) + 1; c.lastUsed = Date.now(); save(); render(); }
     $('showName').textContent = c.name;
     $('showNotes').textContent = [c.group && '🏷 ' + c.group, c.notes].filter(Boolean).join(' · ');
     const [f, bk] = await Promise.all([getPhoto(id, 'f'), getPhoto(id, 'b')]);
@@ -412,7 +419,7 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
         const id = uid(), ph = c.photos || {};
         let has = false;
         for (const s of ['f', 'b']) if (typeof ph[s] === 'string' && ph[s].startsWith('data:image/')) { await putPhoto(id, s, await (await fetch(ph[s])).blob()); has = true; }
-        cards.push({ id, name: c.name.slice(0, 40), code: c.code, format: c.format || 'auto', notes: String(c.notes || '').slice(0, 200), group: String(c.group || '').slice(0, 30), hasPhoto: has, color: COLORS.includes(c.color) ? c.color : COLORS[0] });
+        cards.push({ id, name: c.name.slice(0, 40), code: c.code, format: c.format || 'auto', notes: String(c.notes || '').slice(0, 200), group: String(c.group || '').slice(0, 30), hasPhoto: has, uses: Math.max(0, +c.uses || 0), lastUsed: +c.lastUsed || 0, color: COLORS.includes(c.color) ? c.color : COLORS[0] });
         n++;
       }
       save(); render(); alert(`Importate ${n} tessere.`);
@@ -420,6 +427,8 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
     e.target.value = '';
   };
 
+  try { $('sort').value = localStorage.getItem('tessere.sort') || 'uses'; } catch {}
+  $('sort').onchange = () => { try { localStorage.setItem('tessere.sort', $('sort').value); } catch {} render(); };
   $('q').oninput = render;
   buildColors(); load(); render();
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
