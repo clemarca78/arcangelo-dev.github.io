@@ -70,6 +70,7 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
 <body>
 <header>
   <h1>💳 Le mie Tessere</h1>
+  <p class="hint" id="count" style="margin:-6px 0 8px"></p>
   <div class="row" style="margin-top:0"><input type="search" id="q" placeholder="Cerca tessera…" autocomplete="off" style="flex:2">
   <select id="sort" aria-label="Ordina" style="flex:1"><option value="uses">Più usate</option><option value="recent">Recenti</option><option value="name">Nome A-Z</option></select></div>
   <div class="chips" id="chips"></div>
@@ -109,6 +110,9 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
     <label>Codice</label>
     <input type="text" id="fCode" inputmode="text" autocapitalize="off" placeholder="Facoltativo se aggiungi una foto">
     <div class="row"><button type="button" class="btn" id="scanBtn">📷 Scansiona</button></div>
+    <label>Codice QR (facoltativo, se la tessera ha anche il QR)</label>
+    <input type="text" id="fQr" autocapitalize="off">
+    <div class="row"><button type="button" class="btn" id="scanQrBtn">📷 Scansiona QR</button></div>
     <label>Tipo di codice</label>
     <select id="fFormat">
       <option value="auto">Automatico</option>
@@ -237,6 +241,8 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
       return b;
     }));
     $('empty').hidden = cards.length > 0;
+    const tot = cards.length;
+    $('count').textContent = !tot ? '' : (list.length === tot ? `${tot} ${tot === 1 ? 'tessera' : 'tessere'}` : `${list.length} di ${tot} tessere`);
   }
 
   const textOn = hex => { const v = parseInt(String(hex).slice(1), 16) || 0; return (0.299 * (v >> 16) + 0.587 * ((v >> 8) & 255) + 0.114 * (v & 255)) > 170 ? '#111' : '#fff'; };
@@ -293,22 +299,24 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
     const [f, bk] = await Promise.all([getPhoto(id, 'f'), getPhoto(id, 'b')]);
     freeUrls();
     const views = [];
-    if (c.code) views.push({ label: 'Codice', code: true });
+    if (c.code) views.push({ label: c.qr ? 'Codice a barre' : 'Codice', kind: 'code', text: c.code, fmt: c.format });
+    if (c.qr) views.push({ label: 'QR code', kind: 'qr', text: c.qr, fmt: 'QR' });
     if (f) views.push({ label: 'Fronte', url: URL.createObjectURL(f) });
     if (bk) views.push({ label: 'Retro', url: URL.createObjectURL(bk) });
     views.forEach(v => v.url && urls.push(v.url));
     const pick = i => {
       const v = views[i];
-      $('showCodeBox').hidden = $('showCode').hidden = !v.code;
-      $('showImg').hidden = !!v.code;
-      if (v.code) { $('showCode').textContent = c.code; drawCode($('showCodeBox'), c.code, c.format); }
+      $('showCodeBox').hidden = $('showCode').hidden = !v.text;
+      $('showImg').hidden = !!v.text;
+      if (v.kind && c.qr && c.pref !== v.kind) { c.pref = v.kind; save(); }   // ricorda la scelta barre/QR
+      if (v.text) { $('showCode').textContent = v.text; drawCode($('showCodeBox'), v.text, v.fmt); }
       else { const im = document.createElement('img'); im.src = v.url; im.alt = v.label; $('showImg').replaceChildren(im); }
       [...$('showTabs').children].forEach((t, j) => t.classList.toggle('on', j === i));
     };
     $('showTabs').hidden = views.length < 2;
     $('showTabs').replaceChildren(...views.map((v, i) => { const t = document.createElement('button'); t.className = 'chip'; t.textContent = v.label; t.onclick = () => pick(i); return t; }));
     if (!views.length) { $('showCodeBox').replaceChildren(); $('showCode').textContent = ''; }
-    else pick(0);
+    else pick(Math.max(0, views.findIndex(v => v.kind === c.pref)));
     $('show').showModal();
     try { wakeLock = await navigator.wakeLock?.request('screen'); } catch {}
   }
@@ -360,6 +368,7 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
     $('formTitle').textContent = c ? 'Modifica tessera' : 'Nuova tessera';
     $('fName').value = c?.name || '';
     $('fCode').value = c?.code || '';
+    $('fQr').value = c?.qr || '';
     $('fFormat').value = c?.format || 'auto';
     $('fNotes').value = c?.notes || '';
     logo = c?.logo || ''; drawLogo();
@@ -390,9 +399,9 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
   $('cancelForm').onclick = () => $('form').close();
   $('f').addEventListener('submit', async e => {
     e.preventDefault();
-    const data = { name: $('fName').value.trim(), code: $('fCode').value.trim(), format: $('fFormat').value, notes: $('fNotes').value.trim(), group: $('fGroup').value.trim(), color, logo, hasPhoto: !!(pend.f || pend.b) };
+    const data = { name: $('fName').value.trim(), code: $('fCode').value.trim(), qr: $('fQr').value.trim(), format: $('fFormat').value, notes: $('fNotes').value.trim(), group: $('fGroup').value.trim(), color, logo, hasPhoto: !!(pend.f || pend.b) };
     if (!data.name) return;
-    if (!data.code && !data.hasPhoto) { alert('Inserisci un codice oppure aggiungi una foto.'); return; }
+    if (!data.code && !data.qr && !data.hasPhoto) { alert('Inserisci un codice oppure aggiungi una foto.'); return; }
     let id = editingId;
     if (id) Object.assign(cards.find(x => x.id === id), data);
     else { id = uid(); cards.push({ id, ...data }); }
@@ -415,7 +424,11 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
   }
   $('stopScan').onclick = stopScan;
   $('scan').addEventListener('cancel', stopScan);
-  $('scanBtn').onclick = async () => {
+  let scanTarget = 'code';
+  $('scanBtn').onclick = () => startScan('code');
+  $('scanQrBtn').onclick = () => startScan('qr');
+  async function startScan(target) {
+    scanTarget = target;
     if (!('BarcodeDetector' in window)) {
       alert('La scansione con fotocamera non è supportata da questo browser. Digita il codice a mano (o usa Chrome su Android / Safari recente).');
       return;
@@ -431,8 +444,11 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
       try {
         const r = await det.detect($('video'));
         if (r.length) {
-          $('fCode').value = r[0].rawValue;
-          if (FMT_MAP[r[0].format]) $('fFormat').value = FMT_MAP[r[0].format];
+          if (scanTarget === 'qr') $('fQr').value = r[0].rawValue;
+          else {
+            $('fCode').value = r[0].rawValue;
+            if (FMT_MAP[r[0].format]) $('fFormat').value = FMT_MAP[r[0].format];
+          }
           if (navigator.vibrate) navigator.vibrate(60);
           stopScan(); return;
         }
@@ -440,7 +456,7 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
       setTimeout(tick, 150);
     };
     tick();
-  };
+  }
 
   // ---- Import in blocco da screenshot ----
   let bulkItems = [];
@@ -539,13 +555,14 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
         if (ex) {   // già presente: aggiorna logo, colore e gruppo invece di saltarla
           if (okLogo) ex.logo = okLogo;
           if (okColor) ex.color = okColor;
+          if (typeof c.qr === 'string' && c.qr) ex.qr = c.qr.slice(0, 500);
           if (c.group && !ex.group) ex.group = String(c.group).slice(0, 30);
           upd++; continue;
         }
         const id = uid(), ph = c.photos || {};
         let has = false;
         for (const s of ['f', 'b']) if (typeof ph[s] === 'string' && ph[s].startsWith('data:image/')) { await putPhoto(id, s, await (await fetch(ph[s])).blob()); has = true; }
-        cards.push({ id, name: c.name.slice(0, 40), code: c.code, format: c.format || 'auto', notes: String(c.notes || '').slice(0, 200), group: String(c.group || '').slice(0, 30), hasPhoto: has, uses: Math.max(0, +c.uses || 0), lastUsed: +c.lastUsed || 0, color: /^#[0-9a-f]{6}$/i.test(c.color) ? c.color : COLORS[0], logo: typeof c.logo === 'string' && c.logo.startsWith('data:image/') && c.logo.length < 300000 ? c.logo : '' });
+        cards.push({ id, name: c.name.slice(0, 40), code: c.code, qr: typeof c.qr === 'string' ? c.qr.slice(0, 500) : '', format: c.format || 'auto', notes: String(c.notes || '').slice(0, 200), group: String(c.group || '').slice(0, 30), hasPhoto: has, uses: Math.max(0, +c.uses || 0), lastUsed: +c.lastUsed || 0, color: /^#[0-9a-f]{6}$/i.test(c.color) ? c.color : COLORS[0], logo: typeof c.logo === 'string' && c.logo.startsWith('data:image/') && c.logo.length < 300000 ? c.logo : '' });
         n++;
       }
       save(); render(); alert(`Importate ${n} nuove tessere, aggiornate ${upd} già presenti.`);
@@ -555,7 +572,7 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
 
   try { $('sort').value = localStorage.getItem('tessere.sort') || 'uses'; } catch {}
   $('sort').onchange = () => { try { localStorage.setItem('tessere.sort', $('sort').value); } catch {} render(); };
-  const VERSION = 'v8', BUILD = '24/11/2026 22:12';   // aggiornare a ogni rilascio (e CACHE in sw.js)
+  const VERSION = 'v9', BUILD = '24/11/2026 22:31';   // aggiornare a ogni rilascio (e CACHE in sw.js)
   $('ver').textContent = `Versione ${VERSION} · ${BUILD}`;
   $('q').oninput = render;
   buildColors(); load(); render();
