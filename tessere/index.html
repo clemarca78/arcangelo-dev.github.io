@@ -61,7 +61,17 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
 #showCode{font-size:20px;letter-spacing:.06em;color:#111;font-variant-numeric:tabular-nums;word-break:break-all}
 #video{width:100%;border-radius:12px;background:#000;aspect-ratio:4/3;object-fit:cover}
 .tile{position:relative}
-.tile .ck{position:absolute;top:8px;left:8px;width:22px;height:22px;border-radius:50%;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;line-height:1;background:rgba(128,128,128,.25)}
+.tile .ck{position:absolute;top:8px;left:8px;width:26px;height:26px;border-radius:50%;border:2.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;line-height:1;background:rgba(128,128,128,.3)}
+body.selecting .tile:not(.sel){opacity:.7}
+.titlerow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 10px}
+.titlerow h1{margin:0}
+.btn.sm{padding:7px 14px;font-size:14px;border-radius:999px;flex:none}
+#selTop{background:var(--accent);color:#fff;border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:10px}
+#selTop[hidden]{display:none}
+#selTop div{flex:1;font-size:13px;line-height:1.3}
+#selTop b{display:block;font-size:16px}
+#selTop button{background:transparent;border:1.5px solid #fff;color:#fff;border-radius:999px;padding:6px 14px;font-size:14px;cursor:pointer;flex:none}
+body.selecting .titlerow{display:none}
 .tile.sel{outline:3px solid var(--accent);outline-offset:2px}
 .tile.sel .ck{background:var(--accent);border-color:var(--accent);color:#fff}
 body.selecting .fab,body.selecting .links{display:none}
@@ -69,7 +79,7 @@ body.selecting .fab,body.selecting .links{display:none}
 #selBar[hidden]{display:none}
 .chk{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:15px;color:var(--text)}
 .chk input{width:20px;height:20px;flex:none}
-#selBar span{flex:1;font-size:13px;white-space:nowrap}
+#selBar span{flex:1;font-size:13px;font-weight:600;white-space:nowrap}
 #selBar .btn{font-size:14px}
 #selBar .btn{padding:10px 12px}
 .tile .uses{position:absolute;top:8px;right:8px;font-size:11px;font-weight:600;line-height:1;padding:3px 7px;border-radius:999px;background:rgba(128,128,128,.28);font-variant-numeric:tabular-nums}
@@ -91,9 +101,9 @@ body.selecting .fab,body.selecting .links{display:none}
 </head>
 <body>
 <header>
-  <h1>💳 Le mie Tessere <span class="badge" id="count" hidden></span></h1>
+  <div class="titlerow"><h1>💳 Le mie Tessere <span class="badge" id="count" hidden></span></h1><button class="btn sm" id="selBtn">Seleziona</button></div>
+  <div id="selTop" hidden><div><b>Seleziona le tessere</b><span id="selHint"></span></div><button id="selCancel">Annulla</button></div>
   <div class="row" style="margin-top:0"><input type="search" id="q" placeholder="Cerca tessera…" autocomplete="off" style="flex:2">
-  <button class="btn" id="selBtn" title="Seleziona tessere da condividere" style="flex:none;padding:12px">☑</button>
   <select id="sort" aria-label="Ordina" style="flex:1"><option value="uses">Più usate</option><option value="recent">Recenti</option><option value="name">Nome A-Z</option></select></div>
   <div class="chips" id="chips"></div>
 </header>
@@ -110,9 +120,8 @@ body.selecting .fab,body.selecting .links{display:none}
 
 <div id="selBar" hidden>
   <span id="selCount"></span>
-  <button class="btn" id="selAll">Tutte</button>
+  <button class="btn" id="selAll">Seleziona tutte</button>
   <button class="btn primary" id="selShare">Esporta…</button>
-  <button class="btn" id="selCancel">Annulla</button>
 </div>
 
 <!-- Mostra tessera -->
@@ -250,7 +259,8 @@ body.selecting .fab,body.selecting .links{display:none}
   let editingId = null;
   let color = COLORS[0];
   let activeGroup = '';
-  let selMode = false, visible = [];
+  let selMode = false, visible = [], longHit = false;
+  document.addEventListener('pointerup', () => setTimeout(() => { longHit = false; }, 80), true);   // il click dopo un tocco lungo non deve alternare la selezione
   const sel = new Set();
   let pend = {};   // foto in modifica: {f:Blob|null, b:Blob|null}
 
@@ -300,7 +310,11 @@ body.selecting .fab,body.selecting .links{display:none}
       b.append(n, s);
       if (c.uses) { const u = document.createElement('span'); u.className = 'uses'; u.textContent = c.uses + '×'; u.title = c.uses === 1 ? 'Aperta 1 volta' : `Aperta ${c.uses} volte`; b.append(u); }
       if (selMode) { b.classList.toggle('sel', sel.has(c.id)); const ck = document.createElement('span'); ck.className = 'ck'; ck.textContent = sel.has(c.id) ? '✓' : ''; b.append(ck); }
-      b.onclick = () => selMode ? toggleSel(c.id) : openShow(c.id);
+      let timer = null; const clr = () => { clearTimeout(timer); timer = null; };
+      b.addEventListener('pointerdown', () => { if (selMode) return; timer = setTimeout(() => { timer = null; longHit = true; setSel(true); sel.add(c.id); updateSelBar(); render(); if (navigator.vibrate) navigator.vibrate(30); }, 500); });
+      ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, clr));
+      b.addEventListener('contextmenu', e => e.preventDefault());
+      b.onclick = () => { if (longHit) return; selMode ? toggleSel(c.id) : openShow(c.id); };
       return b;
     }));
     $('empty').hidden = cards.length > 0;
@@ -603,10 +617,12 @@ body.selecting .fab,body.selecting .links{display:none}
   function updateSelBar() {
     $('selCount').textContent = sel.size === 1 ? '1 selezionata' : `${sel.size} selezionate`;
     $('selShare').disabled = !sel.size;
+    $('selAll').textContent = visible.length && visible.every(id => sel.has(id)) ? 'Deseleziona tutte' : 'Seleziona tutte';
   }
-  function setSel(on) {
+  function setSel(on, hint) {
     selMode = on; sel.clear();
-    document.body.classList.toggle('selecting', on); $('selBar').hidden = !on;
+    document.body.classList.toggle('selecting', on); $('selBar').hidden = !on; $('selTop').hidden = !on;
+    $('selHint').textContent = hint || 'Tocca le tessere che vuoi condividere o esportare, poi premi «Esporta…».';
     updateSelBar(); render();
   }
   function toggleSel(id) { sel.has(id) ? sel.delete(id) : sel.add(id); updateSelBar(); render(); }
@@ -700,7 +716,7 @@ body.selecting .fab,body.selecting .links{display:none}
   $('closeData').onclick = () => $('data').close();
   $('exportBtn').onclick = () => {
     $('data').close(); activeGroup = ''; $('q').value = '';
-    setSel(true); cards.forEach(c => sel.add(c.id)); updateSelBar(); render();   // tutte preselezionate: togli quelle che non vuoi
+    setSel(true, 'Sono tutte selezionate: togli la spunta a quelle che NON vuoi esportare, poi premi «Esporta…».'); cards.forEach(c => sel.add(c.id)); updateSelBar(); render();
   };
   $('importBtn').onclick = () => $('importFile').click();
   // Importa un backup/condivisione dal testo JSON. ask: chiede conferma elencando i nomi (file ricevuti da altri).
@@ -755,7 +771,7 @@ body.selecting .fab,body.selecting .links{display:none}
 
   try { $('sort').value = localStorage.getItem('tessere.sort') || 'uses'; } catch {}
   $('sort').onchange = () => { try { localStorage.setItem('tessere.sort', $('sort').value); } catch {} render(); };
-  const VERSION = 'v17', BUILD = '24/11/2026 23:03';   // aggiornare a ogni rilascio (e CACHE in sw.js)
+  const VERSION = 'v18', BUILD = '24/11/2026 23:10';   // aggiornare a ogni rilascio (e CACHE in sw.js)
   $('ver').textContent = `Versione ${VERSION} · ${BUILD}`;
   $('q').oninput = render;
   buildColors(); load(); render(); importShared();
