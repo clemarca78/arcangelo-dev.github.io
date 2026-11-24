@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Tessere">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="description" content="Salva le tue tessere fedeltà con codice a barre o QR e mostrale alla cassa. Gratis, funziona offline e i dati restano sul tuo telefono.">
 <meta property="og:title" content="Le mie Tessere">
 <meta property="og:description" content="Salva le tue tessere fedeltà con codice a barre o QR e mostrale alla cassa. Funziona offline, i dati restano sul tuo telefono.">
@@ -105,7 +105,7 @@ body.selecting .fab,body.selecting .links{display:none}
 
 <p class="ver" id="ver"></p>
 
-<div class="links"><button class="link" id="dataBtn">Backup / Ripristino</button><button class="link" id="shareBtn">Condividi app</button></div>
+<div class="links"><button class="link" id="dataBtn">Backup / Ripristino</button><button class="link" id="shareBtn">Condividi app</button><button class="link" id="installBtn" hidden>📲 Installa</button></div>
 <button class="fab" id="addBtn" aria-label="Aggiungi tessera">+</button>
 
 <div id="selBar" hidden>
@@ -219,6 +219,7 @@ body.selecting .fab,body.selecting .links{display:none}
     <p class="hint">Fai inquadrare il QR dal telefono di un amico, oppure manda il link. Ognuno ha le sue tessere: i dati restano sul proprio telefono.</p>
     <div id="shareQr"></div>
     <p class="hint" id="shareUrl" style="word-break:break-all"></p>
+    <p class="hint" style="text-align:left"><b>Come installarla:</b> <b>Android</b> – apri il link in Chrome, menu ⋮ → «Installa app» o «Aggiungi a schermata Home». <b>iPhone</b> – apri il link in Safari, tocca Condividi → «Aggiungi alla schermata Home». Dentro WhatsApp, Instagram o Telegram non si può installare: apri prima il link nel browser.</p>
     <div class="row"><button class="btn primary" id="shareSend">🔗 Condividi link</button></div>
     <div class="row"><button class="btn" id="shareClose">Chiudi</button></div>
   </div>
@@ -662,6 +663,19 @@ body.selecting .fab,body.selecting .links{display:none}
   $('selShare').onclick = () => openExport([...sel]);
   $('shareOne').onclick = () => openExport([$('show').dataset.id]);
 
+  // ---- Installazione (Android: prompt del browser; iPhone: istruzioni) ----
+  let deferredInstall = null;
+  const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const updInstall = () => { $('installBtn').hidden = isStandalone() || !(deferredInstall || isIOS); };
+  addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstall = e; updInstall(); });
+  addEventListener('appinstalled', () => { deferredInstall = null; updInstall(); });
+  $('installBtn').onclick = async () => {
+    if (deferredInstall) { deferredInstall.prompt(); try { await deferredInstall.userChoice; } catch {} deferredInstall = null; updInstall(); }
+    else alert('Su iPhone: apri la pagina in Safari, tocca Condividi (il quadrato con la freccia) e scegli «Aggiungi alla schermata Home».');
+  };
+  updInstall();
+
   // ---- Condividi app ----
   const APP_URL = () => new URL('./', location.href).href;
   $('shareBtn').onclick = () => {
@@ -741,7 +755,7 @@ body.selecting .fab,body.selecting .links{display:none}
 
   try { $('sort').value = localStorage.getItem('tessere.sort') || 'uses'; } catch {}
   $('sort').onchange = () => { try { localStorage.setItem('tessere.sort', $('sort').value); } catch {} render(); };
-  const VERSION = 'v16', BUILD = '24/11/2026 22:58';   // aggiornare a ogni rilascio (e CACHE in sw.js)
+  const VERSION = 'v17', BUILD = '24/11/2026 23:03';   // aggiornare a ogni rilascio (e CACHE in sw.js)
   $('ver').textContent = `Versione ${VERSION} · ${BUILD}`;
   $('q').oninput = render;
   buildColors(); load(); render(); importShared();
