@@ -67,6 +67,8 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
 body.selecting .fab,body.selecting .links{display:none}
 #selBar{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px;box-shadow:0 4px 14px #0004;z-index:10}
 #selBar[hidden]{display:none}
+.chk{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:15px;color:var(--text)}
+.chk input{width:20px;height:20px;flex:none}
 #selBar span{flex:1;font-size:13px;white-space:nowrap}
 #selBar .btn{font-size:14px}
 #selBar .btn{padding:10px 12px}
@@ -109,7 +111,7 @@ body.selecting .fab,body.selecting .links{display:none}
 <div id="selBar" hidden>
   <span id="selCount"></span>
   <button class="btn" id="selAll">Tutte</button>
-  <button class="btn primary" id="selShare">Condividi</button>
+  <button class="btn primary" id="selShare">Esporta…</button>
   <button class="btn" id="selCancel">Annulla</button>
 </div>
 
@@ -196,6 +198,20 @@ body.selecting .fab,body.selecting .links{display:none}
   </div>
 </dialog>
 
+<!-- Opzioni di esportazione -->
+<dialog id="exp">
+  <div class="pad">
+    <h2 style="margin:0" id="expTitle">Esporta</h2>
+    <p class="hint" id="expSub"></p>
+    <label class="chk"><input type="checkbox" id="oPhotos"> Foto fronte/retro</label>
+    <label class="chk"><input type="checkbox" id="oLogo"> Logo</label>
+    <label class="chk"><input type="checkbox" id="oStats"> Statistiche d'uso (quante volte aperta)</label>
+    <p class="hint">Nome, codice, QR, gruppo, colore e note sono sempre inclusi.</p>
+    <div class="row"><button class="btn" id="expSave">💾 Salva file</button><button class="btn primary" id="expShare">🔗 Condividi</button></div>
+    <div class="row"><button class="btn" id="expCancel">Annulla</button></div>
+  </div>
+</dialog>
+
 <!-- Condividi app -->
 <dialog id="share">
   <div class="pad" style="text-align:center">
@@ -212,8 +228,8 @@ body.selecting .fab,body.selecting .links{display:none}
 <dialog id="data">
   <div class="pad">
     <h2 style="margin:0">Backup</h2>
-    <p class="hint">I dati restano solo su questo dispositivo. Esporta un file per non perderli o per spostarli su un altro telefono.</p>
-    <div class="row"><button class="btn" id="exportBtn">Esporta</button><button class="btn" id="importBtn">Importa</button></div>
+    <p class="hint">I dati restano solo su questo dispositivo. Con <b>Esporta…</b> scegli quali tessere includere (di partenza tutte) e cosa mettere nel file: per un backup completo, per spostarle su un altro telefono o per mandarne alcune a qualcuno.</p>
+    <div class="row"><button class="btn" id="exportBtn">Esporta…</button><button class="btn" id="importBtn">Importa</button></div>
     <div class="row"><button class="btn primary" id="bulkBtn">📥 Importa da screenshot</button></div>
     <p class="hint">Hai tessere in un'altra app? Fai lo screenshot di ognuna e selezionali tutti insieme: leggo io codice e tipo.</p>
     <input type="file" id="bulkFile" accept="image/*" multiple hidden>
@@ -596,29 +612,55 @@ body.selecting .fab,body.selecting .links{display:none}
   $('selBtn').onclick = () => setSel(!selMode);
   $('selCancel').onclick = () => setSel(false);
   $('selAll').onclick = () => { const all = visible.every(id => sel.has(id)); visible.forEach(id => all ? sel.delete(id) : sel.add(id)); updateSelBar(); render(); };
-  async function shareCards(ids) {
-    const list = cards.filter(c => ids.includes(c.id)); if (!list.length) return false;
+  // ---- Esporta: scegli le tessere (selezione) e cosa includere (opzioni) ----
+  let expIds = [];
+  function openExport(ids) {
+    const list = cards.filter(c => ids.includes(c.id)); if (!list.length) return;
+    expIds = list.map(c => c.id);
+    const full = list.length === cards.length;
+    $('expTitle').textContent = list.length === 1 ? 'Esporta 1 tessera' : `Esporta ${list.length} tessere`;
+    $('expSub').textContent = list.slice(0, 6).map(c => c.name).join(', ') + (list.length > 6 ? '…' : '');
+    $('oPhotos').checked = true; $('oLogo').checked = true; $('oStats').checked = full;   // le statistiche solo nel backup completo
+    $('exp').showModal();
+  }
+  async function buildExport(ids, o) {
     const out = [];
-    for (const c of list) {
-      const { id, uses, lastUsed, pref, hasPhoto, ...rest } = c;   // niente statistiche d'uso
-      const [f, b] = await Promise.all([getPhoto(id, 'f'), getPhoto(id, 'b')]);
-      out.push({ ...rest, photos: { f: f ? await toDataURL(f) : null, b: b ? await toDataURL(b) : null } });
+    for (const c of cards.filter(x => ids.includes(x.id))) {
+      const { id, uses, lastUsed, pref, hasPhoto, logo, ...rest } = c;
+      const item = { ...rest };
+      if (o.logo && logo) item.logo = logo;
+      if (o.stats) { item.uses = uses || 0; item.lastUsed = lastUsed || 0; item.pref = pref; }
+      if (o.photos) {
+        const [f, b] = await Promise.all([getPhoto(id, 'f'), getPhoto(id, 'b')]);
+        item.photos = { f: f ? await toDataURL(f) : null, b: b ? await toDataURL(b) : null };
+      }
+      out.push(item);
     }
-    const slug = n => n.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-    const fname = list.length === 1 ? `tessera-${slug(list[0].name) || 'tessera'}.json` : `tessere-${list.length}.json`;
+    return out;
+  }
+  const slug = n => n.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  async function deliver(mode) {
+    const out = await buildExport(expIds, { photos: $('oPhotos').checked, logo: $('oLogo').checked, stats: $('oStats').checked });
+    const fname = expIds.length === cards.length ? 'tessere-backup.json' : out.length === 1 ? `tessera-${slug(out[0].name) || 'tessera'}.json` : `tessere-${out.length}.json`;
     const blob = new Blob([JSON.stringify(out)], { type: 'application/json' });
-    const file = new File([blob], fname, { type: 'application/json' });
-    const text = list.length === 1 ? `Tessera "${list[0].name}" — apri l'app Le mie Tessere e usa Backup → Importa.` : `${list.length} tessere — apri l'app Le mie Tessere e usa Backup → Importa.`;
-    try {
-      if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: fname, text }); return true; }
-    } catch (e) { if (e && e.name === 'AbortError') return false; }
+    if (mode === 'share') {
+      const file = new File([blob], fname, { type: 'application/json' });
+      const text = out.length === 1 ? `Tessera "${out[0].name}" — aprila con l'app Le mie Tessere.` : `${out.length} tessere — aprile con l'app Le mie Tessere.`;
+      try {
+        if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: fname, text }); return true; }
+      } catch (e) { if (e && e.name === 'AbortError') return false; }
+    }
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fname; a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-    alert('File salvato: mandalo a chi vuoi. Chi lo riceve lo importa da Backup → Importa.');
+    if (mode === 'share') alert('Condivisione non disponibile: ho salvato il file. Mandalo a chi vuoi; si importa da Backup → Importa.');
     return true;
   }
-  $('selShare').onclick = async () => { if (await shareCards([...sel])) setSel(false); };
-  $('shareOne').onclick = () => shareCards([$('show').dataset.id]);
+  const finishExport = async mode => { try { if (await deliver(mode)) { $('exp').close(); setSel(false); } } catch { alert('Esportazione non riuscita.'); } };
+  $('expSave').onclick = () => finishExport('save');
+  $('expShare').onclick = () => finishExport('share');
+  $('expCancel').onclick = () => $('exp').close();
+  $('selShare').onclick = () => openExport([...sel]);
+  $('shareOne').onclick = () => openExport([$('show').dataset.id]);
 
   // ---- Condividi app ----
   const APP_URL = () => new URL('./', location.href).href;
@@ -642,15 +684,9 @@ body.selecting .fab,body.selecting .links{display:none}
   // ---- Backup ----
   $('dataBtn').onclick = () => $('data').showModal();
   $('closeData').onclick = () => $('data').close();
-  $('exportBtn').onclick = async () => {
-    const full = [];
-    for (const c of cards) {
-      const [f, b] = await Promise.all([getPhoto(c.id, 'f'), getPhoto(c.id, 'b')]);
-      full.push({ ...c, photos: { f: f ? await toDataURL(f) : null, b: b ? await toDataURL(b) : null } });
-    }
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([JSON.stringify(full)], { type: 'application/json' }));
-    a.download = 'tessere-backup.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  $('exportBtn').onclick = () => {
+    $('data').close(); activeGroup = ''; $('q').value = '';
+    setSel(true); cards.forEach(c => sel.add(c.id)); updateSelBar(); render();   // tutte preselezionate: togli quelle che non vuoi
   };
   $('importBtn').onclick = () => $('importFile').click();
   // Importa un backup/condivisione dal testo JSON. ask: chiede conferma elencando i nomi (file ricevuti da altri).
@@ -705,7 +741,7 @@ body.selecting .fab,body.selecting .links{display:none}
 
   try { $('sort').value = localStorage.getItem('tessere.sort') || 'uses'; } catch {}
   $('sort').onchange = () => { try { localStorage.setItem('tessere.sort', $('sort').value); } catch {} render(); };
-  const VERSION = 'v15', BUILD = '24/11/2026 22:56';   // aggiornare a ogni rilascio (e CACHE in sw.js)
+  const VERSION = 'v16', BUILD = '24/11/2026 22:58';   // aggiornare a ogni rilascio (e CACHE in sw.js)
   $('ver').textContent = `Versione ${VERSION} · ${BUILD}`;
   $('q').oninput = render;
   buildColors(); load(); render(); importShared();
