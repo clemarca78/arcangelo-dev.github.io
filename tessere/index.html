@@ -22,7 +22,9 @@
 html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 body{padding:env(safe-area-inset-top) 16px calc(96px + env(safe-area-inset-bottom))}
 header{position:sticky;top:0;background:var(--bg);padding:14px 0 10px;z-index:5}
-h1{margin:0 0 10px;font-size:22px}
+h1{margin:0 0 10px;font-size:22px;display:flex;align-items:center;gap:10px}
+.badge{font-size:14px;font-weight:600;line-height:1;padding:5px 11px;border-radius:999px;background:var(--accent);color:#fff;font-variant-numeric:tabular-nums}
+.chip small{opacity:.65;margin-left:5px;font-size:12px}
 input,select,textarea,button{font:inherit;color:inherit}
 input[type=search],input[type=text],select,textarea{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card)}
 .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));margin-top:8px}
@@ -69,8 +71,7 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
 </head>
 <body>
 <header>
-  <h1>💳 Le mie Tessere</h1>
-  <p class="hint" id="count" style="margin:-6px 0 8px"></p>
+  <h1>💳 Le mie Tessere <span class="badge" id="count" hidden></span></h1>
   <div class="row" style="margin-top:0"><input type="search" id="q" placeholder="Cerca tessera…" autocomplete="off" style="flex:2">
   <select id="sort" aria-label="Ordina" style="flex:1"><option value="uses">Più usate</option><option value="recent">Recenti</option><option value="name">Nome A-Z</option></select></div>
   <div class="chips" id="chips"></div>
@@ -242,7 +243,9 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
     }));
     $('empty').hidden = cards.length > 0;
     const tot = cards.length;
-    $('count').textContent = !tot ? '' : (list.length === tot ? `${tot} ${tot === 1 ? 'tessera' : 'tessere'}` : `${list.length} di ${tot} tessere`);
+    $('count').hidden = !tot;
+    $('count').textContent = list.length === tot ? tot : `${list.length}/${tot}`;
+    $('count').title = list.length === tot ? `${tot} tessere` : `${list.length} tessere mostrate su ${tot}`;
   }
 
   const textOn = hex => { const v = parseInt(String(hex).slice(1), 16) || 0; return (0.299 * (v >> 16) + 0.587 * ((v >> 8) & 255) + 0.114 * (v & 255)) > 170 ? '#111' : '#fff'; };
@@ -260,6 +263,7 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
       const b = document.createElement('button');
       b.className = 'chip' + (name === activeGroup ? ' on' : '');
       b.textContent = name || 'Tutte';
+      const n = document.createElement('small'); n.textContent = name ? cards.filter(c => c.group === name).length : cards.length; b.append(n);
       b.onclick = () => { activeGroup = name; render(); };
       return b;
     }));
@@ -578,7 +582,7 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
 
   try { $('sort').value = localStorage.getItem('tessere.sort') || 'uses'; } catch {}
   $('sort').onchange = () => { try { localStorage.setItem('tessere.sort', $('sort').value); } catch {} render(); };
-  const VERSION = 'v10', BUILD = '24/11/2026 22:34';   // aggiornare a ogni rilascio (e CACHE in sw.js)
+  const VERSION = 'v11', BUILD = '24/11/2026 22:34';   // aggiornare a ogni rilascio (e CACHE in sw.js)
   $('ver').textContent = `Versione ${VERSION} · ${BUILD}`;
   $('q').oninput = render;
   buildColors(); load(); render();
