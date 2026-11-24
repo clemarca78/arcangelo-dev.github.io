@@ -51,13 +51,25 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
 #show svg,#show canvas,#show img{max-width:100%;height:auto}
 #showCode{font-size:20px;letter-spacing:.06em;color:#111;font-variant-numeric:tabular-nums;word-break:break-all}
 #video{width:100%;border-radius:12px;background:#000;aspect-ratio:4/3;object-fit:cover}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-size:14px}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.photos{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.ph{border:1px dashed var(--line);border-radius:12px;min-height:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:8px;font-size:13px;color:var(--muted);text-align:center}
+.ph img{width:100%;max-height:110px;object-fit:cover;border-radius:8px}
+.ph button{font-size:13px;padding:6px 10px}
+.tabs{display:flex;gap:6px;justify-content:center;margin-top:10px}
+#show .paper img{border-radius:8px}
 .hint{font-size:13px;color:var(--muted);margin:6px 0 0}
 </style>
 </head>
 <body>
 <header>
   <h1>💳 Le mie Tessere</h1>
-  <input type="search" id="q" placeholder="Cerca tessera…" autocomplete="off">
+  <div class="row" style="margin-top:0"><input type="search" id="q" placeholder="Cerca tessera…" autocomplete="off" style="flex:2">
+  <select id="sort" aria-label="Ordina" style="flex:1"><option value="uses">Più usate</option><option value="recent">Recenti</option><option value="name">Nome A-Z</option></select></div>
+  <div class="chips" id="chips"></div>
 </header>
 
 <main>
@@ -72,7 +84,8 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
 <dialog id="show">
   <div class="pad">
     <h2 id="showName" style="margin:0"></h2>
-    <div class="paper"><div id="showCodeBox"></div><div id="showCode"></div></div>
+    <div class="tabs" id="showTabs" hidden></div>
+    <div class="paper"><div id="showCodeBox"></div><div id="showCode"></div><div id="showImg" hidden></div></div>
     <p class="hint" id="showNotes"></p>
     <div class="row">
       <button class="btn" id="editBtn">Modifica</button>
@@ -88,7 +101,7 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
     <label>Nome (es. Coop, Esselunga, Decathlon)</label>
     <input type="text" id="fName" required maxlength="40">
     <label>Codice</label>
-    <input type="text" id="fCode" required inputmode="text" autocapitalize="off">
+    <input type="text" id="fCode" inputmode="text" autocapitalize="off" placeholder="Facoltativo se aggiungi una foto">
     <div class="row"><button type="button" class="btn" id="scanBtn">📷 Scansiona</button></div>
     <label>Tipo di codice</label>
     <select id="fFormat">
@@ -101,6 +114,16 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
       <option value="ITF">ITF (2 di 5)</option>
       <option value="QR">QR code</option>
     </select>
+    <label>Gruppo (es. Spesa, Sport, Carburante)</label>
+    <input type="text" id="fGroup" list="groupList" maxlength="30">
+    <datalist id="groupList"></datalist>
+    <label>Foto della tessera</label>
+    <div class="photos">
+      <div class="ph" id="phF"></div>
+      <div class="ph" id="phB"></div>
+    </div>
+    <input type="file" id="fileF" accept="image/*" hidden>
+    <input type="file" id="fileB" accept="image/*" hidden>
     <label>Colore</label>
     <div class="colors" id="fColors"></div>
     <label>Note (facoltative)</label>
@@ -143,25 +166,67 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
   let cards = [];
   let editingId = null;
   let color = COLORS[0];
+  let activeGroup = '';
+  let pend = {};   // foto in modifica: {f:Blob|null, b:Blob|null}
 
   const load = () => { try { cards = JSON.parse(localStorage.getItem(KEY)) || []; } catch { cards = []; } };
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(cards)); } catch { alert('Impossibile salvare i dati.'); } };
+  // ---- Foto (IndexedDB) ----
+  let dbp;
+  const db = () => dbp || (dbp = new Promise((res, rej) => {
+    const r = indexedDB.open('tessere-photos', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('p');
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  }));
+  const tx = async (mode, fn) => { const d = await db(); return new Promise((res, rej) => { const t = d.transaction('p', mode); const rq = fn(t.objectStore('p')); t.oncomplete = () => res(rq && rq.result); t.onerror = () => rej(t.error); }); };
+  const getPhoto = (id, side) => tx('readonly', s => s.get(id + ':' + side)).catch(() => null);
+  const putPhoto = (id, side, blob) => tx('readwrite', s => s.put(blob, id + ':' + side));
+  const delPhoto = (id, side) => tx('readwrite', s => s.delete(id + ':' + side));
+  async function shrink(file) {
+    const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+    const k = Math.min(1, 1400 / Math.max(bmp.width, bmp.height));
+    const c = document.createElement('canvas'); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+    c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+    return new Promise(r => c.toBlob(r, 'image/jpeg', 0.82));
+  }
+  const toDataURL = b => new Promise(r => { const f = new FileReader(); f.onload = () => r(f.result); f.readAsDataURL(b); });
+
   const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 
   // ---- Lista ----
   function render() {
     const q = $('q').value.trim().toLowerCase();
-    const list = cards.filter(c => c.name.toLowerCase().includes(q)).sort((a, b) => a.name.localeCompare(b.name, 'it'));
+    if (activeGroup && !cards.some(c => c.group === activeGroup)) activeGroup = '';
+    renderChips();
+    const list = cards.filter(c => (!activeGroup || c.group === activeGroup) && c.name.toLowerCase().includes(q)).sort((a, b) => {
+      const by = $('sort').value, n = a.name.localeCompare(b.name, 'it');
+      if (by === 'uses') return (b.uses || 0) - (a.uses || 0) || (b.lastUsed || 0) - (a.lastUsed || 0) || n;
+      if (by === 'recent') return (b.lastUsed || 0) - (a.lastUsed || 0) || n;
+      return n;
+    });
     $('grid').replaceChildren(...list.map(c => {
       const b = document.createElement('button');
       b.className = 'tile'; b.style.background = c.color;
       const n = document.createElement('b'); n.textContent = c.name;
-      const s = document.createElement('small'); s.textContent = c.code;
+      const s = document.createElement('small'); s.textContent = (c.hasPhoto ? '📷 ' : '') + (c.code || c.group || '');
       b.append(n, s);
       b.onclick = () => openShow(c.id);
       return b;
     }));
     $('empty').hidden = cards.length > 0;
+  }
+
+  const groups = () => [...new Set(cards.map(c => c.group).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'it'));
+  function renderChips() {
+    const g = groups();
+    $('chips').hidden = !g.length;
+    $('chips').replaceChildren(...['', ...g].map(name => {
+      const b = document.createElement('button');
+      b.className = 'chip' + (name === activeGroup ? ' on' : '');
+      b.textContent = name || 'Tutte';
+      b.onclick = () => { activeGroup = name; render(); };
+      return b;
+    }));
   }
 
   // ---- Rendering codice ----
@@ -191,18 +256,37 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
   }
 
   // ---- Mostra ----
-  let wakeLock = null;
-  async function openShow(id) {
+  let wakeLock = null, urls = [];
+  const freeUrls = () => { urls.forEach(URL.revokeObjectURL); urls = []; };
+  async function openShow(id, fromEdit) {
     const c = cards.find(x => x.id === id); if (!c) return;
     $('show').dataset.id = id;
+    if (!fromEdit) { c.uses = (c.uses || 0) + 1; c.lastUsed = Date.now(); save(); render(); }
     $('showName').textContent = c.name;
-    $('showCode').textContent = c.code;
-    $('showNotes').textContent = c.notes || '';
-    drawCode($('showCodeBox'), c.code, c.format);
+    $('showNotes').textContent = [c.group && '🏷 ' + c.group, c.notes].filter(Boolean).join(' · ');
+    const [f, bk] = await Promise.all([getPhoto(id, 'f'), getPhoto(id, 'b')]);
+    freeUrls();
+    const views = [];
+    if (c.code) views.push({ label: 'Codice', code: true });
+    if (f) views.push({ label: 'Fronte', url: URL.createObjectURL(f) });
+    if (bk) views.push({ label: 'Retro', url: URL.createObjectURL(bk) });
+    views.forEach(v => v.url && urls.push(v.url));
+    const pick = i => {
+      const v = views[i];
+      $('showCodeBox').hidden = $('showCode').hidden = !v.code;
+      $('showImg').hidden = !!v.code;
+      if (v.code) { $('showCode').textContent = c.code; drawCode($('showCodeBox'), c.code, c.format); }
+      else { const im = document.createElement('img'); im.src = v.url; im.alt = v.label; $('showImg').replaceChildren(im); }
+      [...$('showTabs').children].forEach((t, j) => t.classList.toggle('on', j === i));
+    };
+    $('showTabs').hidden = views.length < 2;
+    $('showTabs').replaceChildren(...views.map((v, i) => { const t = document.createElement('button'); t.className = 'chip'; t.textContent = v.label; t.onclick = () => pick(i); return t; }));
+    if (!views.length) { $('showCodeBox').replaceChildren(); $('showCode').textContent = ''; }
+    else pick(0);
     $('show').showModal();
     try { wakeLock = await navigator.wakeLock?.request('screen'); } catch {}
   }
-  $('show').addEventListener('close', () => { try { wakeLock?.release(); } catch {} wakeLock = null; });
+  $('show').addEventListener('close', () => { try { wakeLock?.release(); } catch {} wakeLock = null; freeUrls(); });
   $('closeShow').onclick = () => $('show').close();
   $('editBtn').onclick = () => { const id = $('show').dataset.id; $('show').close(); openForm(id); };
 
@@ -221,31 +305,55 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
     color = col;
     [...$('fColors').querySelectorAll('input')].forEach(i => i.checked = i.value === col);
   }
-  function openForm(id) {
+  async function openForm(id) {
     editingId = id || null;
+    pend = {};
     const c = id ? cards.find(x => x.id === id) : null;
     $('formTitle').textContent = c ? 'Modifica tessera' : 'Nuova tessera';
     $('fName').value = c?.name || '';
     $('fCode').value = c?.code || '';
     $('fFormat').value = c?.format || 'auto';
     $('fNotes').value = c?.notes || '';
+    $('fGroup').value = c?.group || (activeGroup || '');
+    $('groupList').replaceChildren(...groups().map(g => { const o = document.createElement('option'); o.value = g; return o; }));
     $('delBtn').hidden = !c;
+    if (c) { pend = { f: await getPhoto(c.id, 'f'), b: await getPhoto(c.id, 'b') }; }
+    drawPh('f'); drawPh('b');
     setColor(c?.color || COLORS[cards.length % COLORS.length]);
     $('form').showModal();
   }
+  function drawPh(side) {
+    const box = $(side === 'f' ? 'phF' : 'phB'), blob = pend[side];
+    box.replaceChildren();
+    if (box._u) URL.revokeObjectURL(box._u);
+    if (blob) { box._u = URL.createObjectURL(blob); const im = document.createElement('img'); im.src = box._u; box.append(im); }
+    const add = document.createElement('button'); add.type = 'button'; add.className = 'btn';
+    add.textContent = blob ? 'Cambia' : (side === 'f' ? '📷 Fronte' : '📷 Retro');
+    add.onclick = () => $(side === 'f' ? 'fileF' : 'fileB').click();
+    box.append(add);
+    if (blob) { const rm = document.createElement('button'); rm.type = 'button'; rm.className = 'btn danger'; rm.textContent = 'Rimuovi'; rm.onclick = () => { pend[side] = null; drawPh(side); }; box.append(rm); }
+  }
+  for (const side of ['f', 'b']) $(side === 'f' ? 'fileF' : 'fileB').onchange = async e => {
+    const file = e.target.files[0]; e.target.value = ''; if (!file) return;
+    try { pend[side] = await shrink(file); drawPh(side); } catch { alert('Impossibile leggere la foto.'); }
+  };
   $('addBtn').onclick = () => openForm();
   $('cancelForm').onclick = () => $('form').close();
-  $('f').addEventListener('submit', e => {
+  $('f').addEventListener('submit', async e => {
     e.preventDefault();
-    const data = { name: $('fName').value.trim(), code: $('fCode').value.trim(), format: $('fFormat').value, notes: $('fNotes').value.trim(), color };
-    if (!data.name || !data.code) return;
-    if (editingId) Object.assign(cards.find(x => x.id === editingId), data);
-    else cards.push({ id: uid(), ...data });
+    const data = { name: $('fName').value.trim(), code: $('fCode').value.trim(), format: $('fFormat').value, notes: $('fNotes').value.trim(), group: $('fGroup').value.trim(), color, hasPhoto: !!(pend.f || pend.b) };
+    if (!data.name) return;
+    if (!data.code && !data.hasPhoto) { alert('Inserisci un codice oppure aggiungi una foto.'); return; }
+    let id = editingId;
+    if (id) Object.assign(cards.find(x => x.id === id), data);
+    else { id = uid(); cards.push({ id, ...data }); }
+    try { for (const s of ['f', 'b']) { if (pend[s]) await putPhoto(id, s, pend[s]); else await delPhoto(id, s); } }
+    catch { alert('Foto non salvata (spazio insufficiente?).'); }
     save(); render(); $('form').close();
   });
   $('delBtn').onclick = () => {
     if (!confirm('Eliminare questa tessera?')) return;
-    cards = cards.filter(x => x.id !== editingId); save(); render(); $('form').close();
+    delPhoto(editingId, 'f').catch(() => {}); delPhoto(editingId, 'b').catch(() => {}); cards = cards.filter(x => x.id !== editingId); save(); render(); $('form').close();
   };
 
   // ---- Scanner (BarcodeDetector, Chrome/Android/Safari recenti) ----
@@ -288,9 +396,14 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
   // ---- Backup ----
   $('dataBtn').onclick = () => $('data').showModal();
   $('closeData').onclick = () => $('data').close();
-  $('exportBtn').onclick = () => {
+  $('exportBtn').onclick = async () => {
+    const full = [];
+    for (const c of cards) {
+      const [f, b] = await Promise.all([getPhoto(c.id, 'f'), getPhoto(c.id, 'b')]);
+      full.push({ ...c, photos: { f: f ? await toDataURL(f) : null, b: b ? await toDataURL(b) : null } });
+    }
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([JSON.stringify(cards, null, 2)], { type: 'application/json' }));
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(full)], { type: 'application/json' }));
     a.download = 'tessere-backup.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   };
   $('importBtn').onclick = () => $('importFile').click();
@@ -299,14 +412,23 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
     try {
       const arr = JSON.parse(await f.text());
       if (!Array.isArray(arr)) throw 0;
-      const ok = arr.filter(c => c && typeof c.name === 'string' && typeof c.code === 'string')
-        .map(c => ({ id: uid(), name: c.name.slice(0, 40), code: c.code, format: c.format || 'auto', notes: String(c.notes || '').slice(0, 200), color: COLORS.includes(c.color) ? c.color : COLORS[0] }));
-      cards = cards.concat(ok.filter(n => !cards.some(c => c.name === n.name && c.code === n.code)));
-      save(); render(); alert(`Importate ${ok.length} tessere.`);
+      let n = 0;
+      for (const c of arr) {
+        if (!c || typeof c.name !== 'string' || typeof c.code !== 'string') continue;
+        if (cards.some(x => x.name === c.name && x.code === c.code)) continue;
+        const id = uid(), ph = c.photos || {};
+        let has = false;
+        for (const s of ['f', 'b']) if (typeof ph[s] === 'string' && ph[s].startsWith('data:image/')) { await putPhoto(id, s, await (await fetch(ph[s])).blob()); has = true; }
+        cards.push({ id, name: c.name.slice(0, 40), code: c.code, format: c.format || 'auto', notes: String(c.notes || '').slice(0, 200), group: String(c.group || '').slice(0, 30), hasPhoto: has, uses: Math.max(0, +c.uses || 0), lastUsed: +c.lastUsed || 0, color: COLORS.includes(c.color) ? c.color : COLORS[0] });
+        n++;
+      }
+      save(); render(); alert(`Importate ${n} tessere.`);
     } catch { alert('File non valido.'); }
     e.target.value = '';
   };
 
+  try { $('sort').value = localStorage.getItem('tessere.sort') || 'uses'; } catch {}
+  $('sort').onchange = () => { try { localStorage.setItem('tessere.sort', $('sort').value); } catch {} render(); };
   $('q').oninput = render;
   buildColors(); load(); render();
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
