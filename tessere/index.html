@@ -10,6 +10,10 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon.svg">
+<meta name="description" content="Salva le tue tessere fedeltà con codice a barre o QR e mostrale alla cassa. Gratis, funziona offline e i dati restano sul tuo telefono.">
+<meta property="og:title" content="Le mie Tessere">
+<meta property="og:description" content="Salva le tue tessere fedeltà con codice a barre o QR e mostrale alla cassa. Funziona offline, i dati restano sul tuo telefono.">
+<meta property="og:type" content="website">
 <title>Le mie Tessere</title>
 <style>
 :root{
@@ -33,7 +37,10 @@ input[type=search],input[type=text],select,textarea{width:100%;padding:12px 14px
 .tile small{opacity:.85;font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .empty{text-align:center;color:var(--muted);margin:64px 16px}
 .fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));width:60px;height:60px;border-radius:30px;border:0;background:var(--accent);color:#fff;font-size:32px;box-shadow:0 4px 14px #0006;cursor:pointer}
-.link{position:fixed;left:16px;bottom:calc(24px + env(safe-area-inset-bottom));background:none;border:0;color:var(--muted);font-size:14px;text-decoration:underline;cursor:pointer}
+.links{position:fixed;left:16px;bottom:calc(24px + env(safe-area-inset-bottom));display:flex;gap:16px}
+.link{background:none;border:0;padding:0;color:var(--muted);font-size:14px;text-decoration:underline;cursor:pointer}
+#shareQr svg{width:min(220px,70vw);height:auto}
+#shareQr{background:#fff;border-radius:14px;padding:14px;display:inline-block;margin-top:12px}
 dialog{border:0;border-radius:20px;padding:0;width:min(440px,calc(100vw - 24px));max-height:calc(100dvh - 24px);background:var(--card);color:var(--text)}
 dialog::backdrop{background:#000a}
 .pad{padding:20px}
@@ -86,7 +93,7 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
 
 <p class="ver" id="ver"></p>
 
-<button class="link" id="dataBtn">Backup / Ripristino</button>
+<div class="links"><button class="link" id="dataBtn">Backup / Ripristino</button><button class="link" id="shareBtn">Condividi app</button></div>
 <button class="fab" id="addBtn" aria-label="Aggiungi tessera">+</button>
 
 <!-- Mostra tessera -->
@@ -168,6 +175,18 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
     <p class="hint" id="bulkMsg"></p>
     <div id="bulkList"></div>
     <div class="row"><button class="btn" id="bulkCancel">Annulla</button><button class="btn primary" id="bulkSave">Salva tutte</button></div>
+  </div>
+</dialog>
+
+<!-- Condividi app -->
+<dialog id="share">
+  <div class="pad" style="text-align:center">
+    <h2 style="margin:0">Condividi l'app</h2>
+    <p class="hint">Fai inquadrare il QR dal telefono di un amico, oppure manda il link. Ognuno ha le sue tessere: i dati restano sul proprio telefono.</p>
+    <div id="shareQr"></div>
+    <p class="hint" id="shareUrl" style="word-break:break-all"></p>
+    <div class="row"><button class="btn primary" id="shareSend">🔗 Condividi link</button></div>
+    <div class="row"><button class="btn" id="shareClose">Chiudi</button></div>
   </div>
 </dialog>
 
@@ -540,6 +559,25 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
     bulkItems = []; save(); render(); $('bulk').close(); alert(`Salvate ${n} tessere.`);
   };
 
+  // ---- Condividi app ----
+  const APP_URL = () => new URL('./', location.href).href;
+  $('shareBtn').onclick = () => {
+    const url = APP_URL();
+    const qr = qrcode(0, 'M'); qr.addData(url); qr.make();
+    $('shareQr').innerHTML = qr.createSvgTag({ cellSize: 6, margin: 0, scalable: true });
+    $('shareUrl').textContent = url;
+    $('share').showModal();
+  };
+  $('shareClose').onclick = () => $('share').close();
+  $('shareSend').onclick = async () => {
+    const url = APP_URL();
+    try {
+      if (navigator.share) { await navigator.share({ title: 'Le mie Tessere', text: 'Salva le tue tessere fedeltà con codice a barre o QR. Gratis, funziona offline.', url }); return; }
+    } catch (e) { if (e && e.name === 'AbortError') return; }
+    try { await navigator.clipboard.writeText(url); alert('Link copiato negli appunti.'); }
+    catch { prompt('Copia il link:', url); }
+  };
+
   // ---- Backup ----
   $('dataBtn').onclick = () => $('data').showModal();
   $('closeData').onclick = () => $('data').close();
@@ -585,7 +623,7 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
 
   try { $('sort').value = localStorage.getItem('tessere.sort') || 'uses'; } catch {}
   $('sort').onchange = () => { try { localStorage.setItem('tessere.sort', $('sort').value); } catch {} render(); };
-  const VERSION = 'v12', BUILD = '24/11/2026 22:43';   // aggiornare a ogni rilascio (e CACHE in sw.js)
+  const VERSION = 'v13', BUILD = '24/11/2026 22:48';   // aggiornare a ogni rilascio (e CACHE in sw.js)
   $('ver').textContent = `Versione ${VERSION} · ${BUILD}`;
   $('q').oninput = render;
   buildColors(); load(); render();
