@@ -53,6 +53,8 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
 #show svg,#show canvas,#show img{max-width:100%;height:auto}
 #showCode{font-size:20px;letter-spacing:.06em;color:#111;font-variant-numeric:tabular-nums;word-break:break-all}
 #video{width:100%;border-radius:12px;background:#000;aspect-ratio:4/3;object-fit:cover}
+.tile{position:relative}
+.tile .uses{position:absolute;top:8px;right:8px;font-size:11px;font-weight:600;line-height:1;padding:3px 7px;border-radius:999px;background:rgba(128,128,128,.28);font-variant-numeric:tabular-nums}
 .tile img.logo{width:100%;height:44px;object-fit:contain;object-position:left center}
 #showLogo{height:56px;max-width:100%;object-fit:contain;display:block;margin:0 auto 8px;border-radius:8px}
 .chips{display:flex;gap:8px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:none}
@@ -238,6 +240,7 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
       const s = document.createElement('small'); s.textContent = (c.hasPhoto ? '📷 ' : '') + (c.code || c.group || '');
       if (c.logo) { const im = document.createElement('img'); im.className = 'logo'; im.src = c.logo; im.alt = ''; b.append(im); n.style.fontSize = '13px'; }
       b.append(n, s);
+      if (c.uses) { const u = document.createElement('span'); u.className = 'uses'; u.textContent = c.uses + '×'; u.title = c.uses === 1 ? 'Aperta 1 volta' : `Aperta ${c.uses} volte`; b.append(u); }
       b.onclick = () => openShow(c.id);
       return b;
     }));
@@ -305,7 +308,7 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
     $('showName').textContent = c.name;
     $('showLogo').hidden = !c.logo; if (c.logo) $('showLogo').src = c.logo;
     $('showLogo').style.background = c.color; $('showLogo').style.padding = c.logo ? '6px 14px' : '0';
-    $('showNotes').textContent = [c.group && '🏷 ' + c.group, c.notes].filter(Boolean).join(' · ');
+    $('showNotes').textContent = [c.group && '🏷 ' + c.group, c.uses && (c.uses === 1 ? 'Aperta 1 volta' : `Aperta ${c.uses} volte`), c.notes].filter(Boolean).join(' · ');
     const [f, bk] = await Promise.all([getPhoto(id, 'f'), getPhoto(id, 'b')]);
     freeUrls();
     const views = [];
@@ -582,7 +585,7 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
 
   try { $('sort').value = localStorage.getItem('tessere.sort') || 'uses'; } catch {}
   $('sort').onchange = () => { try { localStorage.setItem('tessere.sort', $('sort').value); } catch {} render(); };
-  const VERSION = 'v11', BUILD = '24/11/2026 22:34';   // aggiornare a ogni rilascio (e CACHE in sw.js)
+  const VERSION = 'v12', BUILD = '24/11/2026 22:43';   // aggiornare a ogni rilascio (e CACHE in sw.js)
   $('ver').textContent = `Versione ${VERSION} · ${BUILD}`;
   $('q').oninput = render;
   buildColors(); load(); render();
