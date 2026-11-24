@@ -530,24 +530,32 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
     try {
       const arr = JSON.parse(await f.text());
       if (!Array.isArray(arr)) throw 0;
-      let n = 0;
+      let n = 0, upd = 0;
       for (const c of arr) {
         if (!c || typeof c.name !== 'string' || typeof c.code !== 'string') continue;
-        if (cards.some(x => x.name === c.name && x.code === c.code)) continue;
+        const okLogo = typeof c.logo === 'string' && c.logo.startsWith('data:image/') && c.logo.length < 300000 ? c.logo : '';
+        const okColor = /^#[0-9a-f]{6}$/i.test(c.color) ? c.color : '';
+        const ex = cards.find(x => x.name === c.name && x.code === c.code);
+        if (ex) {   // già presente: aggiorna logo, colore e gruppo invece di saltarla
+          if (okLogo) ex.logo = okLogo;
+          if (okColor) ex.color = okColor;
+          if (c.group && !ex.group) ex.group = String(c.group).slice(0, 30);
+          upd++; continue;
+        }
         const id = uid(), ph = c.photos || {};
         let has = false;
         for (const s of ['f', 'b']) if (typeof ph[s] === 'string' && ph[s].startsWith('data:image/')) { await putPhoto(id, s, await (await fetch(ph[s])).blob()); has = true; }
         cards.push({ id, name: c.name.slice(0, 40), code: c.code, format: c.format || 'auto', notes: String(c.notes || '').slice(0, 200), group: String(c.group || '').slice(0, 30), hasPhoto: has, uses: Math.max(0, +c.uses || 0), lastUsed: +c.lastUsed || 0, color: /^#[0-9a-f]{6}$/i.test(c.color) ? c.color : COLORS[0], logo: typeof c.logo === 'string' && c.logo.startsWith('data:image/') && c.logo.length < 300000 ? c.logo : '' });
         n++;
       }
-      save(); render(); alert(`Importate ${n} tessere.`);
+      save(); render(); alert(`Importate ${n} nuove tessere, aggiornate ${upd} già presenti.`);
     } catch { alert('File non valido.'); }
     e.target.value = '';
   };
 
   try { $('sort').value = localStorage.getItem('tessere.sort') || 'uses'; } catch {}
   $('sort').onchange = () => { try { localStorage.setItem('tessere.sort', $('sort').value); } catch {} render(); };
-  const VERSION = 'v7', BUILD = '24/11/2026 22:09';   // aggiornare a ogni rilascio (e CACHE in sw.js)
+  const VERSION = 'v8', BUILD = '24/11/2026 22:12';   // aggiornare a ogni rilascio (e CACHE in sw.js)
   $('ver').textContent = `Versione ${VERSION} · ${BUILD}`;
   $('q').oninput = render;
   buildColors(); load(); render();
