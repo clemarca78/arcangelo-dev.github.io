@@ -51,6 +51,8 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
 #show svg,#show canvas,#show img{max-width:100%;height:auto}
 #showCode{font-size:20px;letter-spacing:.06em;color:#111;font-variant-numeric:tabular-nums;word-break:break-all}
 #video{width:100%;border-radius:12px;background:#000;aspect-ratio:4/3;object-fit:cover}
+.tile img.logo{width:100%;height:44px;object-fit:contain;object-position:left center}
+#showLogo{height:56px;max-width:100%;object-fit:contain;display:block;margin:0 auto 8px;border-radius:8px}
 .chips{display:flex;gap:8px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
 .chip{flex:none;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-size:14px}
@@ -83,6 +85,7 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
 <!-- Mostra tessera -->
 <dialog id="show">
   <div class="pad">
+    <img id="showLogo" alt="" hidden>
     <h2 id="showName" style="margin:0"></h2>
     <div class="tabs" id="showTabs" hidden></div>
     <div class="paper"><div id="showCodeBox"></div><div id="showCode"></div><div id="showImg" hidden></div></div>
@@ -124,6 +127,9 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
     </div>
     <input type="file" id="fileF" accept="image/*" hidden>
     <input type="file" id="fileB" accept="image/*" hidden>
+    <label>Logo (facoltativo)</label>
+    <div class="row" style="align-items:center"><button type="button" class="btn" id="logoBtn">🖼 Scegli logo</button><button type="button" class="btn danger" id="logoRm" hidden>Rimuovi</button></div>
+    <input type="file" id="logoFile" accept="image/*" hidden>
     <label>Colore</label>
     <div class="colors" id="fColors"></div>
     <label>Note (facoltative)</label>
@@ -145,12 +151,25 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
   </div>
 </dialog>
 
+<!-- Import da screenshot -->
+<dialog id="bulk">
+  <div class="pad">
+    <h2 style="margin:0">Importa tessere</h2>
+    <p class="hint" id="bulkMsg"></p>
+    <div id="bulkList"></div>
+    <div class="row"><button class="btn" id="bulkCancel">Annulla</button><button class="btn primary" id="bulkSave">Salva tutte</button></div>
+  </div>
+</dialog>
+
 <!-- Backup -->
 <dialog id="data">
   <div class="pad">
     <h2 style="margin:0">Backup</h2>
     <p class="hint">I dati restano solo su questo dispositivo. Esporta un file per non perderli o per spostarli su un altro telefono.</p>
     <div class="row"><button class="btn" id="exportBtn">Esporta</button><button class="btn" id="importBtn">Importa</button></div>
+    <div class="row"><button class="btn primary" id="bulkBtn">📥 Importa da screenshot</button></div>
+    <p class="hint">Hai tessere in un'altra app? Fai lo screenshot di ognuna e selezionali tutti insieme: leggo io codice e tipo.</p>
+    <input type="file" id="bulkFile" accept="image/*" multiple hidden>
     <input type="file" id="importFile" accept="application/json" hidden>
     <div class="row"><button class="btn primary" id="closeData">Chiudi</button></div>
   </div>
@@ -206,9 +225,10 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
     });
     $('grid').replaceChildren(...list.map(c => {
       const b = document.createElement('button');
-      b.className = 'tile'; b.style.background = c.color;
+      b.className = 'tile'; b.style.background = c.color; b.style.color = textOn(c.color);
       const n = document.createElement('b'); n.textContent = c.name;
       const s = document.createElement('small'); s.textContent = (c.hasPhoto ? '📷 ' : '') + (c.code || c.group || '');
+      if (c.logo) { const im = document.createElement('img'); im.className = 'logo'; im.src = c.logo; im.alt = ''; b.append(im); n.style.fontSize = '13px'; }
       b.append(n, s);
       b.onclick = () => openShow(c.id);
       return b;
@@ -216,6 +236,7 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
     $('empty').hidden = cards.length > 0;
   }
 
+  const textOn = hex => { const v = parseInt(String(hex).slice(1), 16) || 0; return (0.299 * (v >> 16) + 0.587 * ((v >> 8) & 255) + 0.114 * (v & 255)) > 170 ? '#111' : '#fff'; };
   const groups = () => [...new Set(cards.map(c => c.group).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'it'));
   function renderChips() {
     const g = groups();
@@ -263,6 +284,8 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
     $('show').dataset.id = id;
     if (!fromEdit) { c.uses = (c.uses || 0) + 1; c.lastUsed = Date.now(); save(); render(); }
     $('showName').textContent = c.name;
+    $('showLogo').hidden = !c.logo; if (c.logo) $('showLogo').src = c.logo;
+    $('showLogo').style.background = c.color; $('showLogo').style.padding = c.logo ? '6px 14px' : '0';
     $('showNotes').textContent = [c.group && '🏷 ' + c.group, c.notes].filter(Boolean).join(' · ');
     const [f, bk] = await Promise.all([getPhoto(id, 'f'), getPhoto(id, 'b')]);
     freeUrls();
@@ -300,11 +323,33 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
       l.querySelector('input').onchange = () => color = col;
       return l;
     }));
+    const cu = document.createElement('input'); cu.type = 'color'; cu.id = 'fCustom'; cu.title = 'Colore personalizzato';
+    cu.style.cssText = 'width:36px;height:36px;border:0;padding:0;background:none';
+    cu.oninput = () => setColor(cu.value);
+    $('fColors').append(cu);
   }
   function setColor(col) {
     color = col;
-    [...$('fColors').querySelectorAll('input')].forEach(i => i.checked = i.value === col);
+    [...$('fColors').querySelectorAll('input[type=radio]')].forEach(i => i.checked = i.value === col);
+    if (/^#[0-9a-f]{6}$/i.test(col)) $('fCustom').value = col;
   }
+  let logo = '';
+  function drawLogo() { $('logoRm').hidden = !logo; $('logoBtn').textContent = logo ? '🖼 Cambia logo' : '🖼 Scegli logo'; }
+  $('logoBtn').onclick = () => $('logoFile').click();
+  $('logoRm').onclick = () => { logo = ''; drawLogo(); };
+  $('logoFile').onchange = async e => {
+    const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+    try {
+      const bmp = await createImageBitmap(f, { imageOrientation: 'from-image' });
+      const k = Math.min(1, 280 / Math.max(bmp.width, bmp.height));
+      const c = document.createElement('canvas'); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+      const x = c.getContext('2d'); x.drawImage(bmp, 0, 0, c.width, c.height);
+      const [r, g, b, a] = x.getImageData(1, 1, 1, 1).data;
+      logo = c.toDataURL('image/png');
+      if (a > 200) setColor('#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join(''));
+      drawLogo();
+    } catch { alert('Impossibile leggere il logo.'); }
+  };
   async function openForm(id) {
     editingId = id || null;
     pend = {};
@@ -314,6 +359,7 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
     $('fCode').value = c?.code || '';
     $('fFormat').value = c?.format || 'auto';
     $('fNotes').value = c?.notes || '';
+    logo = c?.logo || ''; drawLogo();
     $('fGroup').value = c?.group || (activeGroup || '');
     $('groupList').replaceChildren(...groups().map(g => { const o = document.createElement('option'); o.value = g; return o; }));
     $('delBtn').hidden = !c;
@@ -341,7 +387,7 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
   $('cancelForm').onclick = () => $('form').close();
   $('f').addEventListener('submit', async e => {
     e.preventDefault();
-    const data = { name: $('fName').value.trim(), code: $('fCode').value.trim(), format: $('fFormat').value, notes: $('fNotes').value.trim(), group: $('fGroup').value.trim(), color, hasPhoto: !!(pend.f || pend.b) };
+    const data = { name: $('fName').value.trim(), code: $('fCode').value.trim(), format: $('fFormat').value, notes: $('fNotes').value.trim(), group: $('fGroup').value.trim(), color, logo, hasPhoto: !!(pend.f || pend.b) };
     if (!data.name) return;
     if (!data.code && !data.hasPhoto) { alert('Inserisci un codice oppure aggiungi una foto.'); return; }
     let id = editingId;
@@ -393,6 +439,75 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
     tick();
   };
 
+  // ---- Import in blocco da screenshot ----
+  let bulkItems = [];
+  const detFormats = Object.keys(FMT_MAP);
+  const ZX_MAP = { EAN_13: 'EAN13', EAN_8: 'EAN8', UPC_A: 'UPC', CODE_128: 'CODE128', CODE_39: 'CODE39', ITF: 'ITF', QR_CODE: 'QR' };
+  let zxP;
+  const loadZX = () => zxP || (zxP = new Promise((res, rej) => {
+    const sc = document.createElement('script'); sc.src = 'lib/zxing.min.js'; sc.onload = () => res(window.ZXing); sc.onerror = rej; document.head.append(sc);
+  }));
+  async function zxDecode(file) {
+    const ZXing = await loadZX();
+    const hints = new Map([[ZXing.DecodeHintType.TRY_HARDER, true],
+      [ZXing.DecodeHintType.POSSIBLE_FORMATS, Object.keys(ZX_MAP).map(k => ZXing.BarcodeFormat[k])]]);
+    const reader = new ZXing.MultiFormatReader(); reader.setHints(hints);
+    const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+    for (const target of [1600, 2400, 1000]) {   // più scale: i codici in uno screenshot possono essere piccoli
+      const k = target / bmp.width;
+      const c = document.createElement('canvas'); c.width = target; c.height = Math.round(bmp.height * k);
+      c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+      try {
+        const r = reader.decode(new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(new ZXing.HTMLCanvasElementLuminanceSource(c))));
+        return { code: r.getText(), format: ZX_MAP[ZXing.BarcodeFormat[r.getBarcodeFormat()]] || 'auto' };
+      } catch {}
+    }
+    return null;
+  }
+  async function readImage(file) {
+    const res = { blob: null, code: '', format: 'auto' };
+    try { res.blob = await shrink(file); } catch { return res; }
+    try {
+      if ('BarcodeDetector' in window) {
+        const r = await new BarcodeDetector({ formats: detFormats }).detect(await createImageBitmap(file, { imageOrientation: 'from-image' }));
+        if (r.length) { res.code = r[0].rawValue; res.format = FMT_MAP[r[0].format] || 'auto'; return res; }
+      }
+    } catch {}
+    try { const z = await zxDecode(file); if (z) Object.assign(res, z); } catch {}
+    return res;
+  }
+  $('bulkBtn').onclick = () => $('bulkFile').click();
+  $('bulkFile').onchange = async e => {
+    const files = [...e.target.files]; e.target.value = ''; if (!files.length) return;
+    $('data').close();
+    $('bulkMsg').textContent = 'Leggo le immagini…'; $('bulkList').replaceChildren(); $('bulk').showModal();
+    bulkItems = [];
+    for (const f of files) { bulkItems.push(await readImage(f)); $('bulkMsg').textContent = `Lette ${bulkItems.length} / ${files.length}…`; }
+    const found = bulkItems.filter(i => i.code).length;
+    $('bulkMsg').textContent = `${found} codici letti su ${bulkItems.length}. Scrivi il nome di ogni tessera (le righe senza nome vengono saltate).` + (found < bulkItems.length ? ' Dove il codice manca, digitalo: l\'immagine resta come foto.' : '');
+    $('bulkList').replaceChildren(...bulkItems.map((it, i) => {
+      const row = document.createElement('div'); row.style.cssText = 'display:flex;gap:8px;margin-top:10px;align-items:center';
+      const im = document.createElement('img'); im.src = URL.createObjectURL(it.blob); im.style.cssText = 'width:64px;height:48px;object-fit:cover;border-radius:8px';
+      const box = document.createElement('div'); box.style.flex = '1';
+      const n = document.createElement('input'); n.type = 'text'; n.placeholder = 'Nome'; n.maxLength = 40; n.oninput = () => it.name = n.value;
+      const c = document.createElement('input'); c.type = 'text'; c.placeholder = 'Codice'; c.value = it.code; c.style.marginTop = '4px'; c.oninput = () => it.code = c.value;
+      box.append(n, c); row.append(im, box); return row;
+    }));
+  };
+  $('bulkCancel').onclick = () => { bulkItems = []; $('bulk').close(); };
+  $('bulkSave').onclick = async () => {
+    let n = 0;
+    for (const it of bulkItems) {
+      const name = (it.name || '').trim(), code = (it.code || '').trim();
+      if (!name || (!code && !it.blob)) continue;
+      const id = uid();
+      await putPhoto(id, 'f', it.blob);
+      cards.push({ id, name, code, format: it.format, notes: '', group: '', hasPhoto: true, uses: 0, lastUsed: 0, color: COLORS[cards.length % COLORS.length] });
+      n++;
+    }
+    bulkItems = []; save(); render(); $('bulk').close(); alert(`Salvate ${n} tessere.`);
+  };
+
   // ---- Backup ----
   $('dataBtn').onclick = () => $('data').showModal();
   $('closeData').onclick = () => $('data').close();
@@ -419,7 +534,7 @@ label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
         const id = uid(), ph = c.photos || {};
         let has = false;
         for (const s of ['f', 'b']) if (typeof ph[s] === 'string' && ph[s].startsWith('data:image/')) { await putPhoto(id, s, await (await fetch(ph[s])).blob()); has = true; }
-        cards.push({ id, name: c.name.slice(0, 40), code: c.code, format: c.format || 'auto', notes: String(c.notes || '').slice(0, 200), group: String(c.group || '').slice(0, 30), hasPhoto: has, uses: Math.max(0, +c.uses || 0), lastUsed: +c.lastUsed || 0, color: COLORS.includes(c.color) ? c.color : COLORS[0] });
+        cards.push({ id, name: c.name.slice(0, 40), code: c.code, format: c.format || 'auto', notes: String(c.notes || '').slice(0, 200), group: String(c.group || '').slice(0, 30), hasPhoto: has, uses: Math.max(0, +c.uses || 0), lastUsed: +c.lastUsed || 0, color: /^#[0-9a-f]{6}$/i.test(c.color) ? c.color : COLORS[0], logo: typeof c.logo === 'string' && c.logo.startsWith('data:image/') && c.logo.length < 300000 ? c.logo : '' });
         n++;
       }
       save(); render(); alert(`Importate ${n} tessere.`);
