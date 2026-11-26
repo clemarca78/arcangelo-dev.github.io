@@ -1,3 +1,4 @@
+// Tombola di Arcangelo Clemente.
 // Generatore di cartelle riproducibili: lo stesso codice dà sempre la stessa cartella.
 // Usato dalla pagina di stampa (stampa.html) e dal controllo dei premi (index.html).
 //

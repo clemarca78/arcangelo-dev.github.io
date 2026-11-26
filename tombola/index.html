@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tombola</title>
+<meta name="author" content="Arcangelo Clemente">
+<meta name="description" content="Tombola per la scuola e per la famiglia, di Arcangelo Clemente: smorfia, modalità bambini, multiplayer e cartelle stampabili.">
 <meta name="theme-color" content="#0b1120">
 <style>
 :root {
@@ -150,6 +152,10 @@ body.lim .board div { aspect-ratio: auto; font-size: clamp(1.1rem, 3.6vh, 2.6rem
 body.lim .history span { width: 46px; height: 46px; font-size: 1.1rem; }
 body.lim .prize { padding: 6px; font-size: clamp(.9rem, 2.2vh, 1.4rem); }
 body.lim #toast { font-size: clamp(1.6rem, 5vh, 3.4rem); top: 3vh; padding: 18px 40px; }
+.credit { text-align: center; color: var(--muted); font-size: .85rem; padding: 6px 0 14px; }
+.credit a { color: var(--accent); text-decoration: none; }
+.credit a:hover { text-decoration: underline; }
+body.lim .credit { display: none; }
 .kid-only { display: none; }
 body.kids .kid-only { display: block; }
 .seg { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
@@ -354,6 +360,8 @@ details summary { cursor: pointer; font-weight: 600; }
       <div class="smgrid" id="smgrid"></div>
     </details>
   </section>
+
+  <footer class="credit">🎱 Tombola · ideata e realizzata da <a href="../">Arcangelo Clemente</a></footer>
 </main>
 
 <script src="temi.js"></script>

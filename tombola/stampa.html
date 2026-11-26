@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tombola – Stampa cartelle</title>
+<meta name="author" content="Arcangelo Clemente">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: #e2e8f0; color: #111; }
@@ -83,6 +84,7 @@ button.sec { background: #e2e8f0; color: #1e293b; }
     <label class="chk"><input type="checkbox" id="tokens"> Cartellini da ritagliare (per il sacchetto)</label>
     <button id="print" type="button">🖨️ Stampa</button>
   </div>
+  <p style="margin:0 0 6px;font-size:.8rem;color:#64748b">Tombola · ideata e realizzata da Arcangelo Clemente</p>
   <p id="hint" style="margin:0">Per stamparle di nuovo uguali, ricorda il numero della prima serie.</p>
 </div>
 <div class="sheets" id="sheets"></div>
@@ -135,7 +137,7 @@ button.sec { background: #e2e8f0; color: #1e293b; }
       TombolaCards.series(mode, max, serie, cols).forEach((c, i) =>
         grid.append(cardEl(c, choice === 'auto' ? T[(serie * 5 + i) % T.length].key : choice)));
       s.append(grid);
-      s.append(el('footer', null, rules + ' Quando hai un premio alza la mano e leggi il codice della cartella.'));
+      s.append(el('footer', null, rules + ' Quando hai un premio alza la mano e leggi il codice della cartella. · Tombola di Arcangelo Clemente'));
       out.append(s);
     }
     const top = mode === 'kids' ? max : 90;

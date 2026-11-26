@@ -1,3 +1,4 @@
+// Tombola di Arcangelo Clemente.
 // Smorfia per la scuola: a ogni numero estratto corrisponde un'immagine e una frase a tema.
 // Classi: asilo (scuola dell'infanzia) e 1ª-5ª elementare.
 // Alcuni temi sono generati dal numero (calcoli sempre giusti), gli altri sono elenchi di curiosità:
