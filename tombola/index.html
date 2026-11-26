@@ -1244,11 +1244,18 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     const ok = TombolaTemi.themesFor(state.level).map(t => t.key);
     state.sTheme = state.themeMode !== 'auto' && ok.includes(state.themeMode) ? state.themeMode : TombolaTemi.pick(state.level, state.sTheme);
   }
-  function fillThemeSel() {
-    const sel = $('kthemeSel'); sel.innerHTML = '';
-    [['auto', '🎲 Casuale a ogni partita'], ...TombolaTemi.themesFor(state.level).map(t => [t.key, t.icon + ' ' + t.name])]
-      .forEach(([v, t]) => { const o = document.createElement('option'); o.value = v; o.textContent = t; sel.appendChild(o); });
+  // Riempie un menu di temi: prima le voci fisse, poi i temi raggruppati per categoria.
+  function fillGrouped(sel, top, themes) {
+    sel.innerHTML = '';
+    top.forEach(([v, t]) => { const o = document.createElement('option'); o.value = v; o.textContent = t; sel.appendChild(o); });
+    TombolaTemi.CATEGORIES.forEach(cat => {
+      const list = themes.filter(t => t.cat === cat); if (!list.length) return;
+      const g = document.createElement('optgroup'); g.label = cat;
+      list.forEach(t => { const o = document.createElement('option'); o.value = t.key; o.textContent = t.icon + ' ' + t.name; g.appendChild(o); });
+      sel.appendChild(g);
+    });
   }
+  function fillThemeSel() { fillGrouped($('kthemeSel'), [['auto', '🎲 Casuale a ogni partita']], TombolaTemi.themesFor(state.level)); }
   TombolaTemi.LEVELS.forEach(l => { const o = document.createElement('option'); o.value = l.key; o.textContent = l.name; $('levelSel').appendChild(o); });
   $('levelSel').onchange = () => {
     const v = $('levelSel').value;
@@ -1263,8 +1270,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if (state.adultMode === 'napoletana') state.aTheme = '';
     else state.aTheme = state.adultMode !== 'auto' && ok.includes(state.adultMode) ? state.adultMode : TombolaTemi.pick('adulti', state.aTheme);
   }
-  [['napoletana', '🎭 Smorfia napoletana'], ['auto', '🎲 Un tema a sorpresa (cambia a ogni partita)'], ...TombolaTemi.themesFor('adulti').map(t => [t.key, t.icon + ' ' + t.name])]
-    .forEach(([v, t]) => { const o = document.createElement('option'); o.value = v; o.textContent = t; $('amSel').appendChild(o); });
+  fillGrouped($('amSel'), [['napoletana', '🎭 Smorfia napoletana'], ['auto', '🎲 Un tema a sorpresa (cambia a ogni partita)']], TombolaTemi.themesFor('adulti'));
   $('amSel').onchange = () => { state.adultMode = $('amSel').value; newAdultTheme(); save(); render(); broadcast(); };
   $('ksmSel').onchange = () => { state.kidSmorfia = $('ksmSel').value; save(); render(); broadcast(); };
 

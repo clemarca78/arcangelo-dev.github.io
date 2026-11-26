@@ -504,6 +504,111 @@
       ["🦉", "Essere un gufo: portare sfortuna"], ["🕊️", "Colomba di pace: simbolo di pace"], ["🐄", "Dalle stalle alle stelle: dalla povertà al successo"], ["🐒", "Fare le scimmie: imitare gli altri"] ] }
   };
 
+  // ---------- un tema per ogni regione italiana ----------
+  const R = (name, icon, items) => ({ name, icon, levels: ['3', '4', '5', 'adulti'], items });
+  const REGIONI = {
+    'reg-valle-d-aosta': R("Valle d'Aosta", '🏔️', [
+      ["🏔️", "Il capoluogo della Valle d'Aosta è Aosta"], ["📏", "È la regione più piccola d'Italia"], ["🇫🇷", "Qui si parla italiano e francese"], ["🏔️", "Il Monte Bianco è la vetta più alta delle Alpi"],
+      ["⛰️", "Il Cervino è al confine con la Svizzera"], ["🏰", "Il castello di Fénis è tra i più famosi della regione"], ["🏛️", "Aosta è chiamata la «Roma delle Alpi»"], ["🧀", "La fontina è un formaggio valdostano"],
+      ["🐐", "Nel Parco del Gran Paradiso vive lo stambecco"], ["🌲", "Il Gran Paradiso è il più antico parco nazionale d'Italia"], ["⛷️", "Courmayeur è una famosa località sciistica"], ["🥓", "Il lardo di Arnad è un salume tipico"],
+      ["🚇", "Il traforo del Monte Bianco collega l'Italia alla Francia"], ["🪵", "La Fiera di Sant'Orso è la fiera dell'artigianato del legno"], ["🌍", "La regione confina con Francia e Svizzera"], ["🛡️", "È una regione a statuto speciale"] ]),
+    'reg-piemonte': R("Piemonte", '🍫', [
+      ["🏰", "Il capoluogo del Piemonte è Torino"], ["🇮🇹", "Torino fu la prima capitale d'Italia"], ["🗼", "La Mole Antonelliana è il simbolo di Torino"], ["🏺", "Il Museo Egizio di Torino è tra i più importanti al mondo"],
+      ["🚗", "La Fiat è nata a Torino nel 1899"], ["🍷", "Il Barolo è un vino piemontese"], ["🍄", "Il tartufo bianco d'Alba è molto pregiato"], ["🍫", "La Nutella nasce ad Alba"],
+      ["🍫", "Il gianduiotto è un cioccolatino torinese"], ["🍸", "Il vermouth è nato a Torino"], ["🏔️", "Il Po nasce dal Monviso"], ["🧣", "La Sacra Sindone si conserva nel Duomo di Torino"],
+      ["🏰", "La Reggia di Venaria è una grande residenza reale"], ["🥣", "La bagna cauda è un piatto piemontese"], ["⚽", "Juventus e Torino sono le squadre di calcio di Torino"], ["🏞️", "Il Lago Maggiore è in parte piemontese"] ]),
+    'reg-lombardia': R("Lombardia", '🏙️', [
+      ["🏙️", "Il capoluogo della Lombardia è Milano"], ["⛪", "In cima al Duomo di Milano c'è la Madonnina"], ["🎨", "L'Ultima Cena di Leonardo è a Milano"], ["🎭", "Il Teatro alla Scala è il più famoso teatro lirico"],
+      ["🏞️", "Il lago di Como è famoso per i suoi paesaggi"], ["🍰", "Il panettone è nato a Milano"], ["🍚", "Il risotto alla milanese si colora con lo zafferano"], ["🍖", "La cotoletta alla milanese è un piatto tipico"],
+      ["👥", "La Lombardia è la regione più popolosa d'Italia"], ["👗", "Milano è la capitale italiana della moda"], ["🚤", "I Navigli sono i canali di Milano"], ["🧀", "Il gorgonzola è un formaggio lombardo"],
+      ["🏰", "Il Castello Sforzesco è un simbolo di Milano"], ["🏎️", "A Monza si corre il Gran Premio d'Italia di Formula 1"], ["⚽", "San Siro è lo stadio di Milan e Inter"], ["🏰", "Bergamo Alta è una città fortificata dalle antiche mura veneziane"] ]),
+    'reg-trentino-alto-adige': R("Trentino-Alto Adige", '⛰️', [
+      ["⛰️", "Il capoluogo del Trentino-Alto Adige è Trento"], ["🏔️", "Le Dolomiti sono patrimonio UNESCO"], ["🗣️", "Qui si parla italiano e tedesco"], ["🛣️", "Il Brennero è il valico verso l'Austria"],
+      ["🧊", "A Bolzano si trova Ötzi, l'uomo venuto dal ghiaccio"], ["🥓", "Lo speck è un salume tipico dell'Alto Adige"], ["🍎", "La Val di Non è famosa per le mele"], ["🥧", "Lo strudel è un dolce tipico"],
+      ["🍲", "I canederli sono un piatto tipico"], ["🎄", "A Bolzano ci sono famosi mercatini di Natale"], ["⛷️", "Madonna di Campiglio è una località sciistica"], ["🏰", "A Trento c'è il Castello del Buonconsiglio"],
+      ["⛪", "A Trento si tenne il Concilio nel 1545"], ["🏞️", "Il lago di Braies è uno dei più fotografati d'Italia"], ["🛡️", "La regione è divisa in due province autonome: Trento e Bolzano"], ["🌲", "Un terzo della regione è coperto da boschi"] ]),
+    'reg-veneto': R("Veneto", '🚤', [
+      ["🚤", "Il capoluogo del Veneto è Venezia"], ["🌊", "Venezia è costruita sull'acqua"], ["🎭", "Il Carnevale di Venezia è famoso per le maschere"], ["🌉", "Il Ponte di Rialto attraversa il Canal Grande"],
+      ["🛶", "La gondola è la barca tipica di Venezia"], ["🎭", "L'Arena di Verona ospita famosi spettacoli d'opera"], ["💘", "Verona è la città di Romeo e Giulietta"], ["🎨", "A Padova Giotto affrescò la Cappella degli Scrovegni"],
+      ["🏛️", "Vicenza è la città di Palladio"], ["🥂", "Il Prosecco è uno spumante veneto"], ["🍰", "Il tiramisù nasce in Veneto, secondo la tradizione più diffusa"], ["🎬", "A Venezia si tiene la Mostra del cinema"],
+      ["⛷️", "Cortina d'Ampezzo è la «perla delle Dolomiti»"], ["💧", "L'acqua alta invade spesso le strade di Venezia"], ["🚧", "Il Mose protegge Venezia dall'acqua alta"], ["⛪", "La Basilica di San Marco è il simbolo di Venezia"] ]),
+    'reg-friuli-venezia-giulia': R("Friuli-Venezia Giulia", '⚓', [
+      ["⚓", "Il capoluogo del Friuli-Venezia Giulia è Trieste"], ["🏛️", "Piazza Unità d'Italia a Trieste si affaccia sul mare"], ["🥓", "Il prosciutto di San Daniele è famoso in tutto il mondo"], ["🏰", "Il castello di Miramare si affaccia sul golfo di Trieste"],
+      ["💨", "La bora è il vento forte di Trieste"], ["🏺", "Aquileia è patrimonio UNESCO"], ["🏛️", "Cividale del Friuli conserva testimonianze dei Longobardi"], ["🍷", "Il Friuli è terra di grandi vini bianchi"],
+      ["☕", "Trieste è la capitale italiana del caffè"], ["⛰️", "La Carnia è una zona di montagna"], ["⭐", "Palmanova è una città a forma di stella"], ["🧀", "Il frico è un piatto friulano a base di formaggio"],
+      ["🗣️", "Qui si parlano italiano, friulano, sloveno e tedesco"], ["🏔️", "Il Carso è un altopiano di rocce calcaree"], ["🏙️", "Udine, Pordenone e Gorizia sono altre città della regione"], ["🛡️", "È una regione a statuto speciale"] ]),
+    'reg-liguria': R("Liguria", '🌊', [
+      ["🌊", "Il capoluogo della Liguria è Genova"], ["🌎", "Genova è la città di Cristoforo Colombo"], ["🗼", "La Lanterna è il faro di Genova"], ["🌿", "Il pesto alla genovese nasce in Liguria"],
+      ["🍞", "La focaccia genovese è famosa in tutta Italia"], ["🏘️", "Le Cinque Terre sono patrimonio UNESCO"], ["⛵", "Portofino è un borgo di pescatori famoso nel mondo"], ["🎤", "Sanremo ospita il Festival della canzone italiana"],
+      ["🐠", "L'Acquario di Genova è uno dei più grandi d'Europa"], ["🌸", "La Riviera dei Fiori è la costa di ponente"], ["🗿", "Il Cristo degli Abissi è sott'acqua a San Fruttuoso"], ["🎻", "Niccolò Paganini era nato a Genova"],
+      ["🚢", "Il porto di Genova è tra i più importanti d'Italia"], ["🍝", "Le trofie sono una pasta ligure"], ["🏖️", "La Liguria è una striscia di terra tra mare e montagna"], ["🫒", "L'olio ligure è molto delicato"] ]),
+    'reg-emilia-romagna': R("Emilia-Romagna", '🏎️', [
+      ["🍝", "Il capoluogo dell'Emilia-Romagna è Bologna"], ["🧠", "Bologna è detta «la dotta, la grassa e la rossa»"], ["🗼", "Le Due Torri sono il simbolo di Bologna"], ["🧀", "Il Parmigiano Reggiano è il re dei formaggi"],
+      ["🥓", "Il prosciutto di Parma è famoso nel mondo"], ["🍷", "L'aceto balsamico è di Modena"], ["🥟", "I tortellini sono un piatto emiliano"], ["🏛️", "Ravenna è famosa per i mosaici bizantini"],
+      ["🏖️", "Rimini è la capitale delle vacanze sulla Riviera Romagnola"], ["🏎️", "La Ferrari ha sede a Maranello"], ["🐂", "La Lamborghini nasce a Sant'Agata Bolognese"], ["🏍️", "La Ducati è nata a Bologna"],
+      ["🎓", "L'Università di Bologna è la più antica d'Europa"], ["🎶", "Giuseppe Verdi era emiliano"], ["🎤", "Luciano Pavarotti era di Modena"], ["🎬", "Federico Fellini era nato a Rimini"],
+      ["🫓", "La piadina è il pane tipico della Romagna"], ["⚰️", "Dante Alighieri è sepolto a Ravenna"] ]),
+    'reg-toscana': R("Toscana", '🎨', [
+      ["🎨", "Il capoluogo della Toscana è Firenze"], ["⛪", "La cupola del Duomo di Firenze è di Brunelleschi"], ["🌉", "Ponte Vecchio è il ponte più famoso di Firenze"], ["🖼️", "La Galleria degli Uffizi custodisce capolavori del Rinascimento"],
+      ["🗿", "Il David di Michelangelo si trova a Firenze"], ["🗼", "La Torre di Pisa è pendente"], ["🏇", "A Siena si corre il Palio in Piazza del Campo"], ["🍷", "Il Chianti è un vino toscano"],
+      ["🏰", "Lucca è circondata da mura intatte"], ["🏙️", "San Gimignano è famosa per le sue torri"], ["🎭", "Il Carnevale di Viareggio è famoso per i carri allegorici"], ["🥩", "La bistecca alla fiorentina è un piatto celebre"],
+      ["🍲", "La ribollita è una zuppa toscana"], ["🤥", "Pinocchio è nato dalla penna di Collodi"], ["🧠", "Leonardo da Vinci era nato a Vinci"], ["🏝️", "L'isola d'Elba è la più grande dell'arcipelago toscano"],
+      ["🍞", "Il pane toscano si fa senza sale"], ["⛰️", "Il marmo di Carrara è famoso nel mondo"] ]),
+    'reg-umbria': R("Umbria", '💚', [
+      ["💚", "Il capoluogo dell'Umbria è Perugia"], ["⛪", "Assisi è la città di San Francesco"], ["🍫", "A Perugia nascono i Baci Perugina"], ["🍫", "Eurochocolate è la festa del cioccolato di Perugia"],
+      ["🏞️", "Il lago Trasimeno è il più grande dell'Italia centrale"], ["🎭", "Spoleto ospita il Festival dei Due Mondi"], ["⛪", "Il Duomo di Orvieto è un capolavoro gotico"], ["💧", "La Cascata delle Marmore è tra le più alte d'Europa"],
+      ["🕯️", "A Gubbio si corre la Festa dei Ceri"], ["🌍", "È l'unica regione italiana senza mare e senza confini con altri Stati"], ["🍄", "Il tartufo nero di Norcia è molto pregiato"], ["⛪", "A Norcia nacque San Benedetto"],
+      ["🏛️", "La Basilica di San Francesco ad Assisi è patrimonio UNESCO"], ["🌿", "L'Umbria è detta «il cuore verde d'Italia»"], ["🍷", "Il Sagrantino è un vino umbro"], ["🫘", "La lenticchia di Castelluccio è famosa per le fioriture dei suoi campi"] ]),
+    'reg-marche': R("Marche", '⛵', [
+      ["⛵", "Il capoluogo delle Marche è Ancona"], ["🎨", "Raffaello era nato a Urbino"], ["🏰", "Il Palazzo Ducale di Urbino è un gioiello del Rinascimento"], ["⛪", "A Loreto c'è un famoso santuario"],
+      ["🏖️", "Il Conero è un promontorio sul mare Adriatico"], ["📖", "Giacomo Leopardi era di Recanati"], ["🕳️", "Le grotte di Frasassi sono tra le più belle d'Europa"], ["🎶", "Gioachino Rossini era nato a Pesaro"],
+      ["🏰", "La rocca di Gradara è legata a Paolo e Francesca"], ["🍽️", "Le olive all'ascolana sono un piatto tipico"], ["🍷", "Il Verdicchio è un vino bianco marchigiano"], ["⛰️", "I Monti Sibillini sono un parco nazionale"],
+      ["🏖️", "Sirolo e Numana hanno spiagge bellissime"], ["🧶", "Le Marche sono famose per le scarpe e l'artigianato"], ["🏛️", "Urbino è patrimonio UNESCO"], ["🍲", "Il brodetto è la zuppa di pesce adriatica"] ]),
+    'reg-lazio': R("Lazio", '🏛️', [
+      ["🏛️", "Il capoluogo del Lazio è Roma"], ["🏟️", "Il Colosseo è il simbolo di Roma"], ["⛲", "Chi lancia una moneta nella Fontana di Trevi tornerà a Roma"], ["⛪", "Il Vaticano è lo Stato più piccolo del mondo"],
+      ["🏛️", "Il Pantheon è un tempio romano ancora in uso"], ["🌉", "Il Tevere attraversa Roma"], ["🍝", "Carbonara e cacio e pepe sono piatti romani"], ["🧀", "Il pecorino romano è un formaggio del Lazio"],
+      ["🍷", "Frascati è un vino dei Castelli Romani"], ["⛲", "A Tivoli ci sono Villa d'Este e Villa Adriana"], ["🏺", "Ostia Antica era il porto dell'antica Roma"], ["🎬", "A Roma c'è Cinecittà, la città del cinema"],
+      ["🛣️", "La Via Appia è la «regina delle strade»"], ["🏝️", "Ponza è un'isola del Lazio"], ["🏞️", "Il lago di Bolsena è di origine vulcanica"], ["🏖️", "Sabaudia è sul mare, vicino al Circeo"] ]),
+    'reg-abruzzo': R("Abruzzo", '🐻', [
+      ["🐻", "Il capoluogo dell'Abruzzo è L'Aquila"], ["⛰️", "Il Gran Sasso è la montagna più alta degli Appennini"], ["🐻", "Nel Parco d'Abruzzo vive l'orso marsicano"], ["🍢", "Gli arrosticini sono spiedini di carne di pecora"],
+      ["📖", "Gabriele D'Annunzio era nato a Pescara"], ["🍬", "I confetti di Sulmona sono famosi"], ["🍷", "Il Montepulciano d'Abruzzo è un vino rosso"], ["🏰", "Rocca Calascio è uno dei castelli più scenografici d'Italia"],
+      ["🪵", "I trabocchi sono antiche macchine da pesca sulla costa"], ["⛰️", "Il Parco nazionale della Maiella è una vasta area protetta"], ["🍝", "I maccheroni alla chitarra sono la pasta tipica"], ["🏔️", "Campo Imperatore è chiamato il «piccolo Tibet»"],
+      ["🌲", "L'Abruzzo è detta «la regione verde d'Europa»"], ["🏖️", "La costa dei Trabocchi è lunga e sabbiosa"], ["⛷️", "Roccaraso è una località sciistica"], ["🏘️", "Scanno è un borgo di montagna molto fotografato"] ]),
+    'reg-molise': R("Molise", '🔔', [
+      ["🔔", "Il capoluogo del Molise è Campobasso"], ["👶", "Il Molise è la regione più giovane d'Italia: dal 1963"], ["📏", "Il Molise è tra le regioni più piccole d'Italia"], ["🏖️", "Termoli ha un borgo antico sul mare"],
+      ["🔔", "Ad Agnone si fabbricano campane da secoli"], ["🎭", "Il Carnevale di Larino è molto antico"], ["🏛️", "Sepino ha i resti di una città romana"], ["🍄", "A San Pietro Avellana si trova il tartufo bianco"],
+      ["🧀", "Il caciocavallo di Agnone è famoso"], ["😄", "C'è chi dice per scherzo «il Molise non esiste»: invece esiste!"], ["⛰️", "Il Matese è un massiccio montuoso"], ["🔪", "Frosolone è famosa per i coltelli"],
+      ["🦴", "A Isernia c'è un importante sito preistorico"], ["🎉", "La Festa dei Misteri di Campobasso è molto sentita"], ["🍝", "I cavatelli sono una pasta tipica"], ["🌾", "Il Molise è una regione di borghi e campagne"] ]),
+    'reg-campania': R("Campania", '🍕', [
+      ["🍕", "Il capoluogo della Campania è Napoli"], ["🍕", "La pizza è nata a Napoli"], ["🌋", "Il Vesuvio domina il golfo di Napoli"], ["🏺", "Pompei ed Ercolano furono sepolte dall'eruzione del 79 d.C."],
+      ["🏝️", "Capri è l'isola dei Faraglioni"], ["🍋", "La Costiera Amalfitana è patrimonio UNESCO"], ["🏰", "La Reggia di Caserta è tra le più grandi residenze reali"], ["🧀", "La mozzarella di bufala è della Campania"],
+      ["🍰", "Il babà e la sfogliatella sono dolci napoletani"], ["☕", "A Napoli il caffè è un rito"], ["🎭", "Pulcinella è la maschera napoletana"], ["🎭", "Totò era nato a Napoli"],
+      ["🕊️", "San Gennaro è il patrono di Napoli"], ["🎄", "A Napoli c'è via San Gregorio Armeno, la via dei presepi"], ["🌋", "I Campi Flegrei sono una vasta area vulcanica"], ["🎶", "Il Teatro San Carlo è il più antico teatro d'opera d'Europa"],
+      ["🏝️", "Ischia è famosa per le terme"], ["🍋", "Il limone di Sorrento è famoso"] ]),
+    'reg-basilicata': R("Basilicata", '🏘️', [
+      ["🏘️", "Il capoluogo della Basilicata è Potenza"], ["🕳️", "Matera è famosa per i Sassi, patrimonio UNESCO"], ["🏆", "Matera è stata Capitale europea della cultura nel 2019"], ["🌊", "La Basilicata si affaccia su due mari: il Tirreno e lo Ionio"],
+      ["⛪", "A Maratea c'è la statua del Cristo Redentore"], ["🌶️", "Il peperone crusco è un prodotto tipico"], ["🍞", "Il pane di Matera è famoso in tutta Italia"], ["🍷", "L'Aglianico del Vulture è un vino lucano"],
+      ["👻", "Craco è una città fantasma"], ["⛰️", "Le Dolomiti Lucane sono montagne dalle forme particolari"], ["🌲", "Il Parco del Pollino è condiviso con la Calabria"], ["📜", "Lucania è l'antico nome della Basilicata"],
+      ["🪂", "A Castelmezzano si fa il Volo dell'Angelo"], ["🏛️", "A Metaponto ci sono le Tavole Palatine"], ["🏰", "A Melfi c'è un castello di Federico II"], ["⛪", "Le chiese rupestri sono scavate nella roccia"] ]),
+    'reg-calabria': R("Calabria", '🌶️', [
+      ["🌶️", "Il capoluogo della Calabria è Catanzaro"], ["🗿", "I Bronzi di Riace sono al museo di Reggio Calabria"], ["🌶️", "La 'nduja è un salume piccante"], ["🧅", "La cipolla rossa di Tropea è famosa"],
+      ["🌶️", "Il peperoncino è il simbolo della cucina calabrese"], ["🌊", "Scilla e Cariddi sono nello Stretto di Messina"], ["🌲", "La Sila è un altopiano ricoperto di boschi"], ["⛰️", "L'Aspromonte è un massiccio montuoso"],
+      ["🍋", "Il bergamotto cresce quasi solo in Calabria"], ["📐", "Pitagora fondò la sua scuola a Crotone"], ["🏛️", "La Calabria faceva parte della Magna Grecia"], ["🏰", "Il castello aragonese di Le Castella è sul mare"],
+      ["🏘️", "Gerace è un borgo medievale"], ["🏖️", "Capo Vaticano ha spiagge bellissime"], ["🍬", "La liquirizia di Rossano è famosa"], ["🌊", "La Calabria è bagnata da due mari: lo Ionio e il Tirreno"] ]),
+    'reg-sicilia': R("Sicilia", '🌋', [
+      ["🌋", "Il capoluogo della Sicilia è Palermo"], ["🌋", "L'Etna è un vulcano sempre attivo"], ["🏛️", "La Valle dei Templi è ad Agrigento"], ["🎭", "Taormina ha un teatro greco affacciato sul mare"],
+      ["📐", "Archimede era di Siracusa"], ["⛪", "Il Duomo di Monreale è famoso per i suoi mosaici"], ["🏝️", "Stromboli è un vulcano delle Isole Eolie"], ["🥮", "La cassata e i cannoli sono dolci siciliani"],
+      ["🍙", "Gli arancini sono palle di riso fritte"], ["🍧", "La granita con la brioche è la colazione siciliana"], ["🌰", "Il pistacchio di Bronte è famoso"], ["🍷", "Il Marsala è un vino liquoroso"],
+      ["🧂", "Le saline di Trapani sono famose per il sale"], ["📺", "Il commissario Montalbano è ambientato in Sicilia"], ["📖", "Il Gattopardo è un romanzo di Tomasi di Lampedusa"], ["🎭", "Luigi Pirandello era nato ad Agrigento"],
+      ["🏝️", "Lampedusa è l'isola più a sud d'Italia"], ["🌊", "La Sicilia è la più grande isola del Mediterraneo"] ]),
+    'reg-sardegna': R("Sardegna", '🏝️', [
+      ["🏝️", "Il capoluogo della Sardegna è Cagliari"], ["🏖️", "La Costa Smeralda è famosa per il mare cristallino"], ["🗿", "I nuraghi sono antiche torri di pietra"], ["🌊", "La Sardegna è la seconda isola del Mediterraneo"],
+      ["🧀", "Il pecorino sardo è un formaggio famoso"], ["🍖", "Il porceddu è il maialino arrosto"], ["🫓", "Il pane carasau è sottile e croccante"], ["🍷", "Il Cannonau è un vino rosso sardo"],
+      ["🏝️", "La Maddalena è un arcipelago di isole"], ["🫏", "All'Asinara vivono gli asinelli bianchi"], ["🏰", "Ad Alghero si parla anche il catalano"], ["🌿", "Il mirto è un liquore sardo"],
+      ["⛰️", "Il Supramonte è un altopiano selvaggio"], ["📖", "Grazia Deledda vinse il Nobel per la letteratura nel 1926"], ["🎶", "Le launeddas sono uno strumento musicale antico"], ["🏇", "La Sartiglia di Oristano è una giostra a cavallo"],
+      ["🏛️", "Su Nuraxi di Barumini è patrimonio UNESCO"], ["🌊", "Cala Goloritzé è una delle spiagge più belle d'Italia"] ])
+  };
+
   // ---------- temi per adulti (tombola classica) ----------
   const ADULTI = {
     'verita': { name: "Verità universali", icon: '😂', levels: ['adulti'], items: [
@@ -600,7 +705,7 @@
       ["🎨", "Caravaggio è famoso per i forti contrasti di luce"], ["🌅", "Il Rinascimento nacque in Italia"], ["🎭", "Shakespeare scrisse «Romeo e Giulietta»"], ["📜", "Alessandro Manzoni scrisse «I promessi sposi»"],
       ["🍎", "Isaac Newton formulò la legge di gravitazione"], ["🧪", "Marie Curie vinse due premi Nobel"], ["🏛️", "Il Pantheon è a Roma"], ["🌋", "Pompei fu distrutta dall'eruzione del Vesuvio nel 79 d.C."],
       ["🐺", "Secondo la leggenda Roma fu fondata nel 753 a.C."], ["🔋", "Alessandro Volta inventò la pila"] ] },
-    'puglia': { name: "Puglia e dintorni", icon: '🫒', levels: ['adulti'], items: [
+    'puglia': { name: "Puglia e dintorni", icon: '🫒', levels: ['3', '4', '5', 'adulti'], items: [
       ["🏠", "Ad Alberobello ci sono i trulli, patrimonio UNESCO"], ["🏰", "Castel del Monte fu voluto da Federico II"], ["⛪", "Lecce è chiamata la «Firenze del Sud»"], ["🤍", "Ostuni è la «città bianca»"],
       ["🎤", "Domenico Modugno era di Polignano a Mare"], ["🌊", "Polignano a Mare è famosa per le scogliere e le grotte"], ["🍞", "Bari è la città di San Nicola e della focaccia"], ["🌅", "Il Gargano è lo sperone dello stivale"],
       ["💃", "La pizzica è la danza del Salento"], ["🌳", "In Puglia ci sono milioni di ulivi"], ["🍷", "Il Primitivo è un vino di Manduria"], ["🥣", "Le orecchiette con le cime di rapa sono il piatto simbolo pugliese"],
@@ -609,10 +714,23 @@
   };
 
   // ---------- API ----------
-  const ALL = Object.assign({}, GEN, LISTE, CARTONI, CARTONI_OGGI, FESTE, GIOCHI, ANIME, MURPHY, SCUOLA_CARTONI, ANIMALI, ADULTI);
+  const ALL = Object.assign({}, GEN, LISTE, CARTONI, CARTONI_OGGI, FESTE, GIOCHI, ANIME, MURPHY, SCUOLA_CARTONI, ANIMALI, REGIONI, ADULTI);
   Object.keys(ALL).forEach(k => { ALL[k].key = k; });
 
-  const themesFor = level => Object.keys(ALL).filter(k => ALL[k].levels.includes(level)).map(k => ({ key: k, name: ALL[k].name, icon: ALL[k].icon }));
+  // Categorie per ordinare i menu (un tema sta in una sola categoria).
+  const CATEGORIES = ['📚 Scuola', '📺 Cartoni, giochi e supereroi', '🐾 Animali', '🇮🇹 Regioni d\'Italia', '🎉 Feste e tradizioni', '😂 Divertente', '🎵 Cultura e passioni'];
+  const CAT_KEYS = {
+    1: ['animali-versi', 'animali-classi', 'animali-curiosita', 'cuccioli', 'animali-habitat', 'dinosauri-tema', 'animali-modi-di-dire'],
+    2: ['cartoni', 'disney', 'cartoni-oggi', 'cartoni-80-90', 'ghibli', 'anime-classici', 'anime-oggi', 'super-mario', 'roblox', 'one-piece', 'minecraft', 'supereroi',
+        'conta-cartoni', 'problemi-piccoli', 'problemi-grandi', 'alfabeto-cartoni', 'colori-cartoni', 'cartoni-nel-mondo', 'inglese-cartoni'],
+    4: ['feste'], 5: ['verita', 'mamma', 'proverbi', 'modi-di-dire', 'murphy'], 6: ['musica', 'sport', 'cinema', 'sapori', 'capitali', 'cultura']
+  };
+  function catOf(key) {
+    if (key === 'puglia' || key === 'regioni' || key.startsWith('reg-')) return CATEGORIES[3];
+    for (const i in CAT_KEYS) if (CAT_KEYS[i].includes(key)) return CATEGORIES[i];
+    return CATEGORIES[0];   // tutto il resto è materia di scuola
+  }
+  const themesFor = level => Object.keys(ALL).filter(k => ALL[k].levels.includes(level)).map(k => ({ key: k, name: ALL[k].name, icon: ALL[k].icon, cat: catOf(k) }));
 
   // Voce per il numero n del tema: { e: emoji, t: frase, sp?: testo da leggere, spk?: [[testo, lingua]] }
   function entry(key, n) {
@@ -629,5 +747,5 @@
     return l[Math.floor(Math.random() * l.length)];
   }
 
-  g.TombolaTemi = { LEVELS, themesFor, entry, pick, name: k => ALL[k] ? ALL[k].icon + ' ' + ALL[k].name : '' };
+  g.TombolaTemi = { LEVELS, CATEGORIES, themesFor, entry, pick, name: k => ALL[k] ? ALL[k].icon + ' ' + ALL[k].name : '' };
 })(window);
