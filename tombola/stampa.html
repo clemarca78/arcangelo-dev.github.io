@@ -73,6 +73,9 @@ button.sec { background: #e2e8f0; color: #1e293b; }
     <label>Prima serie n.
       <input type="number" id="first" min="1" max="99999">
     </label>
+    <label>Immagini
+      <select id="theme" style="width:210px"></select>
+    </label>
     <button class="sec" id="rnd" type="button">🎲 Nuove cartelle</button>
   </div>
   <div class="row">
@@ -92,17 +95,21 @@ button.sec { background: #e2e8f0; color: #1e293b; }
   $('mode').value = Q.get('mode') === 'kids' ? 'kids' : 'classic';
   if (['30', '60', '90'].includes(Q.get('max'))) $('max').value = Q.get('max');
   if (['3', '4', '5'].includes(Q.get('cols'))) $('cols').value = Q.get('cols');
+  [['auto', '🎨 Varie (una per cartella)'], ['none', 'Nessuna'], ...TombolaCards.themes.map(t => [t.key, t.emoji[0] + ' ' + t.name])]
+    .forEach(([v, t]) => { const o = document.createElement('option'); o.value = v; o.textContent = t; $('theme').appendChild(o); });
+  if ([...$('theme').options].some(o => o.value === Q.get('theme'))) $('theme').value = Q.get('theme');
   $('first').value = +Q.get('serie') || TombolaCards.randomSerie();
 
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 
-  function cardEl(c) {
+  function cardEl(c, themeKey) {
     const d = el('div', 'card');
     const h = el('h3'); h.append(el('b', null, 'Cartella'), el('span', null, c.id));
     const gr = el('div', 'grid' + (c.mode === 'kids' && c.cols > 3 ? ' dense' : ''));
     if (c.mode === 'kids') gr.style.gridTemplateColumns = `repeat(${c.cols}, 1fr)`;
     c.grid.flat().forEach(n => gr.append(n ? el('div', null, n) : el('div', 'blank')));
-    d.append(h, gr);
+    const art = TombolaCards.artEl(c.id, themeKey, c.mode === 'kids' ? '21pt' : '17pt');
+    if (art) d.append(h, art, gr); else d.append(h, gr);
     return d;
   }
   function sheet(titleRight, cls) {
@@ -124,7 +131,9 @@ button.sec { background: #e2e8f0; color: #1e293b; }
       const serie = first + p;
       const s = sheet(`Nome: ______________________  Classe: ________`, mode === 'kids' ? 'kids' : '');
       const grid = el('div', 'cards');
-      TombolaCards.series(mode, max, serie, cols).forEach(c => grid.append(cardEl(c)));
+      const T = TombolaCards.themes, choice = $('theme').value;
+      TombolaCards.series(mode, max, serie, cols).forEach((c, i) =>
+        grid.append(cardEl(c, choice === 'auto' ? T[(serie * 5 + i) % T.length].key : choice)));
       s.append(grid);
       s.append(el('footer', null, rules + ' Quando hai un premio alza la mano e leggi il codice della cartella.'));
       out.append(s);
@@ -145,7 +154,7 @@ button.sec { background: #e2e8f0; color: #1e293b; }
     }
     $('hint').textContent = `Serie n. ${first}${pages > 1 ? '–' + (first + pages - 1) : ''}. Per stamparle di nuovo uguali, ricorda il numero della prima serie.`;
   }
-  ['mode', 'max', 'cols', 'pages', 'first', 'board', 'tokens'].forEach(id => $(id).addEventListener('input', render));
+  ['mode', 'max', 'cols', 'theme', 'pages', 'first', 'board', 'tokens'].forEach(id => $(id).addEventListener('input', render));
   $('rnd').onclick = () => { $('first').value = TombolaCards.randomSerie(); render(); };
   $('print').onclick = () => window.print();
   render();

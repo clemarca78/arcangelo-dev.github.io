@@ -198,6 +198,11 @@ details summary { cursor: pointer; font-weight: 600; }
     </div>
     <p class="hint" id="playHint" style="text-align:left;margin-top:10px"></p>
     <div class="row">
+      <label class="hint" style="display:flex;gap:6px;align-items:center">Immagini sulle cartelle
+        <select id="themeSel"></select>
+      </label>
+    </div>
+    <div class="row">
       <input type="text" id="joinCodeIn" placeholder="Sei un giocatore? Scrivi il codice" maxlength="8" size="28" autocomplete="off">
       <button id="joinGo">Entra nella stanza</button>
     </div>
@@ -407,7 +412,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   const isPlayer = !!ROOM_CODE;
   const KEY = isPlayer ? 'tombola-player-' + ROOM_CODE : 'tombola-proto-v2';
   const $ = id => document.getElementById(id);
-  let state = { mode: 'classic', max: 90, drawn: [], cards: [], marks: [], won: {}, autoMark: false, gen: 0, room: null, token: '', pname: '', play: 'screen', cols: 3 };
+  let state = { mode: 'classic', max: 90, drawn: [], cards: [], marks: [], won: {}, autoMark: false, gen: 0, room: null, token: '', pname: '', play: 'screen', cols: 3, theme: 'auto' };
   let timer = null;
   const kids = () => state.mode === 'kids';
   const prizesFor = (m, cols) => TombolaCards.prizes(m, cols);
@@ -551,6 +556,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     $('modeKids').classList.toggle('active', kids());
     $('maxSel').value = state.max;
     $('colsSel').value = state.cols;
+    $('themeSel').value = state.theme;
     $('autoMark').checked = !!state.autoMark;
     $('cardsHint').textContent = isPlayer
       ? (state.autoMark ? 'I numeri estratti si segnano da soli. Chiama il premio quando lo hai!' : 'Tocca i numeri sulla cartella quando escono. Hai un premio? Chiamalo!')
@@ -595,6 +601,8 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       const hits = g.flat().filter(n => n && m.has(n)).length;
       const c = document.createElement('div'); c.className = 'card';
       c.innerHTML = `<h3>Cartella ${i + 1}<em>${hits}/${size}</em></h3>`;
+      const art = TombolaCards.artEl(g.flat().join(','), state.theme, kids() ? '1.7rem' : '1.2rem');
+      if (art) c.appendChild(art);
       const gr = document.createElement('div'); gr.className = 'grid' + (kids() && state.cols > 3 ? ' dense' : '');
       if (kids()) gr.style.gridTemplateColumns = `repeat(${state.cols}, 1fr)`;
       g.flat().forEach(n => {
@@ -721,7 +729,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   function dealAll() { if (state.room) Object.values(state.room.players).forEach(p => p.cards = dealCards()); }
   function snapshot(token) {
     const p = state.room.players[token];
-    return { t: 'state', mode: state.mode, max: state.max, cols: state.cols, drawn: state.drawn, won: state.won, gen: state.gen, cards: p.cards };
+    return { t: 'state', mode: state.mode, max: state.max, cols: state.cols, theme: state.theme, drawn: state.drawn, won: state.won, gen: state.gen, cards: p.cards };
   }
   function sendTo(token, msg) { const c = conns[token]; if (c && c.open) { try { c.send(msg); } catch (e) {} } }
   function broadcast() { if (state.room) Object.keys(conns).forEach(t => state.room.players[t] && sendTo(t, snapshot(t))); }
@@ -869,7 +877,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if (m.t === 'state') {
       const prev = state.drawn.length;
       if (m.gen !== state.gen || state.marks.length !== m.cards.length) state.marks = m.cards.map(() => []);
-      Object.assign(state, { mode: m.mode, max: m.max, cols: m.cols || 3, drawn: m.drawn, won: m.won, gen: m.gen, cards: m.cards });
+      Object.assign(state, { mode: m.mode, max: m.max, cols: m.cols || 3, theme: m.theme || 'auto', drawn: m.drawn, won: m.won, gen: m.gen, cards: m.cards });
       if (!state.drawn.length) { logLines.length = 0; log('Nuova partita. Buona fortuna!'); }
       save(); setStatus(`🟢 Stanza ${ROOM_CODE} · ${state.pname} ·`);
       const fresh = m.drawn.length === prev + 1;
@@ -931,7 +939,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     });
     box.append(v); out.append(box);
   }
-  $('printBtn').onclick = () => window.open(`stampa.html?mode=${state.mode}&max=${state.max}&cols=${state.cols}&serie=${TombolaCards.randomSerie()}`, '_blank');
+  $('printBtn').onclick = () => window.open(`stampa.html?mode=${state.mode}&max=${state.max}&cols=${state.cols}&theme=${state.theme}&serie=${TombolaCards.randomSerie()}`, '_blank');
   $('chkBtn').onclick = checkPaperCard;
   $('chkId').onkeydown = e => { if (e.key === 'Enter') checkPaperCard(); };
 
@@ -950,6 +958,9 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if (needRoom && !state.room) createRoom();
     save(); render(); renderRoom();
   }
+  [['auto', '🎨 Varie (una diversa per cartella)'], ['none', 'Nessuna'], ...TombolaCards.themes.map(t => [t.key, t.emoji[0] + ' ' + t.name])]
+    .forEach(([v, t]) => { const o = document.createElement('option'); o.value = v; o.textContent = t; $('themeSel').appendChild(o); });
+  $('themeSel').onchange = () => { state.theme = $('themeSel').value; save(); render(); broadcast(); };
   document.querySelectorAll('#playSeg button').forEach(b => { b.onclick = () => setPlay(b.dataset.play); });
   const joinByCode = () => { const c = $('joinCodeIn').value.trim().toUpperCase(); if (c) location.search = '?stanza=' + encodeURIComponent(c); };
   $('joinGo').onclick = joinByCode;
