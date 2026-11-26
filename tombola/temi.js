@@ -245,7 +245,25 @@
       ["🎤", "Cristina D'Avena è la voce di tante sigle dei cartoni"], ["🩺", "«Siamo fatti così» racconta il corpo umano"], ["🐱", "Occhi di gatto: tre sorelle ladre d'arte"], ["🏐", "Mila e Shiro: la storia di una giovane pallavolista"],
       ["⚡", "Pokémon: Ash Ketchum e Pikachu"], ["🏴‍☠️", "Rufy, in One Piece, vuole diventare il Re dei Pirati"], ["🍥", "Naruto è un giovane ninja che sogna di diventare Hokage"], ["🟡", "I Simpson sono in onda dal 1989"],
       ["🧽", "SpongeBob vive a Bikini Bottom"], ["🧚", "Le Winx nascono in Italia, dall'idea di Iginio Straffi"], ["🐺", "Lupo Alberto è un cartone italiano creato da Silver"], ["🎩", "Il signor Rossi cerca la felicità nei cartoni di Bruno Bozzetto"],
-      ["🐭", "Topo Gigio è un topolino nato in Italia negli anni Cinquanta"], ["🐱", "Gatto Silvestro insegue Titti senza successo"], ["📼", "Tom e Jerry: il gatto e il topo che si rincorrono"] ] }
+      ["🐭", "Topo Gigio è un topolino nato in Italia negli anni Cinquanta"], ["🐱", "Gatto Silvestro insegue Titti senza successo"], ["📼", "Tom e Jerry: il gatto e il topo che si rincorrono"], ["🏀", "In «Slam Dunk» Hanamichi Sakuragi si innamora del basket"], ["🔍", "Detective Conan è un detective rimpicciolito in corpo di bambino"], ["🐉", "Dragon Ball Z: Goku diventa Super Saiyan"],
+      ["🤖", "Jeeg Robot d'acciaio si forma con il giovane Hiroshi Shiba"], ["💃", "Gigi la trottola sogna di fare la ballerina"], ["✨", "L'incantevole Creamy si trasforma in una ragazza più grande"], ["🎩", "Magica Magica Emi è una giovane prestigiatrice"],
+      ["🌊", "Gli Snorky vivono in un mondo sottomarino"], ["❤️", "Gli Orsetti del cuore hanno un simbolo sulla pancia"], ["👻", "I «Real Ghostbusters» danno la caccia ai fantasmi"], ["🦇", "La serie animata di Batman è del 1992"],
+      ["🗿", "I Gargoyles di giorno sono di pietra e di notte prendono vita"], ["✈️", "In «TaleSpin» Baloo è un pilota di aerei"], ["🎬", "Yakko, Wakko e Dot sono gli Animaniacs"], ["🧠", "Pinky e Brain vogliono conquistare il mondo ogni notte"],
+      ["🐧", "Pingu è un pinguino che parla il «pinguese»"], ["🧢", "Pippi Calzelunghe è la bambina più forte del mondo"] ] }
+  };
+
+  // Per i ragazzi (3ª-5ª): cartoni di ieri e di oggi, adatti alla loro età.
+  const CARTONI_OGGI = {
+    'cartoni-oggi': { name: "Cartoni di ieri e di oggi", icon: '🎞️', levels: ['3', '4', '5'], items: [
+      ["⚡", "In Pokémon Ash vuole diventare Maestro Pokémon"], ["🏴‍☠️", "In One Piece Rufy ha il corpo di gomma"], ["🍥", "Naruto sogna di diventare Hokage"], ["🐉", "In Dragon Ball Goku cerca le sette sfere del drago"],
+      ["🌙", "Le guerriere di Sailor Moon portano la divisa da marinaretta"], ["🤖", "Goldrake grida «Alabarda spaziale!»"], ["⚽", "In Holly e Benji i campioni giocano su campi lunghissimi"], ["🏀", "In «Slam Dunk» i protagonisti giocano a basket"],
+      ["🔍", "Detective Conan è un detective con il corpo di un bambino"], ["🐞", "In Miraculous Ladybug e Chat Noir difendono Parigi"], ["🌊", "Aang, in Avatar, è l'ultimo Maestro dell'Aria"], ["🔟", "Ben 10 usa l'Omnitrix per trasformarsi in alieni"],
+      ["🛠️", "Phineas e Ferb inventano qualcosa di incredibile ogni giorno d'estate"], ["🔦", "In Gravity Falls Dipper e Mabel scoprono misteri"], ["💥", "Le Superchicche sono tre sorelline supereroine"], ["🧪", "Dexter ha un laboratorio segreto"],
+      ["🐢", "Le Tartarughe Ninja sono quattro e amano la pizza"], ["🦆", "In DuckTales Zio Paperone vive con i nipotini"], ["🐿️", "Chip e Chop sono due scoiattoli agenti speciali"], ["🦇", "La serie animata di Batman è del 1992"],
+      ["🐭", "Pinky e Brain vogliono conquistare il mondo ogni notte"], ["🐧", "Pingu è un pinguino che parla il «pinguese»"], ["🔵", "I Puffi sono blu e vivono in un villaggio nel bosco"], ["🐥", "Calimero è un pulcino nero e piccolo"],
+      ["🧽", "SpongeBob vive a Bikini Bottom"], ["🧚", "Le Winx sono fate nate in Italia"], ["🐕", "Scooby-Doo risolve i misteri insieme ai suoi amici"], ["❤️", "Gli Orsetti del cuore hanno un simbolo sulla pancia"],
+      ["⭐", "I Cavalieri dello Zodiaco indossano armature d'oro"], ["🎤", "Cristina D'Avena canta le sigle dei cartoni"], ["🎩", "Lupin III è un ladro gentiluomo"], ["⛰️", "Heidi vive sulle Alpi con il nonno"],
+      ["🏐", "Mila e Shiro giocano a pallavolo"], ["🐕", "Remi viaggia con il cane Capi"], ["🐢", "Tom e Jerry si rincorrono da una vita"] ] }
   };
 
   // ---------- temi per adulti (tombola classica) ----------
@@ -353,7 +371,7 @@
   };
 
   // ---------- API ----------
-  const ALL = Object.assign({}, GEN, LISTE, CARTONI, ADULTI);
+  const ALL = Object.assign({}, GEN, LISTE, CARTONI, CARTONI_OGGI, ADULTI);
   Object.keys(ALL).forEach(k => { ALL[k].key = k; });
 
   const themesFor = level => Object.keys(ALL).filter(k => ALL[k].levels.includes(level)).map(k => ({ key: k, name: ALL[k].name, icon: ALL[k].icon }));
