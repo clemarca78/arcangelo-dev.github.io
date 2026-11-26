@@ -75,13 +75,15 @@ select { font: inherit; background: var(--bg); color: var(--text); border: 1px s
 .board div.out { background: var(--gold); color: #1e1b4b; font-weight: 800; }
 .board div.last { outline: 3px solid var(--pink); outline-offset: 1px; }
 
-.board.sez { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
-.board.sez .sezione { border: 1px solid rgba(255,255,255,.12); border-radius: 12px; padding: 8px; background: rgba(255,255,255,.03); }
-.board.sez .sezione.vinta { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(251,191,36,.35); }
-.board.sez h4 { margin: 0 0 6px; font-size: .85rem; display: flex; justify-content: space-between; color: var(--muted); }
-.board.sez .sg { display: grid; grid-template-columns: repeat(9, 1fr); gap: 3px; aspect-ratio: auto; background: none; border-radius: 0; place-items: stretch; font-size: inherit; }
-.board.sez .sg div { aspect-ratio: 1; border-radius: 5px; font-size: clamp(.65rem, 1.8vw, .9rem); }
-.board.sez .sg div.blank { background: transparent; }
+.board.sezb div[data-n] { position: relative; }
+.board.sezb div.sl { border-left: 3px solid rgba(255,255,255,.6); }
+.board.sezb div.st { border-top: 3px solid rgba(255,255,255,.6); }
+.board.sezb div[data-s]::before { content: attr(data-s); position: absolute; top: 1px; left: 3px; font-size: .55rem; font-weight: 700; color: var(--pink); }
+.board.sezb div.sv { box-shadow: inset 0 0 0 2px #22c55e; }
+.sezinfo { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; font-size: .8rem; }
+.sezinfo span { padding: 3px 9px; border-radius: 20px; background: rgba(255,255,255,.06); color: var(--muted); }
+.sezinfo span.vinta { background: rgba(34,197,94,.2); color: var(--text); }
+body.lim .sezinfo { display: none; }
 .gwin[hidden] { display: none; }
 .gwin { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(251,191,36,.15); border: 1px solid var(--gold); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .prizes { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -477,11 +479,12 @@ details summary { cursor: pointer; font-weight: 600; }
     <div class="panel">
       <h2>Tabellone</h2>
       <div class="row host-only adult-only" id="sezRow" style="margin-bottom:10px">
-        <label class="hint" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="sezOn"> 🧩 Tabellone a sezioni: ogni sezione è una cartella del gestore, che può vincere anche lui</label>
+        <label class="hint" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="sezOn"> 🧩 Tabellone a sezioni: le 6 sezioni da 15 numeri (blocchi 3×5) sono le cartelle del gestore, che può vincere anche lui</label>
         <input type="text" id="gestoreName" maxlength="20" size="14" placeholder="Nome del gestore">
-        <button id="sezNew" title="Cambia gestore e mescola le sezioni">🔄 Cambia gestore</button>
+        <button id="sezNew" title="Passa il tabellone a un altro gestore">🔄 Cambia gestore</button>
       </div>
       <div class="board" id="board"></div>
+      <div class="sezinfo" id="sezInfo" hidden></div>
       <div class="gwin" id="gwin" hidden></div>
     </div>
   </section>
@@ -708,12 +711,12 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   // numeri considerati "segnati" su una cartella
   // Il banditore gioca anche lui (stanza con dispositivi): segna a mano e chiama i premi come un giocatore.
   // Tabellone a sezioni (solo tombola classica, vista del gestore): le 6 sezioni sono le 6 cartelle di una serie e coprono 1..90.
-  const sezioniOn = () => !isPlayer && !kids() && !!state.sezioni && !(LIM_VIEW || limOn);
+  const sezioniOn = () => !isPlayer && !kids() && !!state.sezioni;
   const gestoreName = () => (state.gestore || '').trim() || 'Il gestore';
-  function sezioniCards() {
-    if (!state.serie) state.serie = TombolaCards.randomSerie();
-    return TombolaCards.series('classic', 90, state.serie).map(c => c.grid);
-  }
+  // Come sul tabellone standard: 6 sezioni da 3 righe x 5 colonne (1-5/11-15/21-25, 6-10/16-20/26-30, 31-35...).
+  const SEZIONI = Array.from({ length: 6 }, (_, s) => [0, 1, 2].map(r => [0, 1, 2, 3, 4].map(c => (Math.floor(s / 2) * 3 + r) * 10 + (s % 2) * 5 + c + 1)));
+  const sezioniCards = () => SEZIONI;
+  const sezOf = n => { const r = Math.floor((n - 1) / 10), c = (n - 1) % 10; return r < 9 ? Math.floor(r / 3) * 2 + (c >= 5 ? 1 : 0) : -1; };
   const sezioniAttive = () => !isPlayer && !kids() && !!state.sezioni;
   function raggiuntoDa(card, prize, drawn) {
     const m = new Set(drawn), size = cardSize();
@@ -973,29 +976,28 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
 
     $('board').innerHTML = '';
     const sez = sezioniOn();
-    $('board').classList.toggle('sez', sez);
+    $('board').classList.toggle('sezb', sez);
     $('sezOn').checked = !!state.sezioni; $('gestoreName').value = state.gestore || '';
-    if (sez) {
-      sezioniCards().forEach((g, i) => {
-        const hits = g.flat().filter(n => n && out.has(n)).length;
-        const box = document.createElement('section'); box.className = 'sezione';
-        const h = document.createElement('h4'); h.innerHTML = `<span>Sezione ${i + 1}</span><span>${hits}/15</span>`;
-        const gr = document.createElement('div'); gr.className = 'sg';
-        g.flat().forEach(n => {
-          const d = document.createElement('div');
-          if (!n) d.className = 'blank';
-          else { d.textContent = n; d.dataset.n = n; if (out.has(n)) d.className = 'out' + (n === last ? ' last' : ''); }
-          gr.appendChild(d);
-        });
-        if (Object.values(state.won).some(w => w.includes(`${gestoreName()} · Sezione ${i + 1}`))) box.classList.add('vinta');
-        box.append(h, gr); $('board').appendChild(box);
-      });
-    } else for (let n = 1; n <= state.max; n++) {
+    const vinteS = new Set();
+    Object.values(state.won).forEach(w => { const m = String(w).match(new RegExp(gestoreName().replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ' · Sezione (\\d)', 'g')); (m || []).forEach(x => vinteS.add(+x.slice(-1) - 1)); });
+    for (let n = 1; n <= state.max; n++) {
       const d = document.createElement('div');
       d.textContent = n; d.dataset.n = n;
       if (out.has(n)) d.className = 'out' + (n === last ? ' last' : '');
+      if (sez && state.max === 90) {
+        const k = sezOf(n), r = Math.floor((n - 1) / 10), c = (n - 1) % 10;
+        if (c === 5) d.classList.add('sl');
+        if (r === 3 || r === 6) d.classList.add('st');
+        if (r % 3 === 0 && c % 5 === 0) d.dataset.s = k + 1;
+        if (vinteS.has(k)) d.classList.add('sv');
+      }
       $('board').appendChild(d);
     }
+    const si = $('sezInfo'); si.innerHTML = ''; si.hidden = !sez;
+    if (sez) SEZIONI.forEach((g, i) => {
+      const hits = g.flat().filter(n => out.has(n)).length;
+      const sp = document.createElement('span'); sp.textContent = `Sezione ${i + 1}: ${hits}/15`; if (vinteS.has(i)) sp.className = 'vinta'; si.appendChild(sp);
+    });
     // premio raggiunto da una sezione del gestore ma non ancora assegnato (carta/misto o urna): proposta di assegnazione
     const gw = $('gwin'); gw.hidden = true; gw.innerHTML = '';
     if (sezioniAttive() && !isPlayer) {
@@ -1103,7 +1105,6 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     stopAuto();
     try { speechSynthesis.cancel(); } catch (e) {}
     state.drawn = []; state.won = {}; state.pmap = null; state.gen = (state.gen || 0) + 1; logLines.length = 0;
-    state.serie = 0;
     if (kids()) newKidTheme(); else newAdultTheme();
     log(msg || 'Nuova partita. Buona fortuna!');
     makeCards(); dealAll(); save(); render(); broadcast();
@@ -1539,12 +1540,12 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     const c = ev.target.closest('[data-n]');
     if (c && !isPlayer && state.source === 'urn') urnAdd(+c.dataset.n);
   });
-  $('sezOn').onchange = () => { state.sezioni = $('sezOn').checked; if (!state.serie) state.serie = TombolaCards.randomSerie(); save(); render(); };
+  $('sezOn').onchange = () => { state.sezioni = $('sezOn').checked; save(); render(); };
   $('gestoreName').oninput = () => { state.gestore = $('gestoreName').value; save(); };
   $('gestoreName').onchange = () => render();
   $('sezNew').onclick = () => {
-    if (state.drawn.length && !confirm('Il gestore cambia: le sezioni vengono mescolate. Se la partita è in corso, i numeri già usciti restano segnati sulle nuove sezioni. Continuare?')) return;
-    state.serie = TombolaCards.randomSerie(); state.gestore = ''; $('gestoreName').focus(); save(); render();
+    if (state.drawn.length && !confirm('Cambia il gestore? Le sezioni sono sempre le stesse: cambia solo il nome. Se la partita è in corso i premi già assegnati restano.')) return;
+    state.gestore = ''; $('gestoreName').focus(); save(); render();
   };
   $('gwin').addEventListener('click', ev => {
     const b = ev.target.closest('[data-gwin]'); if (!b || isPlayer) return;
