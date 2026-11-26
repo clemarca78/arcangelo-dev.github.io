@@ -392,6 +392,71 @@
       ["🧦", "Il calzino spaiato è sempre quello che ti serve"], ["🍳", "La cosa più semplice da cucinare si brucia quando ti distrai"], ["🪟", "Il vetro appena pulito si sporca subito"], ["🛋️", "Il telecomando è sempre nel posto più scomodo"] ] }
   };
 
+  // ---------- materie di scuola con i cartoni ----------
+  const PERS = [['Peppa Pig', '🐷'], ['Topolino', '🐭'], ['Pikachu', '⚡'], ['Mario', '🍄'], ['Elsa', '❄️'], ['Un Minion', '🍌'], ['SpongeBob', '🧽'], ['Doraemon', '🤖'],
+    ['Masha', '👧'], ['Olaf', '⛄'], ['Simba', '🦁'], ['Bluey', '🐕'], ['Woody', '🤠'], ['Paperino', '🦆'], ['Titti', '🐤'], ['Heidi', '⛰️'],
+    ['Shrek', '🟢'], ['Nemo', '🐠'], ['Rufy', '🏴‍☠️'], ['Goku', '🐉'], ['Totoro', '🌳'], ['Kiki', '🧹'], ['Winnie Pooh', '🧸'], ['Stitch', '👽']];
+  const OGG = [['un gelato', 'gelati', 'm'], ['un palloncino', 'palloncini', 'm'], ['un biscotto', 'biscotti', 'm'], ['una moneta', 'monete', 'f'], ['una stella', 'stelle', 'f'],
+    ['una carota', 'carote', 'f'], ['una mela', 'mele', 'f'], ['una caramella', 'caramelle', 'f'], ['una matita', 'matite', 'f'], ['una figurina', 'figurine', 'f']];
+  const scelta = n => ({ pers: PERS[hh(n, 7) % PERS.length], ogg: OGG[hh(n, 8) % OGG.length] });
+
+  const SCUOLA_CARTONI = {
+    'conta-cartoni': { name: "Contiamo con i cartoni", icon: '🧮', levels: ['asilo', '1'],
+      f(n) {
+        const [nome, em] = scelta(n).pers;
+        if (n <= 10) return { e: em.repeat(n), t: `${nome} ci aiuta a contare: ${n}` };
+        if (n <= 20) return { e: '🔟' + em.repeat(n - 10), t: `${n} è una decina e ${n - 10}` };
+        return { e: em, t: `${n} è ${Math.floor(n / 10)} ${Math.floor(n / 10) === 1 ? 'decina' : 'decine'}${n % 10 ? ' e ' + n % 10 : ''}` };
+      } },
+    'problemi-piccoli': { name: "Problemi con i cartoni (addizioni e sottrazioni)", icon: '➕', levels: ['1', '2'],
+      f(n) {
+        const { pers: [nome, em], ogg: [uno, pl, g] } = scelta(n);
+        if (n === 1) return { e: em, t: `${nome} ha ${uno}: è 1!` };
+        if (hh(n, 9) % 2 === 0) {
+          const a = 1 + hh(n, 10) % (n - 1);
+          return { e: em, t: `${nome} ha ${a} ${pl} e ne trova ${g === 'f' ? 'altre' : 'altri'} ${n - a}: ora ne ha ${n}` };
+        }
+        const k = 1 + hh(n, 11) % 9;
+        return { e: em, t: `${nome} ha ${n + k} ${pl}, ne regala ${k}: ne restano ${n}` };
+      } },
+    'problemi-grandi': { name: "Problemi con i cartoni (moltiplicazioni e divisioni)", icon: '✖️', levels: ['3', '4', '5'],
+      f(n) {
+        const { pers: [nome, em], ogg: [uno, pl] } = scelta(n);
+        const pairs = []; for (let a = 2; a <= 10; a++) if (n % a === 0 && n / a >= 2 && n / a <= 10) pairs.push([a, n / a]);
+        const mode = hh(n, 12) % 3;
+        if (mode === 0 && pairs.length) { const [a, b] = pairs[hh(n, 13) % pairs.length]; return { e: em, t: `${nome} prepara ${b} sacchetti da ${a} ${pl}: in tutto ${n} ${pl}` }; }
+        if (mode === 2) return { e: em, t: `${nome} ha ${2 * n} ${pl} e ne regala la metà: ne restano ${n}` };
+        const k = 2 + hh(n, 14) % 4;
+        return { e: em, t: `${nome} divide ${n * k} ${pl} tra ${k} amici: ognuno ne riceve ${n}` };
+      } },
+    'alfabeto-cartoni': { name: "L'alfabeto dei cartoni", icon: '🔤', levels: ['1', '2'], items: [
+      ["🧞", "A come Aladdin"], ["🦌", "B come Bambi"], ["🐥", "C come Calimero"], ["🐘", "D come Dumbo"], ["❄️", "E come Elsa"], ["🟢", "F come Fiona"], ["😺", "G come Garfield"],
+      ["⛰️", "H come Heidi"], ["🦸", "I come Incredibili"], ["👽", "L come Lilo e Stitch"], ["🍌", "M come Minions"], ["🐠", "N come Nemo"], ["⛄", "O come Olaf"], ["🐷", "P come Peppa Pig"],
+      ["🦆", "Q come Qui, Quo e Qua"], ["💇", "R come Rapunzel"], ["🦁", "S come Simba"], ["🐤", "T come Titti"], ["🦑", "U come Ursula"], ["🌺", "V come Vaiana"], ["🦊", "Z come Zootropolis"] ] },
+    'colori-cartoni': { name: "I colori dei cartoni", icon: '🎨', levels: ['asilo', '1'], items: [
+      ["🐷", "Peppa Pig è rosa"], ["🧸", "Winnie Pooh è giallo"], ["👽", "Stitch è blu"], ["🟢", "Shrek è verde"], ["🍌", "I Minions sono gialli"], ["⚡", "Pikachu è giallo"],
+      ["🔵", "I Puffi sono blu"], ["🐭", "Topolino ha i pantaloncini rossi"], ["🦆", "Paperino ha la giacca blu"], ["🐕", "Bluey è azzurra"], ["🐤", "Titti è giallo"], ["🐟", "Dory è blu"],
+      ["🐠", "Nemo è arancione"], ["🦁", "Simba è color sabbia"], ["🐻", "Baloo è grigio"], ["🍄", "Mario ha il cappello rosso"], ["💚", "Luigi ha il cappello verde"], ["🦔", "Sonic è blu"],
+      ["💚", "Hulk è verde"], ["🕷️", "Spider-Man è rosso e blu"], ["🦇", "Batman è nero"], ["❄️", "Elsa è azzurra"], ["🎀", "Hello Kitty ha un fiocco rosso"], ["🦖", "Yoshi è verde"] ] },
+    'cartoni-nel-mondo': { name: "I cartoni nel mondo", icon: '🌍', levels: ['2', '3', '4', '5'], items: [
+      ["🇨🇭", "Heidi vive in Svizzera, sulle Alpi"], ["🇮🇹", "Pinocchio è nato in Italia, dalla penna di Collodi"], ["🇬🇧", "Peppa Pig è inglese"], ["🇫🇷", "Asterix è francese e vive nella Gallia"],
+      ["🇧🇪", "Tintin è belga"], ["🇯🇵", "Totoro è giapponese"], ["🇷🇺", "Masha e Orso vengono dalla Russia"], ["🇧🇪", "I Puffi sono nati in Belgio"],
+      ["🇺🇸", "Topolino è americano e nasce nel 1928"], ["🇦🇷", "Mafalda è argentina"], ["🇦🇺", "Bluey è australiana"], ["🇫🇮", "I Mumin vengono dalla Finlandia"],
+      ["🇸🇪", "Pippi Calzelunghe è svedese"], ["🇨🇳", "Kung Fu Panda è ambientato in Cina"], ["🇲🇽", "Coco è ambientato in Messico"], ["🌺", "Vaiana è ambientata nel Pacifico"],
+      ["🌍", "Il Re Leone è ambientato in Africa"], ["🇧🇷", "Rio è ambientato in Brasile"], ["🗼", "Ratatouille è ambientato a Parigi"], ["🇩🇰", "La Sirenetta è una fiaba danese di Andersen"],
+      ["🇳🇴", "Il regno di Frozen è ispirato alla Norvegia"], ["🇮🇹", "La Pimpa è italiana ed è nata dalla matita di Altan"], ["🇮🇹", "Geronimo Stilton è italiano"], ["🇮🇹", "Topo Gigio è italiano"],
+      ["🇮🇹", "Calimero è italiano e nasce a Carosello nel 1963"], ["🇮🇹", "Le Winx sono state create in Italia"], ["🇫🇷", "I Barbapapà sono francesi"], ["🇺🇸", "Snoopy è il cane di Charlie Brown"],
+      ["🇬🇧", "Paddington è un orsetto inglese"], ["🇬🇧", "Winnie Pooh è nato in Inghilterra, dai libri di A. A. Milne"], ["🇬🇧", "Alice nel Paese delle Meraviglie è un libro inglese di Lewis Carroll"], ["🇯🇵", "Doraemon è giapponese"] ] },
+    'inglese-cartoni': { name: "Inglese con i cartoni", icon: '🇬🇧', levels: ['3', '4', '5'], items: [
+      ["🐷", "Pig in inglese vuol dire maiale, come in Peppa Pig"], ["🐭", "Mouse vuol dire topo, come in Mickey Mouse"], ["🦁", "Lion vuol dire leone, come ne «Il Re Leone»"], ["❄️", "Frozen vuol dire congelato"],
+      ["🤠", "Toy vuol dire giocattolo, come in Toy Story"], ["🐠", "Fish vuol dire pesce, come in Finding Nemo"], ["🔎", "To find vuol dire trovare, come in Finding Nemo"], ["🎈", "Up vuol dire su"],
+      ["🚗", "Cars vuol dire automobili"], ["👾", "Monster vuol dire mostro"], ["❄️", "Snow vuol dire neve, come in Snow White"], ["🌹", "Beauty vuol dire bellezza e Beast vuol dire bestia"],
+      ["🧜", "Mermaid vuol dire sirena"], ["🌴", "Jungle vuol dire giungla, come ne «Il libro della giungla»"], ["🐕", "Dog vuol dire cane, come in Bluey"], ["🦆", "Duck vuol dire papero, come in Donald Duck"],
+      ["🐻", "Bear vuol dire orso"], ["🐱", "Cat vuol dire gatto, come in Tom and Jerry"], ["🏴‍☠️", "Pirate vuol dire pirata"], ["🧚", "Fairy vuol dire fata"],
+      ["🏰", "Castle vuol dire castello"], ["👑", "King vuol dire re e Queen vuol dire regina"], ["⭐", "Star vuol dire stella"], ["🚀", "Space vuol dire spazio, come in Buzz Lightyear"],
+      ["🦸", "Hero vuol dire eroe"], ["🧙", "Wizard vuol dire mago"], ["🐢", "Turtle vuol dire tartaruga, come nelle Tartarughe Ninja"], ["🍌", "Banana si scrive uguale in inglese, come per i Minions"] ] }
+  };
+
   // ---------- temi per adulti (tombola classica) ----------
   const ADULTI = {
     'verita': { name: "Verità universali", icon: '😂', levels: ['adulti'], items: [
@@ -497,7 +562,7 @@
   };
 
   // ---------- API ----------
-  const ALL = Object.assign({}, GEN, LISTE, CARTONI, CARTONI_OGGI, FESTE, GIOCHI, ANIME, MURPHY, ADULTI);
+  const ALL = Object.assign({}, GEN, LISTE, CARTONI, CARTONI_OGGI, FESTE, GIOCHI, ANIME, MURPHY, SCUOLA_CARTONI, ADULTI);
   Object.keys(ALL).forEach(k => { ALL[k].key = k; });
 
   const themesFor = level => Object.keys(ALL).filter(k => ALL[k].levels.includes(level)).map(k => ({ key: k, name: ALL[k].name, icon: ALL[k].icon }));
