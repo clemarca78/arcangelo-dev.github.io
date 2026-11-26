@@ -724,6 +724,51 @@
       ["🔀", "L'algoritmo di Fisher-Yates mescola un elenco in modo uniforme"], ["❓", "«P contro NP» è uno dei sette problemi del millennio"] ] }
   };
 
+  // ---------- videogiochi ----------
+  const VIDEOGIOCHI = {
+    'videogiochi-classici': { name: "Videogiochi classici (anni '70-'90)", icon: '👾', levels: ['3', '4', '5', 'adulti'], items: [
+      ["🏓", "Pong, del 1972, è uno dei primi videogiochi di successo: due racchette e una pallina"], ["👾", "In Space Invaders, del 1978, gli alieni scendono verso il basso"], ["🟡", "Pac-Man, del 1980, mangia i puntini e scappa dai fantasmi"], ["👻", "I fantasmi di Pac-Man si chiamano Blinky, Pinky, Inky e Clyde"],
+      ["🦍", "In Donkey Kong, del 1981, Mario salta i barili"], ["🧱", "Tetris fu inventato da Alexey Pajitnov nel 1984"], ["🟦", "In Tetris i pezzi sono sette forme fatte di quattro quadretti"], ["🍄", "Super Mario Bros è uscito nel 1985"],
+      ["🗡️", "In The Legend of Zelda, del 1986, l'eroe si chiama Link, non Zelda"], ["🚀", "In Metroid, del 1986, la protagonista è Samus Aran"], ["💨", "Sonic è il porcospino blu della Sega, nato nel 1991"], ["💍", "Sonic raccoglie anelli d'oro mentre corre"],
+      ["🥊", "In Street Fighter II, del 1991, i protagonisti sono Ryu e Ken"], ["🗺️", "Prince of Persia, del 1989, è famoso per i movimenti fluidi del principe"], ["🧟", "In Lemmings, del 1991, bisogna guidare tanti omini verdi fino all'uscita"], ["⚡", "Pokémon è uscito in Giappone nel 1996"],
+      ["🐾", "Crash Bandicoot è la mascotte della prima PlayStation"], ["🏺", "Lara Croft è la protagonista di Tomb Raider, del 1996"], ["🌍", "Super Mario 64, del 1996, fu il primo Mario in 3D"], ["⚔️", "Final Fantasy VII è uscito nel 1997"],
+      ["🪱", "In Worms i vermi si sfidano a turni con armi buffe"], ["🕹️", "L'Atari 2600, del 1977, portò i videogiochi nelle case"], ["⌚", "Game & Watch, del 1980, erano piccoli giochi portatili di Nintendo"], ["🎮", "Il Game Boy, del 1989, veniva venduto con Tetris"],
+      ["📟", "Il Mega Drive è la console della Sega: in Giappone uscì nel 1988"], ["💻", "Il Commodore 64, del 1982, fu il computer dei videogiochi di una generazione"], ["🪙", "Nelle sale giochi si giocava con i gettoni"], ["🕹️", "Il joystick è la leva con cui si muove il personaggio"],
+      ["💀", "«Game Over» compare quando finiscono le vite"], ["🍄", "Un «1-Up» regala una vita in più"], ["⬆️", "Il codice Konami è su, su, giù, giù, sinistra, destra, sinistra, destra, B, A"], ["🐕", "In Duck Hunt un cagnolino ride quando sbagli il colpo"],
+      ["💣", "In Bomberman il protagonista piazza bombe per aprirsi la strada"], ["🐸", "In Frogger una rana deve attraversare la strada e il fiume"], ["🛸", "Galaga, del 1981, è un gioco di navicelle contro insetti spaziali"], ["☄️", "In Asteroids, del 1979, una navicella evita i massi nello spazio"],
+      ["🧱", "Breakout, del 1976, è un gioco in cui si rompono i mattoncini con una pallina"], ["🩷", "Kirby, del 1992, è una pallina rosa che ingoia i nemici"], ["🤖", "Mega Man, del 1987, è un robottino blu che copia i poteri dei nemici"], ["🏎️", "Super Mario Kart, del 1992, è il primo Mario Kart"] ] },
+    'videogiochi-oggi': { name: "Videogiochi di oggi", icon: '🎮', levels: ['3', '4', '5', 'adulti'], items: [
+      ["🏝️", "In Animal Crossing: New Horizons si abita su un'isola deserta e si incontra Tom Nook"], ["🏔️", "Zelda: Breath of the Wild, del 2017, ha un enorme mondo da esplorare"], ["🪽", "Zelda: Tears of the Kingdom è uscito nel 2023"], ["🎩", "In Super Mario Odyssey il cappello Cappy si lancia per catturare i nemici"],
+      ["🏎️", "Mario Kart 8 Deluxe è uno dei giochi più venduti di Switch"], ["🦑", "In Splatoon i calamari colorano il campo con l'inchiostro"], ["🫘", "Fall Guys è un gioco di ostacoli con tanti buffi fagioli"], ["🚗", "In Rocket League le automobili giocano a calcio"],
+      ["🚀", "Among Us è ambientato su un'astronave dove si cerca l'impostore"], ["💃", "Fortnite è famoso anche per i balletti dei personaggi"], ["📱", "Pokémon GO, del 2016, si gioca camminando e catturando i Pokémon per strada"], ["🍬", "Candy Crush Saga è il gioco delle caramelle da far combaciare"],
+      ["🐦", "Angry Birds nasce in Finlandia: gli uccelli lanciano contro i maiali"], ["👑", "Clash Royale è un gioco di carte e battaglie in tempo reale"], ["🏃", "In Subway Surfers si corre sui binari evitando i treni"], ["⚽", "EA Sports FC è il nuovo nome del gioco di calcio che prima si chiamava FIFA"],
+      ["🏠", "The Sims è un gioco in cui si costruisce e si guida la vita dei personaggi"], ["🕺", "Just Dance è il gioco in cui si balla davanti allo schermo"], ["🎳", "Wii Sports, del 2006, fece muovere tutta la famiglia davanti alla TV"], ["🌾", "In Stardew Valley si coltiva una fattoria"],
+      ["🍳", "In Overcooked bisogna cucinare tutti insieme in cucine sempre più folli"], ["🤝", "It Takes Two è un gioco da fare in due"], ["🎮", "Nintendo Switch, del 2017, è una console che si può usare anche come portatile"], ["🏆", "Gli e-sport sono tornei di videogiochi"],
+      ["📺", "Gli streamer giocano in diretta davanti a un pubblico online"], ["🥽", "Il visore per la realtà virtuale fa entrare dentro il gioco"], ["🔞", "Il PEGI indica l'età minima consigliata di un videogioco"], ["👨‍👩‍👧", "Il controllo parentale permette di scegliere cosa e quanto giocare"],
+      ["🔒", "Nei giochi online non si danno mai nome, indirizzo o password"], ["⏱️", "Fai una pausa ogni ora: anche gli occhi si stancano"], ["🗣️", "Se qualcuno online ti scrive cose che non ti piacciono, dillo a un adulto"], ["🧠", "Molti giochi allenano la logica, la memoria e la collaborazione"],
+      ["🌐", "Molti giochi si possono giocare insieme online con gli amici"], ["🛠️", "Alcuni giochi permettono di costruire livelli e mondi tutti tuoi"], ["💾", "Quasi tutti i giochi hanno il salvataggio: così riparti da dove eri arrivato"], ["🏅", "In molti giochi si sbloccano trofei e obiettivi"] ] },
+    'console': { name: "Console e storia dei videogiochi", icon: '🕹️', levels: ['4', '5', 'adulti'], items: [
+      ["🃏", "Nintendo è stata fondata nel 1889 e all'inizio produceva carte da gioco"], ["🏓", "Il primo videogioco di grande successo fu Pong, con Atari, nel 1972"], ["🕹️", "L'Atari 2600 uscì nel 1977"], ["📺", "Una console si collega alla TV e ha i suoi controller"],
+      ["🎮", "Il NES, la console a 8 bit di Nintendo, ebbe grande successo negli anni Ottanta"], ["🎮", "Il Game Boy uscì nel 1989 ed era portatile"], ["📟", "Il Mega Drive è la console a 16 bit della Sega"], ["💿", "PlayStation, della Sony, uscì in Giappone nel 1994"],
+      ["🟩", "La prima Xbox, di Microsoft, uscì nel 2001"], ["🎳", "La Wii, del 2006, si giocava muovendo il telecomando"], ["🎮", "Nintendo Switch uscì nel 2017"], ["💾", "Un tempo i giochi stavano su cartucce, poi su CD e infine si scaricano da internet"],
+      ["🔢", "I bit indicano la potenza della console: 8 bit, 16 bit, 32 bit..."], ["🖼️", "Il pixel è il quadratino con cui è fatta l'immagine sullo schermo"], ["🎨", "La grafica 3D arrivò in massa negli anni Novanta"], ["🖥️", "Il PC è usato anche per i videogiochi, con mouse e tastiera"],
+      ["📱", "Oggi si gioca anche con smartphone e tablet"], ["🌐", "Il gioco online permette di sfidare persone in tutto il mondo"], ["☁️", "Il cloud gaming fa girare il gioco su un computer lontano"], ["🏆", "Gli e-sport hanno campionati con premi in denaro"],
+      ["🧑‍💻", "Un game designer inventa le regole e il mondo di un gioco"], ["🎵", "La musica dei videogiochi si chiama colonna sonora, anche chiamata «soundtrack»"], ["🧩", "Un livello è una parte del gioco con un obiettivo da raggiungere"], ["👾", "Il «boss» è il nemico più forte alla fine di un livello"],
+      ["🕵️", "Un «easter egg» è una sorpresa nascosta dagli sviluppatori"], ["💥", "Un «bug» è un errore del programma"], ["🛠️", "Una «mod» è una modifica creata dai giocatori"], ["🔓", "«Sbloccare» significa rendere disponibile un personaggio o un livello"],
+      ["🇯🇵", "Molte grandi aziende di videogiochi sono giapponesi: Nintendo, Sega, Capcom, Sony"], ["🇮🇹", "Anche in Italia si sviluppano videogiochi"], ["🍄", "Mario è la mascotte di Nintendo"], ["🦔", "Sonic è la mascotte della Sega"],
+      ["🎮", "Il controller moderno ha pulsanti, levette e vibrazione"], ["📚", "I videogiochi sono considerati una forma di arte e di intrattenimento"] ] },
+    'pokemon': { name: "Pokémon", icon: '⚡', levels: ['1', '2', '3', '4', '5', 'adulti'], items: [
+      ["⚡", "Pikachu è il Pokémon più famoso: è di tipo Elettro"], ["🟡", "Pikachu si evolve in Raichu con una Pietratuono"], ["🔥", "Charmander ha una fiammella sulla coda"], ["🐢", "Squirtle è una tartarughina che spara acqua"],
+      ["🌱", "Bulbasaur ha un bulbo sulla schiena"], ["🦊", "Eevee può evolversi in tanti Pokémon diversi"], ["😴", "Snorlax dorme quasi sempre ed è un grande mangione"], ["🐟", "Magikarp è debole, ma si evolve nel potente Gyarados"],
+      ["🦆", "Psyduck ha sempre mal di testa"], ["🎤", "Jigglypuff canta e fa addormentare chi ascolta"], ["👻", "Gengar è un Pokémon fantasma"], ["🧬", "Mewtwo è stato creato dagli scienziati partendo da Mew"],
+      ["🟣", "Ditto può trasformarsi in qualsiasi altro Pokémon"], ["🐱", "Meowth, della Team Rocket, è un gatto che sa parlare"], ["⚽", "La Poké Ball serve a catturare i Pokémon"], ["📱", "Il Pokédex è l'enciclopedia dei Pokémon"],
+      ["🏅", "Nelle palestre si sfidano i capipalestra per ottenere le medaglie"], ["8️⃣", "Per partecipare alla Lega Pokémon servono otto medaglie"], ["👦", "Ash Ketchum è l'allenatore che gira il mondo con Pikachu"], ["🌊", "Misty è un'allenatrice di Pokémon Acqua"],
+      ["🪨", "Brock è un allenatore di Pokémon Roccia"], ["🚀", "Jessie, James e Meowth sono la Team Rocket"], ["🔥", "Fuoco, Acqua ed Erba sono tre dei tipi di Pokémon"], ["🎨", "I tipi di Pokémon sono diciotto"],
+      ["🗺️", "Kanto è la prima regione dei giochi Pokémon"], ["🇯🇵", "Pokémon è stato inventato in Giappone da Satoshi Tajiri nel 1996"], ["❄️", "Articuno, Zapdos e Moltres sono tre Pokémon leggendari"], ["💪", "Più un Pokémon combatte, più sale di livello"],
+      ["🦋", "Un Pokémon può evolversi e cambiare forma"], ["🎮", "Pokémon Rosso e Blu sono tra i primi giochi della serie"], ["📺", "La serie animata dei Pokémon va in onda dal 1997"], ["🃏", "Le carte Pokémon si collezionano e si scambiano"],
+      ["📱", "Pokémon GO si gioca camminando all'aperto"], ["🌍", "Esistono più di mille Pokémon diversi"], ["🤝", "I Pokémon e gli allenatori diventano amici e si aiutano"], ["🍃", "Pikachu accumula elettricità nelle guance rosse"] ] }
+  };
+
   // ---------- temi per adulti (tombola classica) ----------
   const ADULTI = {
     'verita': { name: "Verità universali", icon: '😂', levels: ['adulti'], items: [
@@ -829,7 +874,7 @@
   };
 
   // ---------- API ----------
-  const ALL = Object.assign({}, GEN, LISTE, CARTONI, CARTONI_OGGI, FESTE, GIOCHI, ANIME, MURPHY, SCUOLA_CARTONI, ANIMALI, REGIONI, FEDE, MATEMATICA, ADULTI);
+  const ALL = Object.assign({}, GEN, LISTE, CARTONI, CARTONI_OGGI, FESTE, GIOCHI, VIDEOGIOCHI, ANIME, MURPHY, SCUOLA_CARTONI, ANIMALI, REGIONI, FEDE, MATEMATICA, ADULTI);
   Object.keys(ALL).forEach(k => { ALL[k].key = k; });
 
   // Categorie per ordinare i menu (un tema sta in una sola categoria).
@@ -839,7 +884,7 @@
   const CAT_KEYS = {
     [C.animali]: ['animali-versi', 'animali-classi', 'animali-curiosita', 'cuccioli', 'animali-habitat', 'dinosauri-tema', 'animali-modi-di-dire'],
     [C.cartoni]: ['cartoni', 'disney', 'cartoni-oggi', 'cartoni-80-90', 'ghibli', 'anime-classici', 'anime-oggi', 'super-mario', 'roblox', 'one-piece', 'minecraft', 'supereroi',
-                  'conta-cartoni', 'problemi-piccoli', 'problemi-grandi', 'alfabeto-cartoni', 'colori-cartoni', 'cartoni-nel-mondo', 'inglese-cartoni'],
+                  'videogiochi-classici', 'videogiochi-oggi', 'console', 'pokemon', 'conta-cartoni', 'problemi-piccoli', 'problemi-grandi', 'alfabeto-cartoni', 'colori-cartoni', 'cartoni-nel-mondo', 'inglese-cartoni'],
     [C.mate]: ['matematica'], [C.feste]: ['feste'], [C.fede]: ['santi', 'chiesa', 'gesu'], [C.divertente]: ['verita', 'mamma', 'proverbi', 'modi-di-dire', 'murphy'], [C.cultura]: ['musica', 'sport', 'cinema', 'sapori', 'capitali', 'cultura']
   };
   function catOf(key) {
