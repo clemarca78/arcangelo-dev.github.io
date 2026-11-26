@@ -1078,6 +1078,49 @@
   };
   Object.keys(EXTRA2).forEach(k => { ALL[k].items.push(...EXTRA2[k]); });
 
+  // ---------- frasi in più per «Personaggi dei cartoni» e «Disney e Pixar»: ogni tema copre i 90 numeri ----------
+  const EXTRA3 = {
+    'cartoni': [
+      ["🐭", "Topolino ha le orecchie tonde e i guanti bianchi"], ["🏠", "Topolino abita a Topolinia e Paperino a Paperopoli"], ["⚓", "Paperino indossa un vestito da marinaio"], ["💰", "Paperon de' Paperoni è lo zio ricchissimo di Paperino"],
+      ["🐶", "Pluto è il cane di Topolino"], ["🏜️", "Beep Beep corre velocissimo e il Coyote non riesce mai a prenderlo"], ["📦", "Il Coyote ordina strani attrezzi dalla ditta Acme"], ["🐷", "Porky Pig chiude i cartoni dicendo: «Questo è tutto, gente!»"],
+      ["🦆", "Daffy Duck è un papero nero pasticcione"], ["🎬", "I Looney Tunes sono nati alla Warner Bros."], ["🐱", "Garfield è un gatto arancione che adora le lasagne"], ["🐶", "Snoopy è il cane di Charlie Brown e dorme sul tetto della sua cuccia"],
+      ["🐤", "Woodstock è l'uccellino amico di Snoopy"], ["🧸", "Linus ha sempre con sé la sua copertina"], ["🐻", "Yoghi è un orso che ruba i cestini del picnic"], ["🦴", "Fred Flintstone vive nell'età della pietra insieme a Wilma"],
+      ["🚀", "I Pronipoti vivono in una casa che vola nel cielo, nel futuro"], ["🏴", "Hanna e Barbera hanno creato Tom e Jerry"], ["🐕", "Shaggy è l'amico di Scooby-Doo, sempre affamato"], ["🎒", "Dora l'esploratrice ha uno zaino parlante"],
+      ["🐒", "Curioso come George è una scimmietta curiosissima"], ["🎩", "L'amico di George è l'uomo con il cappello giallo"], ["🚜", "Bob Aggiustatutto ripara tutto con i suoi attrezzi e dice: «Possiamo farlo?»"], ["🐘", "Babar è un elefante che diventa re"],
+      ["🐼", "I Cinque Cicloni di Kung Fu Panda sono Tigre, Gru, Mantide, Vipera e Scimmia"], ["🦓", "In Madagascar Marty è una zebra, Melman una giraffa e Gloria un'ippopotama"], ["🐧", "I pinguini di Madagascar sono Skipper, Kowalski, Rico e Soldato"], ["🐱", "Il Gatto con gli stivali è lo spadaccino che compare in Shrek"],
+      ["🫏", "Ciuchino è l'amico chiacchierone di Shrek"], ["👸", "Fiona è la principessa che sposa Shrek"], ["👻", "Casper è un fantasma gentile"], ["🦄", "My Little Pony racconta le avventure di piccoli pony colorati"],
+      ["🎀", "Hello Kitty è una gattina bianca con un fiocco rosso"], ["🍊", "L'orso Paddington adora la marmellata di arance"], ["🐕", "Clifford è un grandissimo cane rosso"], ["🦸", "I Super Pigiamini sono Gattoboy, Gufetta e Geco"],
+      ["🚒", "Sam il pompiere soccorre gli abitanti di Pontypandy"], ["🐛", "Il piccolo bruco Maisazio mangia tantissimo prima di diventare farfalla"], ["🐷", "George è il fratellino di Peppa Pig e ama i dinosauri"], ["🐶", "Bingo è la sorellina di Bluey, e Bandit è il loro papà"],
+      ["🕷️", "L'Uomo Ragno ha un costume rosso e blu"], ["🦇", "Batman vive a Gotham City"], ["🦸", "Superman viene dal pianeta Krypton"], ["🌸", "Heidi ha un amico capraio che si chiama Peter"],
+      ["🐕", "La Pimpa è stata creata dal fumettista Altan"], ["🐥", "Calimero esclama: «Questa è un'ingiustizia!»"], ["🫧", "I Barbapapà sono Barbapapà, Barbamamma e sette Barbabimbi"], ["👦", "Nobita è il bambino amico di Doraemon"],
+      ["🔥", "Charmander è il Pokémon con la fiamma sulla coda"], ["🌱", "Bulbasaur ha un bulbo sulla schiena"], ["🐢", "Squirtle è un Pokémon tartaruga che spruzza acqua"], ["⭐", "Patrick è la stella marina amica di SpongeBob"],
+      ["🍔", "I Krabby Patty sono i panini del ristorante di SpongeBob"], ["🕶️", "I Minions lavorano per Gru, il protagonista di «Cattivissimo me»"] ],
+
+    'disney': [
+      ["🚢", "Topolino comparve nel cortometraggio «Steamboat Willie»"], ["🎬", "Walt Disney creò Topolino"], ["🎂", "Walt Disney nacque a Chicago nel 1901"], ["🏰", "Disneyland aprì nel 1955, in California"],
+      ["🏰", "Il castello nel logo Disney è ispirato a castelli veri"], ["💡", "Il logo della Pixar è una lampada chiamata Luxo Jr."], ["🎶", "«Fantasia» (1940) mette insieme cartoni e musica classica"], ["🪄", "In «Fantasia» Topolino è l'apprendista stregone"],
+      ["🦗", "Il Grillo Parlante è la coscienza di Pinocchio"], ["🪵", "Geppetto è il falegname che costruisce Pinocchio"], ["🐭", "I topolini amici di Cenerentola si chiamano Giac e Gus"], ["✨", "La Fata Madrina di Cenerentola dice «Bibbidi Bobbidi Bu»"],
+      ["🍎", "Biancaneve assaggia una mela avvelenata"], ["🤓", "Dotto è il capo dei sette nani e porta gli occhiali"], ["😠", "Brontolo è il nano sempre arrabbiato"], ["🤐", "Cucciolo è il nano più giovane e non parla mai"],
+      ["🧚", "La fatina di Peter Pan si chiama Campanellino"], ["🪝", "Il nemico di Peter Pan è Capitan Uncino"], ["🐊", "Il coccodrillo di Capitan Uncino ha mangiato una sveglia"], ["😸", "In «Alice nel Paese delle Meraviglie» lo Stregatto appare e scompare"],
+      ["🎩", "In «Alice nel Paese delle Meraviglie» il Cappellaio Matto fa un tè senza fine"], ["♥️", "In «Alice nel Paese delle Meraviglie» la Regina di Cuori vuole tagliare la testa a tutti"], ["🐰", "Tamburino è il coniglietto amico di Bambi"], ["🦨", "Fiore è la puzzola amica di Bambi"],
+      ["🐭", "Timoteo è il topolino amico di Dumbo"], ["👩", "Crudelia De Mon vuole una pelliccia di cuccioli dalmata"], ["🕯️", "In «La Bella e la Bestia» Lumière è un candelabro"], ["🌹", "Alla fine de «La Bella e la Bestia» la Bestia torna principe"],
+      ["🏹", "Gaston è il cacciatore vanitoso de «La Bella e la Bestia»"], ["🦀", "Il granchio Sebastian è amico di Ariel, la Sirenetta"], ["🐠", "Flounder è il pesciolino amico di Ariel"], ["🐙", "Ursula è la strega del mare con otto tentacoli"],
+      ["🐯", "Jasmine ha una tigre di nome Rajah"], ["🐒", "Abu è la scimmietta di Aladdin"], ["🧞", "Aladdin viaggia sul tappeto volante"], ["🐍", "Jafar è il visir cattivo di Aladdin"],
+      ["🦁", "Scar è lo zio cattivo di Simba"], ["🐗", "Timon e Pumbaa sono gli amici di Simba"], ["🦁", "Nala è l'amica d'infanzia di Simba"], ["🐒", "Rafiki è la saggia scimmia del «Re Leone»"],
+      ["🦝", "Meeko è il procione amico di Pocahontas"], ["🔔", "Quasimodo suona le campane di Notre Dame"], ["🐴", "Pegaso è il cavallo alato di Hercules"], ["🦍", "Tarzan è cresciuto con i gorilla"],
+      ["👽", "Stitch è un alieno blu che vive alle Hawaii con Lilo"], ["🐷", "Pimpi è il maialino timido amico di Winnie the Pooh"], ["🐅", "Tigro è la tigre saltellante del Bosco dei Cento Acri"], ["🫏", "Ih-Oh è l'asinello triste del Bosco dei Cento Acri"],
+      ["🦎", "Pascal è il camaleonte amico di Rapunzel"], ["🗡️", "Flynn Rider è il ladro che incontra Rapunzel"], ["👭", "Anna è la sorella di Elsa in «Frozen»"], ["🦌", "Kristoff ha una renna che si chiama Sven"],
+      ["🐔", "Heihei è il gallo sbadato di Vaiana"], ["🐉", "Mushu è il draghetto amico di Mulan"], ["🦗", "Il grillo Cri-Kee porta fortuna a Mulan"], ["🐰", "Judy Hopps, in «Zootropolis», è una coniglietta poliziotto"],
+      ["🦊", "Nick Wilde, in «Zootropolis», è una volpe furba"], ["🤖", "Baymax è un robot gonfiabile che cura i suoi amici"], ["🥔", "Mr. Potato è il signor Patata di «Toy Story»"], ["🦖", "Rex è il dinosauro verde pauroso di «Toy Story»"],
+      ["🐕", "Slinky è il cane a molla di «Toy Story»"], ["👧", "Boo è la bambina di «Monsters & Co.»"], ["🧵", "Edna Mode è la stilista dei supereroi de «Gli Incredibili»"], ["🚚", "Cricchetto è il carro attrezzi amico di Saetta McQueen"],
+      ["💚", "WALL-E è innamorato della robot EVE"], ["🎈", "In «Up» il protagonista è il vecchietto Carl, e con lui c'è Russell"], ["🐶", "Dug è il cane che parla in «Up»"], ["🐘", "Bing Bong è l'amico immaginario di Riley in «Inside Out»"],
+      ["🎸", "In «Coco» Miguel sogna di suonare la chitarra"], ["🏹", "Merida è la principessa con i capelli rossi e ricci che tira con l'arco"], ["🧑‍🍳", "Linguini è il ragazzo che cucina insieme a Remy"], ["🐟", "«Luca» (2021) è ambientato sulla Riviera ligure"],
+      ["🐠", "In «Alla ricerca di Dory» Dory cerca la sua famiglia"], ["🦉", "Il Mago Merlino insegna a Semola, in «La spada nella roccia»"], ["🐻", "Re Luigi è l'orango che balla e canta con Mowgli nel «Libro della giungla»"], ["🐅", "Shere Khan è la tigre cattiva del «Libro della giungla»"],
+      ["🐆", "Baghera è la pantera che porta Mowgli al villaggio"], ["🍝", "Lilli e il vagabondo mangiano insieme gli spaghetti"], ["🧚", "Le tre fate proteggono Aurora, la Bella Addormentata"], ["🐲", "Malefica è la cattiva de «La Bella Addormentata»"],
+      ["🦊", "Robin Hood, nel cartone Disney, è una volpe"] ]
+  };
+  Object.keys(EXTRA3).forEach(k => { ALL[k].items.push(...EXTRA3[k]); });
+
   // Categorie per ordinare i menu (un tema sta in una sola categoria).
   const C = { mix: '🎲 Mix di temi', scuola: '📚 Scuola', cartoni: '📺 Cartoni, giochi e supereroi', animali: '🐾 Animali', regioni: "🇮🇹 Regioni d'Italia",
               feste: '🎉 Feste e tradizioni', fede: '✝️ Santi, Chiesa e Vangelo', divertente: '😂 Divertente', cultura: '🎵 Cultura e passioni', mate: '📐 Matematica e statistica', mio: '✏️ I miei temi' };
