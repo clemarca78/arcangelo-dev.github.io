@@ -214,6 +214,40 @@
       ['🌍', 'La Terra è la casa di tutti'], ['📚', 'Studiare è un diritto di tutti i bambini'] ] }
   };
 
+  // ---------- cartoni animati ----------
+  const CARTONI = {
+    'cartoni': { name: "Personaggi dei cartoni", icon: '📺', levels: ['asilo', '1', '2', '3', '4', '5'], items: [
+      ["🐷", "Peppa Pig adora saltare nelle pozzanghere di fango"], ["👧", "Masha è la bambina vivace che vive vicino a Orso"], ["🐶", "La Pimpa è la cagnolina bianca a pois rossi"], ["🐕", "Bluey è una cagnolina blu che gioca con la sua famiglia"],
+      ["🚒", "Nei Paw Patrol i cuccioli soccorrono chi è in difficoltà"], ["🐰", "Bing è un coniglietto che scopre il mondo con Flop"], ["⚡", "Pikachu è un Pokémon giallo che fa le scintille"], ["🧽", "SpongeBob vive in un ananas sotto il mare"],
+      ["🍌", "I Minions sono gialli e parlano una lingua buffissima"], ["🐕", "Scooby-Doo ha paura di tutto ma risolve i misteri"], ["🐤", "Titti è un canarino giallo che sfugge a Gatto Silvestro"], ["🥕", "Bugs Bunny è un coniglio che adora le carote"],
+      ["🐭", "Tom e Jerry: il gatto e il topo che si rincorrono sempre"], ["⛰️", "Heidi vive sulle montagne con il nonno"], ["🤖", "Doraemon è un gatto robot con una tasca magica"], ["🦆", "Paperino è lo zio di Qui, Quo e Qua"],
+      ["🐶", "Pippo è l'amico distratto e simpatico di Topolino"], ["🎀", "Minni è la fidanzata di Topolino"], ["🟢", "Shrek è un orco verde che vive in una palude"], ["🐼", "Po è il panda di Kung Fu Panda"],
+      ["🐉", "Sdentato è il drago amico di Hiccup"], ["🦁", "Alex è il leone di Madagascar"], ["🐿️", "Scrat insegue sempre la sua ghianda nell'era glaciale"], ["🔵", "I Puffi sono blu e vivono in un villaggio nel bosco"],
+      ["🐥", "Calimero è un pulcino nero e piccolo"], ["📰", "Geronimo Stilton è un topo giornalista"], ["🧚", "Le Winx sono fate con le ali e i poteri magici"], ["🚂", "Thomas è un trenino blu con il numero 1"],
+      ["🔵", "Pocoyo è un bimbo vestito di blu che scopre il mondo"], ["🫧", "I Barbapapà cambiano forma a piacere"], ["🐢", "Le Tartarughe Ninja amano la pizza"], ["🐝", "L'ape Maia vola nel prato con l'amico Willi"],
+      ["🦸", "Gli Incredibili sono una famiglia di supereroi"], ["🐠", "Nemo è un pesciolino pagliaccio"], ["🧞", "Il Genio esce dalla lampada di Aladdin"], ["🧑‍🚀", "Buzz Lightyear dice «Verso l'infinito e oltre!»"] ] },
+    'disney': { name: "Disney e Pixar", icon: '🏰', levels: ['asilo', '1', '2', '3', '4', '5', 'adulti'], items: [
+      ["🐭", "Topolino è apparso per la prima volta nel 1928"], ["🍎", "Biancaneve e i sette nani è il primo lungometraggio Disney, del 1937"], ["🐘", "Dumbo è un elefantino con grandi orecchie che vola"], ["🦌", "Bambi è un cerbiatto che vive nel bosco"],
+      ["🤥", "A Pinocchio cresce il naso quando dice le bugie"], ["👠", "Cenerentola perde una scarpetta di cristallo"], ["🐇", "Alice nel Paese delle Meraviglie insegue il Bianconiglio"], ["🧚", "Peter Pan vive nell'Isola che non c'è"],
+      ["🐕", "La carica dei 101 ha tanti cuccioli dalmata"], ["🌹", "La Bella e la Bestia: Belle ama leggere i libri"], ["🧜", "Ariel è la Sirenetta che sogna il mondo di sopra"], ["🧞", "Aladdin trova una lampada con dentro il Genio"],
+      ["🦁", "Il Re Leone: «Hakuna Matata» significa «nessun problema»"], ["🐻", "Baloo insegna a Mowgli «lo stretto indispensabile»"], ["🐈", "Gli Aristogatti sono gatti eleganti di Parigi"], ["⚔️", "Mulan si veste da soldato per aiutare suo padre"],
+      ["🤠", "In Toy Story i giocatoli prendono vita: Woody e Buzz"], ["🐠", "Alla ricerca di Nemo: Dory dimentica sempre tutto"], ["🐀", "Ratatouille: Remy è un topo che sa cucinare"], ["🚗", "In Cars Saetta McQueen corre sulla pista"],
+      ["🤖", "WALL-E è un piccolo robot spazzino"], ["🎈", "In Up una casa vola attaccata a tanti palloncini"], ["😀", "In Inside Out le emozioni sono Gioia, Tristezza, Rabbia, Paura e Disgusto"], ["❄️", "In Frozen Elsa ha il potere del ghiaccio"],
+      ["⛄", "Olaf è un pupazzo di neve che sogna l'estate"], ["🌺", "Vaiana attraversa l'oceano insieme a Maui"], ["💀", "Coco si svolge durante il Día de Muertos in Messico"], ["💇", "Rapunzel ha capelli lunghissimi"],
+      ["🧸", "Winnie the Pooh ama il miele"], ["🦸", "Gli Incredibili sono una famiglia di supereroi"], ["👾", "In Monsters & Co. gli amici sono Sulley e Mike"], ["🔮", "In Encanto la casa della famiglia Madrigal è magica"],
+      ["🛏️", "La Bella Addormentata si punge con il fuso di un arcolaio"], ["🏔️", "Elsa canta «Libera sono» nella versione italiana di Frozen"] ] },
+    'cartoni-80-90': { name: "Cartoni degli anni '80 e '90", icon: '📺', levels: ['adulti'], items: [
+      ["🤖", "Goldrake arrivò in Italia nel 1978 con il grido «Alabarda spaziale!»"], ["🤖", "Mazinga Z è un robot gigante pilotato da Koji"], ["🎩", "Lupin III è un ladro gentiluomo, nipote di Arsenio Lupin"], ["🎀", "Candy Candy è un'orfana bionda con i codini"],
+      ["⚽", "Holly e Benji sognano di diventare campioni di calcio"], ["🐉", "Goku è il protagonista di Dragon Ball"], ["🔵", "I Puffi sono blu e vivono in un villaggio nel bosco"], ["👑", "Lady Oscar è ambientata alla corte di Versailles"],
+      ["🏴‍☠️", "Capitan Harlock è un pirata dello spazio"], ["⛰️", "Heidi vive sulle Alpi con il nonno"], ["🐕", "Remi viaggia con il cane Capi e la scimmietta Joli-Coeur"], ["🌙", "Sailor Moon dice «In nome della Luna ti punirò!»"],
+      ["⭐", "I Cavalieri dello Zodiaco indossano armature d'oro"], ["👊", "Ken il guerriero vive in un mondo dopo l'apocalisse"], ["🦆", "Paperon de' Paperoni nuota in una piscina di monete"], ["🐢", "Le Tartarughe Ninja amano la pizza"],
+      ["🗡️", "He-Man brandisce la Spada del Potere"], ["🦴", "Fred Flintstone grida «Yabba dabba doo!» ne «Gli Antenati»"], ["🌵", "Willy il Coyote non riesce mai ad acchiappare Beep Beep"], ["🐥", "Calimero è il pulcino nero di Carosello"],
+      ["🎤", "Cristina D'Avena è la voce di tante sigle dei cartoni"], ["🩺", "«Siamo fatti così» racconta il corpo umano"], ["🐱", "Occhi di gatto: tre sorelle ladre d'arte"], ["🏐", "Mila e Shiro: la storia di una giovane pallavolista"],
+      ["⚡", "Pokémon: Ash Ketchum e Pikachu"], ["🏴‍☠️", "Rufy, in One Piece, vuole diventare il Re dei Pirati"], ["🍥", "Naruto è un giovane ninja che sogna di diventare Hokage"], ["🟡", "I Simpson sono in onda dal 1989"],
+      ["🧽", "SpongeBob vive a Bikini Bottom"], ["🧚", "Le Winx nascono in Italia, dall'idea di Iginio Straffi"], ["🐺", "Lupo Alberto è un cartone italiano creato da Silver"], ["🎩", "Il signor Rossi cerca la felicità nei cartoni di Bruno Bozzetto"],
+      ["🐭", "Topo Gigio è un topolino nato in Italia negli anni Cinquanta"], ["🐱", "Gatto Silvestro insegue Titti senza successo"], ["📼", "Tom e Jerry: il gatto e il topo che si rincorrono"], ["🐺", "Gli Antenati vivono a Bedrock"] ] }
+  };
+
   // ---------- temi per adulti (tombola classica) ----------
   const ADULTI = {
     'verita': { name: "Verità universali", icon: '😂', levels: ['adulti'], items: [
@@ -319,7 +353,7 @@
   };
 
   // ---------- API ----------
-  const ALL = Object.assign({}, GEN, LISTE, ADULTI);
+  const ALL = Object.assign({}, GEN, LISTE, CARTONI, ADULTI);
   Object.keys(ALL).forEach(k => { ALL[k].key = k; });
 
   const themesFor = level => Object.keys(ALL).filter(k => ALL[k].levels.includes(level)).map(k => ({ key: k, name: ALL[k].name, icon: ALL[k].icon }));
