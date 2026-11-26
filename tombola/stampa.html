@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tombola – Stampa cartelle</title>
+<meta name="author" content="Arcangelo Clemente">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: #e2e8f0; color: #111; }
@@ -34,6 +35,7 @@ button.sec { background: #e2e8f0; color: #1e293b; }
 }
 .kids .grid { grid-template-columns: repeat(3, 1fr); }
 .kids .grid div { font-size: 30pt; border-width: 1px; }
+.kids .grid.dense div { font-size: 21pt; }
 .sheet footer { margin-top: 3mm; font-size: 8.5pt; color: #333; border-top: 1px solid #999; padding-top: 2mm; }
 
 .board { flex: 1; display: grid; grid-template-columns: repeat(10, 1fr); gap: 0; border: 1.5px solid #111; margin-top: 2mm; }
@@ -61,13 +63,19 @@ button.sec { background: #e2e8f0; color: #1e293b; }
       <select id="mode"><option value="classic">Classica (1–90)</option><option value="kids">Bambini (3×3)</option></select>
     </label>
     <label id="maxWrap">Numeri fino a
-      <select id="max"><option>30</option><option>60</option><option>90</option></select>
+      <select id="max"><option>20</option><option>30</option><option>60</option><option>90</option></select>
+    </label>
+    <label id="colsWrap">Numeri per riga
+      <select id="cols"><option value="3">3 (fino al terno)</option><option value="4">4 (fino alla quaterna)</option><option value="5">5 (fino alla cinquina)</option></select>
     </label>
     <label>Pagine (serie)
       <input type="number" id="pages" min="1" max="20" value="2">
     </label>
     <label>Prima serie n.
       <input type="number" id="first" min="1" max="99999">
+    </label>
+    <label>Immagini
+      <select id="theme" style="width:210px"></select>
     </label>
     <button class="sec" id="rnd" type="button">🎲 Nuove cartelle</button>
   </div>
@@ -76,6 +84,7 @@ button.sec { background: #e2e8f0; color: #1e293b; }
     <label class="chk"><input type="checkbox" id="tokens"> Cartellini da ritagliare (per il sacchetto)</label>
     <button id="print" type="button">🖨️ Stampa</button>
   </div>
+  <p style="margin:0 0 6px;font-size:.8rem;color:#64748b">Tombola · ideata e realizzata da Arcangelo Clemente</p>
   <p id="hint" style="margin:0">Per stamparle di nuovo uguali, ricorda il numero della prima serie.</p>
 </div>
 <div class="sheets" id="sheets"></div>
@@ -86,17 +95,23 @@ button.sec { background: #e2e8f0; color: #1e293b; }
   const $ = id => document.getElementById(id);
   const Q = new URLSearchParams(location.search);
   $('mode').value = Q.get('mode') === 'kids' ? 'kids' : 'classic';
-  if (['30', '60', '90'].includes(Q.get('max'))) $('max').value = Q.get('max');
+  if (['20', '30', '60', '90'].includes(Q.get('max'))) $('max').value = Q.get('max');
+  if (['3', '4', '5'].includes(Q.get('cols'))) $('cols').value = Q.get('cols');
+  [['auto', '🎨 Varie (una per cartella)'], ['none', 'Nessuna'], ...TombolaCards.themes.map(t => [t.key, t.emoji[0] + ' ' + t.name])]
+    .forEach(([v, t]) => { const o = document.createElement('option'); o.value = v; o.textContent = t; $('theme').appendChild(o); });
+  if ([...$('theme').options].some(o => o.value === Q.get('theme'))) $('theme').value = Q.get('theme');
   $('first').value = +Q.get('serie') || TombolaCards.randomSerie();
 
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 
-  function cardEl(c) {
+  function cardEl(c, themeKey) {
     const d = el('div', 'card');
     const h = el('h3'); h.append(el('b', null, 'Cartella'), el('span', null, c.id));
-    const gr = el('div', 'grid');
+    const gr = el('div', 'grid' + (c.mode === 'kids' && c.cols > 3 ? ' dense' : ''));
+    if (c.mode === 'kids') gr.style.gridTemplateColumns = `repeat(${c.cols}, 1fr)`;
     c.grid.flat().forEach(n => gr.append(n ? el('div', null, n) : el('div', 'blank')));
-    d.append(h, gr);
+    const art = TombolaCards.artEl(c.id, themeKey, c.mode === 'kids' ? '21pt' : '17pt');
+    if (art) d.append(h, art, gr); else d.append(h, gr);
     return d;
   }
   function sheet(titleRight, cls) {
@@ -106,20 +121,23 @@ button.sec { background: #e2e8f0; color: #1e293b; }
     return s;
   }
   function render() {
-    const mode = $('mode').value, max = +$('max').value;
+    const mode = $('mode').value, max = +$('max').value, cols = +$('cols').value;
     $('maxWrap').classList.toggle('hidden', mode !== 'kids');
+    $('colsWrap').classList.toggle('hidden', mode !== 'kids');
     const pages = Math.max(1, Math.min(20, +$('pages').value || 1));
     const first = Math.max(1, Math.min(99999 - 20, +$('first').value || 1));
     const out = $('sheets'); out.innerHTML = '';
-    const kidsRules = 'Ambo = 2 numeri sulla stessa riga · Terno = 3 numeri sulla stessa riga · Tombola = tutta la cartella.';
-    const classicRules = 'Ambo = 2, Terno = 3, Quaterna = 4, Cinquina = 5 numeri sulla stessa riga · Tombola = tutta la cartella.';
+    const rules = TombolaCards.prizes(mode, cols).filter(p => p.name !== 'Tombola!').map(p => `${p.name} = ${p.n}`).join(', ')
+      + ' numeri sulla stessa riga · Tombola = tutta la cartella.';
     for (let p = 0; p < pages; p++) {
       const serie = first + p;
       const s = sheet(`Nome: ______________________  Classe: ________`, mode === 'kids' ? 'kids' : '');
       const grid = el('div', 'cards');
-      TombolaCards.series(mode, max, serie).forEach(c => grid.append(cardEl(c)));
+      const T = TombolaCards.themes, choice = $('theme').value;
+      TombolaCards.series(mode, max, serie, cols).forEach((c, i) =>
+        grid.append(cardEl(c, choice === 'auto' ? T[(serie * 5 + i) % T.length].key : choice)));
       s.append(grid);
-      s.append(el('footer', null, (mode === 'kids' ? kidsRules : classicRules) + ' Quando hai un premio alza la mano e leggi il codice della cartella.'));
+      s.append(el('footer', null, rules + ' Quando hai un premio alza la mano e leggi il codice della cartella. · Tombola di Arcangelo Clemente'));
       out.append(s);
     }
     const top = mode === 'kids' ? max : 90;
@@ -138,7 +156,7 @@ button.sec { background: #e2e8f0; color: #1e293b; }
     }
     $('hint').textContent = `Serie n. ${first}${pages > 1 ? '–' + (first + pages - 1) : ''}. Per stamparle di nuovo uguali, ricorda il numero della prima serie.`;
   }
-  ['mode', 'max', 'pages', 'first', 'board', 'tokens'].forEach(id => $(id).addEventListener('input', render));
+  ['mode', 'max', 'cols', 'theme', 'pages', 'first', 'board', 'tokens'].forEach(id => $(id).addEventListener('input', render));
   $('rnd').onclick = () => { $('first').value = TombolaCards.randomSerie(); render(); };
   $('print').onclick = () => window.print();
   render();
