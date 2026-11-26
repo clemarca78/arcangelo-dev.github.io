@@ -24,15 +24,17 @@ h1 { font-size: 1.6rem; letter-spacing: .5px; }
 h1 span { color: var(--gold); }
 h2 { font-size: .8rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 10px; }
 .panel { background: var(--glass); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
 .counter { color: var(--muted); font-size: .9rem; }
+.modes { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.modes button.active { background: var(--accent); color: #0b1120; border-color: var(--accent); }
 
 .top { display: grid; gap: 16px; grid-template-columns: 1fr; }
-@media (min-width: 800px) { .top { grid-template-columns: 340px 1fr; } }
+@media (min-width: 800px) { .top { grid-template-columns: 360px 1fr; } }
 
 .draw { text-align: center; }
 .ball {
-  width: 150px; height: 150px; margin: 4px auto 14px; border-radius: 50%;
+  width: 150px; height: 150px; margin: 4px auto 10px; border-radius: 50%;
   display: grid; place-items: center; font-size: 4.2rem; font-weight: 800;
   background: radial-gradient(circle at 32% 28%, #fff 0 14%, var(--gold) 15% 60%, #b45309 100%);
   color: #1e1b4b; box-shadow: 0 10px 30px rgba(251,191,36,.3);
@@ -40,6 +42,14 @@ header { display: flex; justify-content: space-between; align-items: center; fle
 .ball.empty { background: var(--glass); color: var(--muted); box-shadow: none; border: 2px dashed var(--border); }
 .ball.pop { animation: pop .45s ease-out; }
 @keyframes pop { 0% { transform: scale(.3) rotate(-30deg); opacity: 0; } 70% { transform: scale(1.12); } 100% { transform: scale(1); opacity: 1; } }
+
+.info { min-height: 74px; margin-bottom: 12px; }
+.info .words { font-size: 1.5rem; font-weight: 800; color: var(--gold); }
+.info .dec { font-size: .95rem; color: var(--accent); margin: 2px 0 6px; }
+.info .smorf { font-size: 1.05rem; }
+.info .smorf b { font-size: 1.6rem; margin-right: 6px; vertical-align: middle; }
+.info .smorf i { color: var(--muted); font-style: normal; }
+
 .btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
 button {
   font: inherit; font-weight: 600; cursor: pointer; color: var(--text);
@@ -48,6 +58,7 @@ button {
 button:hover { border-color: var(--accent); }
 button.primary { background: linear-gradient(135deg, var(--accent), var(--purple)); border: 0; font-size: 1.1rem; padding: 12px 26px; }
 button:disabled { opacity: .45; cursor: not-allowed; }
+select { font: inherit; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 6px 8px; }
 .opts { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 12px; font-size: .9rem; color: var(--muted); }
 .opts label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
 .history { margin-top: 14px; display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; min-height: 34px; }
@@ -63,13 +74,12 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .board div.last { outline: 3px solid var(--pink); outline-offset: 1px; }
 
 .prizes { display: flex; gap: 8px; flex-wrap: wrap; }
-.prize { flex: 1 1 140px; border: 1px solid var(--border); border-radius: 12px; padding: 10px; text-align: center; font-size: .85rem; color: var(--muted); }
+.prize { flex: 1 1 120px; border: 1px solid var(--border); border-radius: 12px; padding: 10px; text-align: center; font-size: .85rem; color: var(--muted); }
 .prize b { display: block; font-size: 1rem; color: var(--text); }
 .prize.won { border-color: var(--gold); background: rgba(251,191,36,.12); color: var(--gold); }
 .prize.won b { color: var(--gold); }
 
 .cards-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
-.cards-bar select { font: inherit; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px; }
 .cards { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
 .card { background: #fef3c7; color: #1e1b4b; border-radius: 12px; padding: 10px; box-shadow: 0 6px 18px rgba(0,0,0,.35); }
 .card h3 { font-size: .8rem; margin-bottom: 6px; display: flex; justify-content: space-between; }
@@ -79,23 +89,64 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .grid div.blank { background: rgba(30,27,75,.18); }
 .grid div.hit { background: var(--pink); color: #fff; }
 
+/* modalità bambini */
+.kids .grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.kids .grid div { font-size: 2rem; border-radius: 14px; background: #fff; border: 3px solid #fbbf24; cursor: pointer; user-select: none; }
+.kids .grid div.hit { background: var(--pink); border-color: #be185d; }
+.kids .card { background: linear-gradient(160deg, #fde68a, #fbcfe8); border-radius: 18px; }
+.kids .card h3 { font-size: 1.05rem; }
+.kids .cards { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.kids .ball { width: 180px; height: 180px; font-size: 5.5rem; }
+.kids .info .words { font-size: 2.2rem; }
+.kids .info .dec { font-size: 1.15rem; }
+.kids .info .smorf { font-size: 1.25rem; }
+.kids .info .smorf b { font-size: 2.6rem; }
+.kids .board div { font-size: clamp(.9rem, 3vw, 1.5rem); }
+.shake { animation: shake .35s; }
+@keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+.only-kids { display: none; }
+.kids .only-kids { display: flex; }
+
+#toast {
+  position: fixed; left: 50%; top: 24px; transform: translate(-50%, -150%); z-index: 10;
+  background: var(--gold); color: #1e1b4b; font-weight: 800; font-size: 1.4rem;
+  padding: 14px 26px; border-radius: 40px; box-shadow: 0 10px 30px rgba(0,0,0,.5);
+  transition: transform .4s; text-align: center; max-width: 92vw;
+}
+#toast.show { transform: translate(-50%, 0); }
+
 #log { max-height: 130px; overflow: auto; font-size: .9rem; display: grid; gap: 4px; }
 #log div { color: var(--muted); }
 #log div.win { color: var(--gold); font-weight: 700; }
 .hint { font-size: .8rem; color: var(--muted); text-align: center; }
+
+details summary { cursor: pointer; font-weight: 600; }
+.smgrid { display: grid; gap: 4px 16px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); margin-top: 12px; font-size: .9rem; }
+.smgrid div { padding: 3px 0; border-bottom: 1px solid var(--border); }
+.smgrid b { display: inline-block; min-width: 28px; color: var(--gold); }
+.smgrid i { color: var(--muted); font-style: normal; }
 </style>
 </head>
 <body>
+<div id="toast"></div>
 <main>
   <header>
     <h1>🎱 <span>Tombola</span></h1>
-    <div class="counter" id="counter">Estratti: 0 / 90</div>
+    <div class="modes">
+      <button id="modeClassic">Classica</button>
+      <button id="modeKids">🧒 Bambini</button>
+      <label class="only-kids" style="gap:6px;align-items:center;color:var(--muted);font-size:.9rem">Numeri fino a
+        <select id="maxSel"><option value="30">30</option><option value="60">60</option><option value="90">90</option></select>
+      </label>
+    </div>
+    <div class="counter" id="counter"></div>
   </header>
 
   <section class="top">
     <div class="panel draw">
       <h2>Estrazione</h2>
       <div class="ball empty" id="ball">–</div>
+      <div class="info" id="info"></div>
       <div class="btns">
         <button class="primary" id="drawBtn">Estrai</button>
         <button id="autoBtn">▶ Auto</button>
@@ -103,11 +154,13 @@ button:disabled { opacity: .45; cursor: not-allowed; }
       </div>
       <div class="opts">
         <label><input type="checkbox" id="speak" checked> Voce</label>
+        <label><input type="checkbox" id="smorfia" checked> Smorfia</label>
+        <label class="only-kids"><input type="checkbox" id="autoMark"> Segna da solo</label>
         <label>Ritmo
           <select id="speed">
-            <option value="2000">Veloce</option>
-            <option value="4000" selected>Normale</option>
-            <option value="7000">Lento</option>
+            <option value="2500">Veloce</option>
+            <option value="5000" selected>Normale</option>
+            <option value="8000">Lento</option>
           </select>
         </label>
       </div>
@@ -134,38 +187,160 @@ button:disabled { opacity: .45; cursor: not-allowed; }
         <select id="nCards"></select>
       </label>
       <button id="newCards">Cambia cartelle</button>
-      <span class="hint">I numeri estratti si segnano da soli.</span>
+      <span class="hint" id="cardsHint"></span>
     </div>
     <div class="cards" id="cards"></div>
+  </section>
+
+  <section class="panel">
+    <details>
+      <summary>📖 Tutta la smorfia napoletana</summary>
+      <div class="smgrid" id="smgrid"></div>
+    </details>
   </section>
 </main>
 
 <script>
 (() => {
-  const PRIZES = [
-    { n: 2, name: 'Ambo' }, { n: 3, name: 'Terno' }, { n: 4, name: 'Quaterna' },
-    { n: 5, name: 'Cinquina' }, { n: 15, name: 'Tombola!' }
-  ];
-  const KEY = 'tombola-proto-v1';
+  // ---------- La smorfia napoletana ----------
+  // dialetto | italiano | emoji [| italiano per bambini | emoji per bambini]
+  // Per i bambini alcune voci sono sostituite con versioni adatte alla scuola primaria.
+  const SMORFIA_RAW = `
+L'Italia|l'Italia|🇮🇹
+'A piccerella|la bambina|👧
+'A jatta|la gatta|🐈
+'O puorco|il maiale|🐖
+'A mano|la mano|✋
+Chella che guarda 'nterra|quella che guarda per terra|👀
+'O vasetto|il vasetto|🏺
+'A Maronna|la Madonna|🙏
+'A figliata|la prole|👶
+'E fasule|i fagioli|🫘
+'E suricille|i topolini|🐭
+'O surdato|il soldato|💂
+Sant'Antonio|Sant'Antonio|😇
+'O mbriaco|l'ubriaco|🥴|il pagliaccio|🤡
+'O guaglione|il ragazzo|👦
+'O culo|il sedere|🍑|il giocoliere|🤹
+'A disgrazia|la disgrazia|⛈️
+'O sanghe|il sangue|🩸|il cuore|❤️
+'A resata|la risata|😂
+'A festa|la festa|🎉
+'A femmena annura|la donna nuda|🙈|la signora elegante|💃
+'O pazzo|il pazzo|🤪
+'O scemo|lo scemo|😜
+'E gguardie|le guardie|👮
+Natale|Natale|🎄
+Nanninella|Annina|👩
+'O cantero|il pitale|🚽|il vasino|🚽
+'E zzizze|il seno|🍈|le campane|🔔
+'O pate d''e criature|il padre dei bambini|👨‍👧
+'E palle d''o tenente|le palle del tenente|🎖️|il tenente|🎖️
+'O padrone 'e casa|il padrone di casa|🏠
+'O capitone|il capitone|🐍
+Ll'anne 'e Cristo|gli anni di Cristo|✝️
+'A capa|la testa|🧠
+L'aucelluzzo|l'uccellino|🐦
+'E castagnelle|le nacchere|🪘
+'O monaco|il monaco|🧘
+'E mmazzate|le botte|👊|il tamburo|🥁
+'A funa 'nganna|la corda al collo|🪢|la corda|🪢
+'A passione|la passione|❤️‍🔥
+'O curtiello|il coltello|🔪
+'O ccafè|il caffè|☕
+'Onna pereta fore 'o balcone|la donna al balcone|🪟
+'E ccancelle|le carceri|⛓️|il cancello|🚧
+'O vino bbuono|il vino buono|🍷|il succo buono|🧃
+'E denare|i soldi|💰
+'O muorto|il morto|💀|il fantasma|👻
+'O muorto che parla|il morto che parla|🗣️|il fantasma che parla|👻
+'O piezzo 'e carne|il pezzo di carne|🥩
+'O ppane|il pane|🍞
+'O ciardino|il giardino|🌳
+'A mamma|la mamma|👩‍👧
+'O viecchio|il vecchio|👴
+'O cappiello|il cappello|🎩
+'A museca|la musica|🎵
+'A caruta|la caduta|🤕
+'O scartellato|il gobbo|🐪|il cammello|🐪
+'O paccotto|il pacco|📦
+'E pile|i peli|🧶
+Se lamenta|si lamenta|😩
+'O cacciatore|il cacciatore|🏹
+'O muorto acciso|il morto ammazzato|🔦|il detective|🕵️
+'A sposa|la sposa|👰
+'A sciammeria|la marsina|🤵
+'O chianto|il pianto|😭
+'E ddoie zetelle|le due zitelle|👭
+'O totaro int''a chitarra|il totano nella chitarra|🦑
+'A zuppa cotta|la zuppa cotta|🍲
+Sott'e 'ncoppa|sottosopra|🙃
+'O palazzo|il palazzo|🏢
+L'ommo 'e merda|l'uomo da poco|🫥|l'ometto|🧍
+'A maraviglia|la meraviglia|✨
+'O spitale|l'ospedale|🏥
+'A rotta|la grotta|🪨
+Pulecenella|Pulcinella|🎭
+'A funtana|la fontana|⛲
+'E riavulille|i diavoletti|😈
+'A bella figliola|la bella ragazza|👸
+'O mariuolo|il ladro|🦹
+'A vocca|la bocca|👄
+'E sciure|i fiori|🌸
+'A tavula 'mbandita|la tavola imbandita|🍽️
+'O maletiempo|il maltempo|🌧️
+'A chiesa|la chiesa|⛪
+L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
+'A puteca|la bottega|🏪
+'E perucchie|i pidocchi|🪲
+'E casecavalle|i caciocavalli|🧀
+'A vecchia|la vecchia|👵
+'A paura|la paura|😱`.trim().split('\n');
+  // SMORFIA[n] = { d: dialetto, it, e, kit, ke, soft }
+  const SMORFIA = [null, ...SMORFIA_RAW.map(l => {
+    const [d, it, e, kit, ke] = l.split('|');
+    return { d, it, e, kit: kit || it, ke: ke || e, soft: !!kit };
+  })];
+
+  // ---------- numeri in lettere ----------
+  const U = ['', 'uno', 'due', 'tre', 'quattro', 'cinque', 'sei', 'sette', 'otto', 'nove', 'dieci', 'undici', 'dodici', 'tredici', 'quattordici', 'quindici', 'sedici', 'diciassette', 'diciotto', 'diciannove'];
+  const T = ['', '', 'venti', 'trenta', 'quaranta', 'cinquanta', 'sessanta', 'settanta', 'ottanta', 'novanta'];
+  function words(n) {
+    if (n < 20) return U[n];
+    const t = Math.floor(n / 10), u = n % 10;
+    let b = T[t];
+    if (u === 1 || u === 8) b = b.slice(0, -1);
+    return b + (u === 3 ? 'tré' : U[u]);
+  }
+  function decomp(n) {
+    const t = Math.floor(n / 10), u = n % 10;
+    const d = t ? `${t} ${t === 1 ? 'decina' : 'decine'}` : '';
+    const un = u ? `${u} ${u === 1 ? 'unità' : 'unità'}` : '';
+    return [d, un].filter(Boolean).join(' + ');
+  }
+
+  // ---------- stato ----------
+  const KEY = 'tombola-proto-v2';
   const $ = id => document.getElementById(id);
-
-  let state = { drawn: [], cards: [], won: {} };   // won: { n: "Cartella X" }
+  let state = { mode: 'classic', max: 90, drawn: [], cards: [], marks: [], won: {}, autoMark: false };
   let timer = null;
+  const kids = () => state.mode === 'kids';
+  const prizes = () => kids()
+    ? [{ n: 2, name: 'Ambo' }, { n: 3, name: 'Terno' }, { n: 9, name: 'Tombola!' }]
+    : [{ n: 2, name: 'Ambo' }, { n: 3, name: 'Terno' }, { n: 4, name: 'Quaterna' }, { n: 5, name: 'Cinquina' }, { n: 15, name: 'Tombola!' }];
 
-  // ---------- persistenza (best effort) ----------
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
   const load = () => {
     try {
       const s = JSON.parse(localStorage.getItem(KEY));
-      if (s && Array.isArray(s.drawn) && Array.isArray(s.cards)) state = s;
+      if (s && Array.isArray(s.drawn) && Array.isArray(s.cards) && s.cards.length) state = Object.assign(state, s);
     } catch (e) {}
   };
 
-  // ---------- generazione cartella ----------
-  // 3 righe x 9 colonne, 5 numeri per riga, 15 totali, 1..3 numeri per colonna,
-  // numeri crescenti verso il basso. Colonna c: 1-9, 10-19, ... 80-90.
+  // ---------- cartelle ----------
   const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-  function newCard() {
+  // Classica: 3x9, 5 numeri per riga, 1..3 per colonna, crescenti verso il basso.
+  function classicCard() {
     let layout;
     for (;;) {
       layout = [0, 1, 2].map(() => shuffle([...Array(9).keys()]).slice(0, 5));
@@ -183,50 +358,77 @@ button:disabled { opacity: .45; cursor: not-allowed; }
     }
     return grid;
   }
+  // Bambini: 3x3, 9 numeri diversi presi da 1..max, ordinati per colonna.
+  function kidCard(max) {
+    const pool = []; for (let n = 1; n <= max; n++) pool.push(n);
+    const nums = shuffle(pool).slice(0, 9).sort((a, b) => a - b);
+    return [0, 1, 2].map(r => [0, 1, 2].map(c => nums[c * 3 + r]));
+  }
+  function makeCards() {
+    const n = +$('nCards').value;
+    state.cards = Array.from({ length: n }, () => kids() ? kidCard(state.max) : classicCard());
+    state.marks = state.cards.map(() => []);
+    state.won = {};
+    checkPrizes();
+  }
+
+  // numeri considerati "segnati" su una cartella
+  function marked(i) {
+    const out = new Set(state.drawn);
+    if (!kids() || state.autoMark) return out;
+    return new Set(state.marks[i]);
+  }
 
   // ---------- estrazione ----------
-  function remaining() {
-    const out = new Set(state.drawn);
-    const r = []; for (let n = 1; n <= 90; n++) if (!out.has(n)) r.push(n);
-    return r;
-  }
   function draw() {
-    const r = remaining();
+    const out = new Set(state.drawn), r = [];
+    for (let n = 1; n <= state.max; n++) if (!out.has(n)) r.push(n);
     if (!r.length) { stopAuto(); return; }
     const n = r[Math.floor(Math.random() * r.length)];
     state.drawn.push(n);
     say(n);
     checkPrizes();
     save(); render(true);
-    if (state.drawn.length === 90) stopAuto();
+    if (state.drawn.length >= state.max) stopAuto();
+  }
+  function entry(n) {
+    const s = SMORFIA[n];
+    return kids() ? { it: s.kit, e: s.ke, d: s.soft ? '' : s.d } : { it: s.it, e: s.e, d: s.d };
   }
   function say(n) {
     if (!$('speak').checked || !('speechSynthesis' in window)) return;
     try {
-      const u = new SpeechSynthesisUtterance(String(n));
-      u.lang = 'it-IT'; speechSynthesis.cancel(); speechSynthesis.speak(u);
+      let t = kids() ? words(n) : String(n);
+      if ($('smorfia').checked) t += '. ' + entry(n).it;
+      const u = new SpeechSynthesisUtterance(t);
+      u.lang = 'it-IT'; u.rate = kids() ? .85 : .95;
+      speechSynthesis.cancel(); speechSynthesis.speak(u);
     } catch (e) {}
   }
 
   // ---------- premi ----------
-  // Ambo/terno/quaterna/cinquina valgono su una singola riga di una cartella; tombola = 15.
+  // Ambo/terno/quaterna/cinquina valgono su una riga; tombola = tutta la cartella.
   function checkPrizes() {
-    const out = new Set(state.drawn);
+    const size = kids() ? 9 : 15;
     state.cards.forEach((g, i) => {
-      const best = Math.max(...g.map(r => r.filter(n => n && out.has(n)).length));
-      const total = g.flat().filter(n => n && out.has(n)).length;
-      PRIZES.forEach(p => {
+      const m = marked(i);
+      const best = Math.max(...g.map(r => r.filter(n => n && m.has(n)).length));
+      const total = g.flat().filter(n => n && m.has(n)).length;
+      prizes().forEach(p => {
         if (state.won[p.n]) return;
-        const ok = p.n === 15 ? total === 15 : best >= p.n;
-        if (ok) {
+        if (p.n === size ? total === size : best >= p.n) {
           state.won[p.n] = 'Cartella ' + (i + 1);
           log(`🎉 ${p.name} alla ${state.won[p.n]}!`, true);
+          toast(`🎉 ${p.name} alla Cartella ${i + 1}!`);
         }
       });
     });
   }
-
-  // ---------- log ----------
+  let toastT;
+  function toast(t) {
+    const el = $('toast'); el.textContent = t; el.classList.add('show');
+    clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('show'), 3200);
+  }
   const logLines = [];
   function log(t, win) {
     logLines.unshift({ t, win });
@@ -235,17 +437,41 @@ button:disabled { opacity: .45; cursor: not-allowed; }
   }
 
   // ---------- rendering ----------
+  function renderInfo(last) {
+    const el = $('info'); el.innerHTML = '';
+    if (!last) return;
+    const e = entry(last);
+    let h = '';
+    if (kids()) {
+      h += `<div class="words">${words(last)}</div>`;
+      h += `<div class="dec">${decomp(last)} · ${last % 2 ? 'dispari' : 'pari'}</div>`;
+    }
+    if ($('smorfia').checked) {
+      h += `<div class="smorf"><b>${e.e}</b>${e.d ? e.d + ' <i>— ' + e.it + '</i>' : e.it}</div>`;
+    }
+    el.innerHTML = h;
+  }
   function render(animate) {
+    document.body.classList.toggle('kids', kids());
+    $('modeClassic').classList.toggle('active', !kids());
+    $('modeKids').classList.toggle('active', kids());
+    $('maxSel').value = state.max;
+    $('autoMark').checked = !!state.autoMark;
+    $('cardsHint').textContent = kids() && !state.autoMark
+      ? 'Tocca i numeri sulla cartella quando escono!'
+      : 'I numeri estratti si segnano da soli.';
+
     const out = new Set(state.drawn), last = state.drawn[state.drawn.length - 1];
     const ball = $('ball');
     ball.textContent = last || '–';
     ball.className = 'ball' + (last ? '' : ' empty');
     if (animate && last) { void ball.offsetWidth; ball.classList.add('pop'); }
-    $('counter').textContent = `Estratti: ${state.drawn.length} / 90`;
-    $('drawBtn').disabled = state.drawn.length >= 90;
+    renderInfo(last);
+    $('counter').textContent = `Estratti: ${state.drawn.length} / ${state.max}`;
+    $('drawBtn').disabled = state.drawn.length >= state.max;
 
     $('board').innerHTML = '';
-    for (let n = 1; n <= 90; n++) {
+    for (let n = 1; n <= state.max; n++) {
       const d = document.createElement('div');
       d.textContent = n;
       if (out.has(n)) d.className = 'out' + (n === last ? ' last' : '');
@@ -256,7 +482,7 @@ button:disabled { opacity: .45; cursor: not-allowed; }
     state.drawn.slice(-8, -1).reverse().forEach(n => { const s = document.createElement('span'); s.textContent = n; $('history').appendChild(s); });
 
     $('prizes').innerHTML = '';
-    PRIZES.forEach(p => {
+    prizes().forEach(p => {
       const d = document.createElement('div');
       const w = state.won[p.n];
       d.className = 'prize' + (w ? ' won' : '');
@@ -264,57 +490,101 @@ button:disabled { opacity: .45; cursor: not-allowed; }
       $('prizes').appendChild(d);
     });
 
+    const size = kids() ? 9 : 15;
     $('cards').innerHTML = '';
     state.cards.forEach((g, i) => {
-      const hits = g.flat().filter(n => n && out.has(n)).length;
+      const m = marked(i);
+      const hits = g.flat().filter(n => n && m.has(n)).length;
       const c = document.createElement('div'); c.className = 'card';
-      c.innerHTML = `<h3>Cartella ${i + 1}<em>${hits}/15</em></h3>`;
+      c.innerHTML = `<h3>Cartella ${i + 1}<em>${hits}/${size}</em></h3>`;
       const gr = document.createElement('div'); gr.className = 'grid';
       g.flat().forEach(n => {
         const d = document.createElement('div');
-        if (!n) d.className = 'blank'; else { d.textContent = n; if (out.has(n)) d.className = 'hit'; }
+        if (!n) d.className = 'blank';
+        else {
+          d.textContent = n; d.dataset.n = n; d.dataset.card = i;
+          if (m.has(n)) d.className = 'hit';
+        }
         gr.appendChild(d);
       });
       c.appendChild(gr); $('cards').appendChild(c);
     });
+
+    renderSmorfia();
   }
+  function renderSmorfia() {
+    const el = $('smgrid'); el.innerHTML = '';
+    for (let n = 1; n <= 90; n++) {
+      const e = entry(n);
+      const d = document.createElement('div');
+      d.innerHTML = `<b>${n}</b> ${e.e} ${e.d ? e.d + ' <i>— ' + e.it + '</i>' : e.it}`;
+      el.appendChild(d);
+    }
+  }
+
+  // ---------- tocco sulla cartella (modalità bambini) ----------
+  $('cards').addEventListener('click', ev => {
+    const t = ev.target.closest('[data-n]');
+    if (!t || !kids() || state.autoMark) return;
+    const n = +t.dataset.n, i = +t.dataset.card;
+    if (!state.drawn.includes(n)) {
+      t.classList.remove('shake'); void t.offsetWidth; t.classList.add('shake');
+      toast(`Il ${n} non è ancora uscito! 🔍`);
+      return;
+    }
+    if (!state.marks[i].includes(n)) state.marks[i].push(n);
+    checkPrizes(); save(); render();
+  });
 
   // ---------- controlli ----------
   function stopAuto() { clearInterval(timer); timer = null; $('autoBtn').textContent = '▶ Auto'; }
   function toggleAuto() {
     if (timer) return stopAuto();
-    if (state.drawn.length >= 90) return;
+    if (state.drawn.length >= state.max) return;
     $('autoBtn').textContent = '⏸ Pausa';
     draw(); timer = setInterval(draw, +$('speed').value);
   }
-  function makeCards() {
-    state.cards = Array.from({ length: +$('nCards').value }, newCard);
-    state.won = {}; // premi ricalcolati sulle nuove cartelle
-    checkPrizes();
-  }
-  function reset() {
+  function reset(msg) {
     stopAuto();
-    state.drawn = []; state.won = {}; logLines.length = 0; log('Nuova partita. Buona fortuna!');
+    try { speechSynthesis.cancel(); } catch (e) {}
+    state.drawn = []; state.won = {}; logLines.length = 0;
+    log(msg || 'Nuova partita. Buona fortuna!');
     makeCards(); save(); render();
+  }
+  function setMode(m) {
+    if (state.mode === m) return;
+    if (state.drawn.length && !confirm('Cambiando modalità inizia una nuova partita. Continuare?')) return;
+    state.mode = m;
+    state.max = m === 'kids' ? 30 : 90;
+    state.autoMark = false;
+    $('nCards').value = 2;
+    reset();
   }
 
   $('drawBtn').onclick = draw;
   $('autoBtn').onclick = toggleAuto;
   $('resetBtn').onclick = () => { if (!state.drawn.length || confirm('Iniziare una nuova partita?')) reset(); };
   $('newCards').onclick = () => { makeCards(); save(); render(); };
+  $('nCards').onchange = () => { makeCards(); save(); render(); };
   $('speed').onchange = () => { if (timer) { stopAuto(); toggleAuto(); } };
+  $('smorfia').onchange = () => render();
+  $('modeClassic').onclick = () => setMode('classic');
+  $('modeKids').onclick = () => setMode('kids');
+  $('maxSel').onchange = () => {
+    if (state.drawn.length && !confirm('Cambiando l\'intervallo inizia una nuova partita. Continuare?')) { $('maxSel').value = state.max; return; }
+    state.max = +$('maxSel').value; reset();
+  };
+  $('autoMark').onchange = () => { state.autoMark = $('autoMark').checked; checkPrizes(); save(); render(); };
   document.addEventListener('keydown', e => {
     if (e.code === 'Space' && !/SELECT|INPUT|BUTTON/.test(e.target.tagName)) { e.preventDefault(); draw(); }
   });
 
   for (let i = 1; i <= 6; i++) { const o = document.createElement('option'); o.value = i; o.textContent = i; $('nCards').appendChild(o); }
   $('nCards').value = 2;
-  $('nCards').onchange = () => { makeCards(); save(); render(); };
 
   load();
-  if (!state.cards.length) makeCards();
-  else $('nCards').value = state.cards.length;
-  if (!logLines.length) log(state.drawn.length ? 'Partita ripresa.' : 'Premi "Estrai" per iniziare.');
+  if (!state.cards.length) makeCards(); else $('nCards').value = state.cards.length;
+  log(state.drawn.length ? 'Partita ripresa.' : 'Premi "Estrai" per iniziare.');
   render();
 })();
 </script>
