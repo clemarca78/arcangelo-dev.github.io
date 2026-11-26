@@ -108,7 +108,7 @@ select { font: inherit; background: var(--bg); color: var(--text); border: 1px s
 .kids .only-kids { display: flex; }
 .opt-auto { display: none; }
 .kids .opt-auto, .player .opt-auto { display: flex; }
-body.player .host-only, body.inroom .host-cards, body.nojoin .needs-join { display: none !important; }
+body.player .host-only, body.inroom .host-cards, body.paper .host-cards, body.nojoin .needs-join { display: none !important; }
 #joinPanel { display: none; max-width: 420px; margin: 0 auto; width: 100%; text-align: center; }
 body.nojoin #joinPanel { display: block; }
 #joinPanel input { width: 100%; margin: 10px 0; font-size: 1.2rem; text-align: center; }
@@ -125,6 +125,11 @@ input[type=text] { font: inherit; background: var(--bg); color: var(--text); bor
 .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); flex: none; }
 .dot.on { background: var(--green); }
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+.chk-card { margin-top: 12px; display: grid; gap: 10px; }
+.chk-card .card { max-width: 420px; }
+.verdict { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.verdict .ok { color: var(--gold); font-weight: 700; }
+.verdict .no { color: var(--muted); }
 .err { color: var(--pink); font-size: .9rem; margin-top: 8px; }
 
 #toast {
@@ -171,6 +176,20 @@ details summary { cursor: pointer; font-weight: 600; }
   <section class="panel host-only" id="roomPanel">
     <h2>Multiplayer</h2>
     <div id="roomBody"></div>
+  </section>
+
+  <section class="panel host-only" id="paperPanel">
+    <h2>Cartelle di carta</h2>
+    <p class="hint" style="text-align:left;margin-bottom:10px">A scuola senza dispositivi? Stampa le cartelle, i bambini segnano i numeri a mano. Quando qualcuno chiama un premio, digita il codice scritto sulla sua cartella e controlla.</p>
+    <div class="row" style="margin-top:0">
+      <button id="printBtn" class="primary" style="font-size:1rem;padding:10px 18px">🖨️ Stampa cartelle</button>
+      <label class="opts" style="margin:0"><input type="checkbox" id="paper"> Gioco con le cartelle di carta (nascondi le mie cartelle)</label>
+    </div>
+    <div class="row">
+      <input type="text" id="chkId" placeholder="Codice cartella (es. C4821-3)" maxlength="14" size="26" autocomplete="off">
+      <button id="chkBtn">Controlla</button>
+    </div>
+    <div id="chkOut"></div>
   </section>
 
   <section class="top needs-join">
@@ -231,6 +250,7 @@ details summary { cursor: pointer; font-weight: 600; }
   </section>
 </main>
 
+<script src="cartelle.js"></script>
 <script src="lib/peerjs.min.js"></script>
 <script src="lib/qrcode.js"></script>
 <script>
@@ -358,12 +378,13 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   const isPlayer = !!ROOM_CODE;
   const KEY = isPlayer ? 'tombola-player-' + ROOM_CODE : 'tombola-proto-v2';
   const $ = id => document.getElementById(id);
-  let state = { mode: 'classic', max: 90, drawn: [], cards: [], marks: [], won: {}, autoMark: false, gen: 0, room: null, token: '', pname: '' };
+  let state = { mode: 'classic', max: 90, drawn: [], cards: [], marks: [], won: {}, autoMark: false, gen: 0, room: null, token: '', pname: '', paper: false };
   let timer = null;
   const kids = () => state.mode === 'kids';
-  const prizes = () => kids()
+  const prizesFor = m => m === 'kids'
     ? [{ n: 2, name: 'Ambo' }, { n: 3, name: 'Terno' }, { n: 9, name: 'Tombola!' }]
     : [{ n: 2, name: 'Ambo' }, { n: 3, name: 'Terno' }, { n: 4, name: 'Quaterna' }, { n: 5, name: 'Cinquina' }, { n: 15, name: 'Tombola!' }];
+  const prizes = () => prizesFor(state.mode);
 
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
   const load = () => {
@@ -447,7 +468,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   // ---------- premi ----------
   // Ambo/terno/quaterna/cinquina valgono su una riga; tombola = tutta la cartella.
   function checkPrizes() {
-    if (isPlayer || state.room) return; // in stanza i premi si assegnano a chiamata
+    if (isPlayer || state.room || state.paper) return; // in stanza o con cartelle di carta i premi si assegnano a chiamata
     const size = kids() ? 9 : 15;
     state.cards.forEach((g, i) => {
       const m = marked(i);
@@ -492,6 +513,8 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   }
   function render(animate) {
     document.body.classList.toggle('kids', kids());
+    document.body.classList.toggle('paper', !!state.paper && !isPlayer);
+    $('paper').checked = !!state.paper;
     $('modeClassic').classList.toggle('active', !kids());
     $('modeKids').classList.toggle('active', kids());
     $('maxSel').value = state.max;
@@ -837,6 +860,45 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if (state.pname) playerConnect(); else document.body.classList.add('nojoin');
     render();
   }
+
+  // ---------- controllo di una cartella di carta ----------
+  function checkPaperCard() {
+    const out = $('chkOut'); out.innerHTML = '';
+    const c = TombolaCards.cardFromId($('chkId').value);
+    if (!c) { out.append(el('div', 'err', 'Codice non valido. Esempio: C4821-3 (classica) oppure B30-4821-3 (bambini).')); return; }
+    const m = new Set(state.drawn), size = c.mode === 'kids' ? 9 : 15;
+    const best = Math.max(...c.grid.map(r => r.filter(n => n && m.has(n)).length));
+    const total = c.grid.flat().filter(n => n && m.has(n)).length;
+    const box = el('div', 'chk-card');
+    if (c.mode !== state.mode || (c.mode === 'kids' && c.max !== state.max))
+      box.append(el('div', 'err', 'Attenzione: questa cartella è di un\'altra modalità rispetto alla partita in corso.'));
+    const card = el('div', 'card'), h = el('h3'); h.append(el('b', null, 'Cartella ' + c.id), el('em', null, `${total}/${size}`));
+    const gr = el('div', 'grid');
+    c.grid.flat().forEach(n => { const d = el('div', n && m.has(n) ? 'hit' : (n ? '' : 'blank'), n || ''); gr.append(d); });
+    card.append(h, gr); box.append(card);
+    const v = el('div', 'verdict');
+    prizesFor(c.mode).forEach(p => {
+      const ok = p.n === size ? total === size : best >= p.n;
+      const won = state.won[p.n];
+      const tag = el('span', ok ? 'ok' : 'no', (ok ? '✔ ' : '✘ ') + p.name + (won ? ' (già assegnato)' : ''));
+      v.append(tag);
+      if (ok && !won && c.mode === state.mode) {
+        const b = el('button', null, 'Assegna ' + p.name);
+        b.onclick = () => {
+          state.won[p.n] = 'Cartella ' + c.id;
+          const text = `🎉 ${p.name} alla cartella ${c.id}!`;
+          log(text, true); toast(text); if (state.room) broadcastMsg({ t: 'toast', text });
+          save(); render(); broadcast(); checkPaperCard();
+        };
+        v.append(b);
+      }
+    });
+    box.append(v); out.append(box);
+  }
+  $('printBtn').onclick = () => window.open(`stampa.html?mode=${state.mode}&max=${state.max}&serie=${TombolaCards.randomSerie()}`, '_blank');
+  $('chkBtn').onclick = checkPaperCard;
+  $('chkId').onkeydown = e => { if (e.key === 'Enter') checkPaperCard(); };
+  $('paper').onchange = () => { state.paper = $('paper').checked; save(); render(); };
 
   load();
   if (isPlayer) {

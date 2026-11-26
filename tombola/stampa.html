@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tombola – Stampa cartelle</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: #e2e8f0; color: #111; }
+.controls { max-width: 900px; margin: 0 auto; padding: 16px; background: #fff; border-bottom: 2px solid #cbd5e1; }
+.controls h1 { font-size: 1.3rem; margin-bottom: 4px; }
+.controls p { color: #475569; font-size: .9rem; margin-bottom: 12px; }
+.row { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 10px; }
+label { display: grid; gap: 4px; font-size: .85rem; color: #334155; font-weight: 600; }
+label.chk { display: flex; align-items: center; gap: 6px; font-weight: 500; }
+select, input[type=number] { font: inherit; padding: 8px; border: 1px solid #94a3b8; border-radius: 8px; width: 120px; }
+button { font: inherit; font-weight: 700; padding: 10px 18px; border-radius: 10px; border: 0; cursor: pointer; background: #2563eb; color: #fff; }
+button.sec { background: #e2e8f0; color: #1e293b; }
+.hidden { display: none !important; }
+
+.sheets { padding: 16px 0; display: grid; gap: 16px; justify-content: center; }
+.sheet { width: 210mm; min-height: 297mm; background: #fff; padding: 9mm 10mm; box-shadow: 0 4px 16px rgba(0,0,0,.2); display: flex; flex-direction: column; }
+.sheet header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #111; padding-bottom: 2mm; margin-bottom: 4mm; font-size: 11pt; }
+.sheet header b { font-size: 15pt; letter-spacing: 1px; }
+.cards { flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 1fr); gap: 5mm 6mm; }
+.card { border: 1.6px solid #111; border-radius: 2mm; padding: 2mm; display: flex; flex-direction: column; break-inside: avoid; }
+.card h3 { display: flex; justify-content: space-between; font-size: 9pt; margin-bottom: 1.5mm; }
+.card h3 span { font-family: ui-monospace, Menlo, Consolas, monospace; font-weight: 700; }
+.grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 0; border: 1.2px solid #111; flex: 1; }
+.grid div { display: grid; place-items: center; border: .6px solid #555; font-weight: 800; font-size: 15pt; }
+.grid div.blank {
+  background: repeating-linear-gradient(45deg, #fff 0 1.2mm, #bbb 1.2mm 1.5mm);
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+.kids .grid { grid-template-columns: repeat(3, 1fr); }
+.kids .grid div { font-size: 30pt; border-width: 1px; }
+.sheet footer { margin-top: 3mm; font-size: 8.5pt; color: #333; border-top: 1px solid #999; padding-top: 2mm; }
+
+.board { flex: 1; display: grid; grid-template-columns: repeat(10, 1fr); gap: 0; border: 1.5px solid #111; margin-top: 2mm; }
+.board div { display: grid; place-items: center; border: .6px solid #555; font-weight: 800; font-size: 22pt; }
+.tokens { flex: 1; display: grid; grid-template-columns: repeat(6, 1fr); gap: 0; align-content: start; }
+.tokens div { height: 24mm; display: grid; place-items: center; border: 1px dashed #666; font-weight: 800; font-size: 30pt; }
+
+@page { size: A4 portrait; margin: 0; }
+@media print {
+  body { background: #fff; }
+  .controls { display: none; }
+  .sheets { padding: 0; gap: 0; display: block; }
+  .sheet { box-shadow: none; page-break-after: always; break-after: page; margin: 0; width: 210mm; height: 297mm; min-height: 0; overflow: hidden; }
+  .sheet:last-child { page-break-after: auto; break-after: auto; }
+}
+</style>
+</head>
+<body>
+<div class="controls">
+  <h1>🖨️ Stampa le cartelle della tombola</h1>
+  <p>Ogni pagina A4 ha una serie di 6 cartelle. Nella modalità classica le 6 cartelle insieme contengono tutti i numeri da 1 a 90.
+     Ogni cartella ha un <b>codice</b>: la maestra lo digita nella pagina del gioco per controllare i premi.</p>
+  <div class="row">
+    <label>Modalità
+      <select id="mode"><option value="classic">Classica (1–90)</option><option value="kids">Bambini (3×3)</option></select>
+    </label>
+    <label id="maxWrap">Numeri fino a
+      <select id="max"><option>30</option><option>60</option><option>90</option></select>
+    </label>
+    <label>Pagine (serie)
+      <input type="number" id="pages" min="1" max="20" value="2">
+    </label>
+    <label>Prima serie n.
+      <input type="number" id="first" min="1" max="99999">
+    </label>
+    <button class="sec" id="rnd" type="button">🎲 Nuove cartelle</button>
+  </div>
+  <div class="row">
+    <label class="chk"><input type="checkbox" id="board"> Tabellone da segnare</label>
+    <label class="chk"><input type="checkbox" id="tokens"> Cartellini da ritagliare (per il sacchetto)</label>
+    <button id="print" type="button">🖨️ Stampa</button>
+  </div>
+  <p id="hint" style="margin:0">Per stamparle di nuovo uguali, ricorda il numero della prima serie.</p>
+</div>
+<div class="sheets" id="sheets"></div>
+
+<script src="cartelle.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const Q = new URLSearchParams(location.search);
+  $('mode').value = Q.get('mode') === 'kids' ? 'kids' : 'classic';
+  if (['30', '60', '90'].includes(Q.get('max'))) $('max').value = Q.get('max');
+  $('first').value = +Q.get('serie') || TombolaCards.randomSerie();
+
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+
+  function cardEl(c) {
+    const d = el('div', 'card');
+    const h = el('h3'); h.append(el('b', null, 'Cartella'), el('span', null, c.id));
+    const gr = el('div', 'grid');
+    c.grid.flat().forEach(n => gr.append(n ? el('div', null, n) : el('div', 'blank')));
+    d.append(h, gr);
+    return d;
+  }
+  function sheet(titleRight, cls) {
+    const s = el('section', 'sheet' + (cls ? ' ' + cls : ''));
+    const h = el('header'); h.append(el('b', null, '🎱 TOMBOLA'), el('span', null, titleRight));
+    s.append(h);
+    return s;
+  }
+  function render() {
+    const mode = $('mode').value, max = +$('max').value;
+    $('maxWrap').classList.toggle('hidden', mode !== 'kids');
+    const pages = Math.max(1, Math.min(20, +$('pages').value || 1));
+    const first = Math.max(1, Math.min(99999 - 20, +$('first').value || 1));
+    const out = $('sheets'); out.innerHTML = '';
+    const kidsRules = 'Ambo = 2 numeri sulla stessa riga · Terno = 3 numeri sulla stessa riga · Tombola = tutta la cartella.';
+    const classicRules = 'Ambo = 2, Terno = 3, Quaterna = 4, Cinquina = 5 numeri sulla stessa riga · Tombola = tutta la cartella.';
+    for (let p = 0; p < pages; p++) {
+      const serie = first + p;
+      const s = sheet(`Nome: ______________________  Classe: ________`, mode === 'kids' ? 'kids' : '');
+      const grid = el('div', 'cards');
+      TombolaCards.series(mode, max, serie).forEach(c => grid.append(cardEl(c)));
+      s.append(grid);
+      s.append(el('footer', null, (mode === 'kids' ? kidsRules : classicRules) + ' Quando hai un premio alza la mano e leggi il codice della cartella.'));
+      out.append(s);
+    }
+    const top = mode === 'kids' ? max : 90;
+    if ($('board').checked) {
+      const s = sheet('Tabellone');
+      const b = el('div', 'board');
+      const cols = 10; b.style.gridTemplateRows = `repeat(${Math.ceil(top / cols)}, 1fr)`;
+      for (let n = 1; n <= top; n++) b.append(el('div', null, n));
+      s.append(b); out.append(s);
+    }
+    if ($('tokens').checked) {
+      const s = sheet('Cartellini da ritagliare');
+      const t = el('div', 'tokens');
+      for (let n = 1; n <= top; n++) t.append(el('div', null, n));
+      s.append(t); out.append(s);
+    }
+    $('hint').textContent = `Serie n. ${first}${pages > 1 ? '–' + (first + pages - 1) : ''}. Per stamparle di nuovo uguali, ricorda il numero della prima serie.`;
+  }
+  ['mode', 'max', 'pages', 'first', 'board', 'tokens'].forEach(id => $(id).addEventListener('input', render));
+  $('rnd').onclick = () => { $('first').value = TombolaCards.randomSerie(); render(); };
+  $('print').onclick = () => window.print();
+  render();
+})();
+</script>
+</body>
+</html>
