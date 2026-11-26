@@ -534,7 +534,7 @@ details summary { cursor: pointer; font-weight: 600; }
     </details>
   </section>
 
-  <footer class="credit">🎱 Tombola · ideata e realizzata da <a href="../">Arcangelo Clemente</a> · <a href="privacy.html">🔒 Privacy</a></footer>
+  <footer class="credit">🎱 Tombola · ideata e realizzata da <a href="../">Arcangelo Clemente</a> · <a href="privacy.html">🔒 Privacy</a> · <span id="ver" title="Se non è questo numero, ricarica la pagina">versione 26.11.2026-c</span></footer>
 </main>
 
 <script src="analytics.js"></script>
@@ -1148,7 +1148,9 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if (timer) return stopAuto();
     if (state.drawn.length >= state.max || finita()) return;
     $('autoBtn').textContent = '⏸ Pausa';
-    draw(); timer = setInterval(draw, Math.max(+$('speed').value, state.drawAnim ? 5500 : 0));
+    // il timer parte prima del primo numero: se quel numero chiude la partita, stopAuto() lo ferma davvero
+    timer = setInterval(draw, Math.max(+$('speed').value, state.drawAnim ? 5500 : 0));
+    draw();
   }
   function reset(msg) {
     stopAuto();
