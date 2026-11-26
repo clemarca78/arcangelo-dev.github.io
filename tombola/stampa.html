@@ -40,8 +40,8 @@ button.sec { background: #e2e8f0; color: #1e293b; }
 
 .board { flex: 1; display: grid; grid-template-columns: repeat(10, 1fr); gap: 0; border: 1.5px solid #111; margin-top: 2mm; }
 .board div { display: grid; place-items: center; border: .6px solid #555; font-weight: 800; font-size: 22pt; }
-.tokens { flex: 1; display: grid; grid-template-columns: repeat(6, 1fr); gap: 0; align-content: start; }
-.tokens div { height: 24mm; display: grid; place-items: center; border: 1px dashed #666; font-weight: 800; font-size: 30pt; }
+.tokens { flex: 1; min-height: 0; display: grid; gap: 0; }   /* righe e colonne sono calcolate in base a quanti cartellini ci sono */
+.tokens div { display: grid; place-items: center; border: 1px dashed #666; font-weight: 800; }
 
 @page { size: A4 portrait; margin: 0; }
 @media print {
@@ -122,6 +122,16 @@ button.sec { background: #e2e8f0; color: #1e293b; }
     s.append(h);
     return s;
   }
+  // Griglia esatta (senza celle vuote) con le celle più «quadrate» possibile sull'area utile A4 (190 x 266 mm).
+  function bestGrid(N) {
+    let C = 1, best = Infinity;
+    for (let c = 1; c <= N; c++) {
+      if (N % c) continue;
+      const score = Math.abs(Math.log((190 / c) / (266 / (N / c))));
+      if (score < best) { best = score; C = c; }
+    }
+    return [C, N / C];
+  }
   function render() {
     const mode = $('mode').value, max = +$('max').value, cols = +$('cols').value;
     $('maxWrap').classList.toggle('hidden', mode !== 'kids');
@@ -146,14 +156,20 @@ button.sec { background: #e2e8f0; color: #1e293b; }
     if ($('board').checked) {
       const s = sheet('Tabellone');
       const b = el('div', 'board');
-      const cols = 10; b.style.gridTemplateRows = `repeat(${Math.ceil(top / cols)}, 1fr)`;
-      for (let n = 1; n <= top; n++) b.append(el('div', null, n));
+      // con 90 numeri il tabellone è quello tradizionale (10 colonne x 9 righe); con meno numeri celle più «quadrate»
+      const [bc, br] = top === 90 ? [10, 9] : bestGrid(top);
+      b.style.gridTemplateColumns = `repeat(${bc}, 1fr)`; b.style.gridTemplateRows = `repeat(${br}, 1fr)`;
+      const bpt = Math.round(Math.min(190 / bc, 266 / br) * 0.5 * 2.835);
+      for (let n = 1; n <= top; n++) { const d = el('div', null, n); d.style.fontSize = bpt + 'pt'; b.append(d); }
       s.append(b); out.append(s);
     }
     if ($('tokens').checked) {
       const s = sheet('Cartellini da ritagliare');
       const t = el('div', 'tokens');
-      for (let n = 1; n <= top; n++) t.append(el('div', null, n));
+      const [C, Rw] = bestGrid(top);
+      t.style.gridTemplateColumns = `repeat(${C}, 1fr)`; t.style.gridTemplateRows = `repeat(${Rw}, 1fr)`;
+      const pt = Math.round(Math.min(190 / C, 266 / Rw) * 0.5 * 2.835);   // grandezza dei numeri in base alla cella
+      for (let n = 1; n <= top; n++) { const d = el('div', null, n); d.style.fontSize = pt + 'pt'; t.append(d); }
       s.append(t); out.append(s);
     }
     $('hint').textContent = `Serie n. ${first}${pages > 1 ? '–' + (first + pages - 1) : ''}. Per stamparle di nuovo uguali, ricorda il numero della prima serie.`;
