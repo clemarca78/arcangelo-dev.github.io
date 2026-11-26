@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tombola</title>
+<meta name="theme-color" content="#0b1120">
+<style>
+:root {
+  --bg: #0b1120; --text: #f1f5f9; --muted: #94a3b8; --accent: #38bdf8;
+  --purple: #a855f7; --pink: #ec4899; --gold: #fbbf24; --green: #22c55e;
+  --glass: rgba(255,255,255,.05); --border: rgba(255,255,255,.12);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background-image: radial-gradient(at 0% 0%, rgba(56,189,248,.15), transparent 50%),
+                    radial-gradient(at 100% 0%, rgba(168,85,247,.15), transparent 50%);
+  background-attachment: fixed; min-height: 100vh; padding: 16px;
+}
+main { max-width: 1100px; margin: 0 auto; display: grid; gap: 16px; }
+h1 { font-size: 1.6rem; letter-spacing: .5px; }
+h1 span { color: var(--gold); }
+h2 { font-size: .8rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 10px; }
+.panel { background: var(--glass); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+.counter { color: var(--muted); font-size: .9rem; }
+
+.top { display: grid; gap: 16px; grid-template-columns: 1fr; }
+@media (min-width: 800px) { .top { grid-template-columns: 340px 1fr; } }
+
+.draw { text-align: center; }
+.ball {
+  width: 150px; height: 150px; margin: 4px auto 14px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 4.2rem; font-weight: 800;
+  background: radial-gradient(circle at 32% 28%, #fff 0 14%, var(--gold) 15% 60%, #b45309 100%);
+  color: #1e1b4b; box-shadow: 0 10px 30px rgba(251,191,36,.3);
+}
+.ball.empty { background: var(--glass); color: var(--muted); box-shadow: none; border: 2px dashed var(--border); }
+.ball.pop { animation: pop .45s ease-out; }
+@keyframes pop { 0% { transform: scale(.3) rotate(-30deg); opacity: 0; } 70% { transform: scale(1.12); } 100% { transform: scale(1); opacity: 1; } }
+.btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+button {
+  font: inherit; font-weight: 600; cursor: pointer; color: var(--text);
+  background: var(--glass); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px;
+}
+button:hover { border-color: var(--accent); }
+button.primary { background: linear-gradient(135deg, var(--accent), var(--purple)); border: 0; font-size: 1.1rem; padding: 12px 26px; }
+button:disabled { opacity: .45; cursor: not-allowed; }
+.opts { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 12px; font-size: .9rem; color: var(--muted); }
+.opts label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.history { margin-top: 14px; display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; min-height: 34px; }
+.history span { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: .85rem; font-weight: 700; background: rgba(251,191,36,.18); color: var(--gold); }
+
+.board { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; }
+.board div {
+  aspect-ratio: 1.15; display: grid; place-items: center; border-radius: 8px;
+  background: rgba(255,255,255,.04); color: var(--muted); font-weight: 600; font-size: clamp(.7rem, 2.2vw, 1.05rem);
+  transition: background .3s, color .3s;
+}
+.board div.out { background: var(--gold); color: #1e1b4b; font-weight: 800; }
+.board div.last { outline: 3px solid var(--pink); outline-offset: 1px; }
+
+.prizes { display: flex; gap: 8px; flex-wrap: wrap; }
+.prize { flex: 1 1 140px; border: 1px solid var(--border); border-radius: 12px; padding: 10px; text-align: center; font-size: .85rem; color: var(--muted); }
+.prize b { display: block; font-size: 1rem; color: var(--text); }
+.prize.won { border-color: var(--gold); background: rgba(251,191,36,.12); color: var(--gold); }
+.prize.won b { color: var(--gold); }
+
+.cards-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.cards-bar select { font: inherit; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px; }
+.cards { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+.card { background: #fef3c7; color: #1e1b4b; border-radius: 12px; padding: 10px; box-shadow: 0 6px 18px rgba(0,0,0,.35); }
+.card h3 { font-size: .8rem; margin-bottom: 6px; display: flex; justify-content: space-between; }
+.card h3 em { font-style: normal; color: #b45309; }
+.grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 3px; }
+.grid div { aspect-ratio: 1; display: grid; place-items: center; border-radius: 6px; font-weight: 700; font-size: .95rem; background: rgba(0,0,0,.05); }
+.grid div.blank { background: rgba(30,27,75,.18); }
+.grid div.hit { background: var(--pink); color: #fff; }
+
+#log { max-height: 130px; overflow: auto; font-size: .9rem; display: grid; gap: 4px; }
+#log div { color: var(--muted); }
+#log div.win { color: var(--gold); font-weight: 700; }
+.hint { font-size: .8rem; color: var(--muted); text-align: center; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>🎱 <span>Tombola</span></h1>
+    <div class="counter" id="counter">Estratti: 0 / 90</div>
+  </header>
+
+  <section class="top">
+    <div class="panel draw">
+      <h2>Estrazione</h2>
+      <div class="ball empty" id="ball">–</div>
+      <div class="btns">
+        <button class="primary" id="drawBtn">Estrai</button>
+        <button id="autoBtn">▶ Auto</button>
+        <button id="resetBtn">Nuova partita</button>
+      </div>
+      <div class="opts">
+        <label><input type="checkbox" id="speak" checked> Voce</label>
+        <label>Ritmo
+          <select id="speed">
+            <option value="2000">Veloce</option>
+            <option value="4000" selected>Normale</option>
+            <option value="7000">Lento</option>
+          </select>
+        </label>
+      </div>
+      <div class="history" id="history"></div>
+      <p class="hint" style="margin-top:8px">Barra spaziatrice = estrai</p>
+    </div>
+
+    <div class="panel">
+      <h2>Tabellone</h2>
+      <div class="board" id="board"></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Premi</h2>
+    <div class="prizes" id="prizes"></div>
+    <div id="log" style="margin-top:12px"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Le tue cartelle</h2>
+    <div class="cards-bar">
+      <label>Quante cartelle:
+        <select id="nCards"></select>
+      </label>
+      <button id="newCards">Cambia cartelle</button>
+      <span class="hint">I numeri estratti si segnano da soli.</span>
+    </div>
+    <div class="cards" id="cards"></div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const PRIZES = [
+    { n: 2, name: 'Ambo' }, { n: 3, name: 'Terno' }, { n: 4, name: 'Quaterna' },
+    { n: 5, name: 'Cinquina' }, { n: 15, name: 'Tombola!' }
+  ];
+  const KEY = 'tombola-proto-v1';
+  const $ = id => document.getElementById(id);
+
+  let state = { drawn: [], cards: [], won: {} };   // won: { n: "Cartella X" }
+  let timer = null;
+
+  // ---------- persistenza (best effort) ----------
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
+  const load = () => {
+    try {
+      const s = JSON.parse(localStorage.getItem(KEY));
+      if (s && Array.isArray(s.drawn) && Array.isArray(s.cards)) state = s;
+    } catch (e) {}
+  };
+
+  // ---------- generazione cartella ----------
+  // 3 righe x 9 colonne, 5 numeri per riga, 15 totali, 1..3 numeri per colonna,
+  // numeri crescenti verso il basso. Colonna c: 1-9, 10-19, ... 80-90.
+  const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  function newCard() {
+    let layout;
+    for (;;) {
+      layout = [0, 1, 2].map(() => shuffle([...Array(9).keys()]).slice(0, 5));
+      const cnt = Array(9).fill(0);
+      layout.forEach(r => r.forEach(c => cnt[c]++));
+      if (cnt.every(x => x >= 1 && x <= 3)) break;
+    }
+    const grid = [Array(9).fill(0), Array(9).fill(0), Array(9).fill(0)];
+    for (let c = 0; c < 9; c++) {
+      const lo = c === 0 ? 1 : c * 10, hi = c === 8 ? 90 : c * 10 + 9;
+      const pool = []; for (let n = lo; n <= hi; n++) pool.push(n);
+      const rows = [0, 1, 2].filter(r => layout[r].includes(c));
+      const nums = shuffle(pool).slice(0, rows.length).sort((a, b) => a - b);
+      rows.forEach((r, i) => grid[r][c] = nums[i]);
+    }
+    return grid;
+  }
+
+  // ---------- estrazione ----------
+  function remaining() {
+    const out = new Set(state.drawn);
+    const r = []; for (let n = 1; n <= 90; n++) if (!out.has(n)) r.push(n);
+    return r;
+  }
+  function draw() {
+    const r = remaining();
+    if (!r.length) { stopAuto(); return; }
+    const n = r[Math.floor(Math.random() * r.length)];
+    state.drawn.push(n);
+    say(n);
+    checkPrizes();
+    save(); render(true);
+    if (state.drawn.length === 90) stopAuto();
+  }
+  function say(n) {
+    if (!$('speak').checked || !('speechSynthesis' in window)) return;
+    try {
+      const u = new SpeechSynthesisUtterance(String(n));
+      u.lang = 'it-IT'; speechSynthesis.cancel(); speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+
+  // ---------- premi ----------
+  // Ambo/terno/quaterna/cinquina valgono su una singola riga di una cartella; tombola = 15.
+  function checkPrizes() {
+    const out = new Set(state.drawn);
+    state.cards.forEach((g, i) => {
+      const best = Math.max(...g.map(r => r.filter(n => n && out.has(n)).length));
+      const total = g.flat().filter(n => n && out.has(n)).length;
+      PRIZES.forEach(p => {
+        if (state.won[p.n]) return;
+        const ok = p.n === 15 ? total === 15 : best >= p.n;
+        if (ok) {
+          state.won[p.n] = 'Cartella ' + (i + 1);
+          log(`🎉 ${p.name} alla ${state.won[p.n]}!`, true);
+        }
+      });
+    });
+  }
+
+  // ---------- log ----------
+  const logLines = [];
+  function log(t, win) {
+    logLines.unshift({ t, win });
+    const el = $('log'); el.innerHTML = '';
+    logLines.slice(0, 30).forEach(l => { const d = document.createElement('div'); if (l.win) d.className = 'win'; d.textContent = l.t; el.appendChild(d); });
+  }
+
+  // ---------- rendering ----------
+  function render(animate) {
+    const out = new Set(state.drawn), last = state.drawn[state.drawn.length - 1];
+    const ball = $('ball');
+    ball.textContent = last || '–';
+    ball.className = 'ball' + (last ? '' : ' empty');
+    if (animate && last) { void ball.offsetWidth; ball.classList.add('pop'); }
+    $('counter').textContent = `Estratti: ${state.drawn.length} / 90`;
+    $('drawBtn').disabled = state.drawn.length >= 90;
+
+    $('board').innerHTML = '';
+    for (let n = 1; n <= 90; n++) {
+      const d = document.createElement('div');
+      d.textContent = n;
+      if (out.has(n)) d.className = 'out' + (n === last ? ' last' : '');
+      $('board').appendChild(d);
+    }
+
+    $('history').innerHTML = '';
+    state.drawn.slice(-8, -1).reverse().forEach(n => { const s = document.createElement('span'); s.textContent = n; $('history').appendChild(s); });
+
+    $('prizes').innerHTML = '';
+    PRIZES.forEach(p => {
+      const d = document.createElement('div');
+      const w = state.won[p.n];
+      d.className = 'prize' + (w ? ' won' : '');
+      d.innerHTML = `<b>${p.name}</b>${w || 'in palio'}`;
+      $('prizes').appendChild(d);
+    });
+
+    $('cards').innerHTML = '';
+    state.cards.forEach((g, i) => {
+      const hits = g.flat().filter(n => n && out.has(n)).length;
+      const c = document.createElement('div'); c.className = 'card';
+      c.innerHTML = `<h3>Cartella ${i + 1}<em>${hits}/15</em></h3>`;
+      const gr = document.createElement('div'); gr.className = 'grid';
+      g.flat().forEach(n => {
+        const d = document.createElement('div');
+        if (!n) d.className = 'blank'; else { d.textContent = n; if (out.has(n)) d.className = 'hit'; }
+        gr.appendChild(d);
+      });
+      c.appendChild(gr); $('cards').appendChild(c);
+    });
+  }
+
+  // ---------- controlli ----------
+  function stopAuto() { clearInterval(timer); timer = null; $('autoBtn').textContent = '▶ Auto'; }
+  function toggleAuto() {
+    if (timer) return stopAuto();
+    if (state.drawn.length >= 90) return;
+    $('autoBtn').textContent = '⏸ Pausa';
+    draw(); timer = setInterval(draw, +$('speed').value);
+  }
+  function makeCards() {
+    state.cards = Array.from({ length: +$('nCards').value }, newCard);
+    state.won = {}; // premi ricalcolati sulle nuove cartelle
+    checkPrizes();
+  }
+  function reset() {
+    stopAuto();
+    state.drawn = []; state.won = {}; logLines.length = 0; log('Nuova partita. Buona fortuna!');
+    makeCards(); save(); render();
+  }
+
+  $('drawBtn').onclick = draw;
+  $('autoBtn').onclick = toggleAuto;
+  $('resetBtn').onclick = () => { if (!state.drawn.length || confirm('Iniziare una nuova partita?')) reset(); };
+  $('newCards').onclick = () => { makeCards(); save(); render(); };
+  $('speed').onchange = () => { if (timer) { stopAuto(); toggleAuto(); } };
+  document.addEventListener('keydown', e => {
+    if (e.code === 'Space' && !/SELECT|INPUT|BUTTON/.test(e.target.tagName)) { e.preventDefault(); draw(); }
+  });
+
+  for (let i = 1; i <= 6; i++) { const o = document.createElement('option'); o.value = i; o.textContent = i; $('nCards').appendChild(o); }
+  $('nCards').value = 2;
+  $('nCards').onchange = () => { makeCards(); save(); render(); };
+
+  load();
+  if (!state.cards.length) makeCards();
+  else $('nCards').value = state.cards.length;
+  if (!logLines.length) log(state.drawn.length ? 'Partita ripresa.' : 'Premi "Estrai" per iniziare.');
+  render();
+})();
+</script>
+</body>
+</html>
