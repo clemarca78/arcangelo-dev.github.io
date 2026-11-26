@@ -478,7 +478,7 @@ details summary { cursor: pointer; font-weight: 600; }
         </label>
         <label class="opt-auto"><input type="checkbox" id="autoMark"> Segna da solo</label>
         <label class="host-only">Ritmo
-          <select id="speed">
+          <select id="speed" title="Pausa tra un numero e l'altro: il numero successivo aspetta comunque che la voce abbia finito di leggere">
             <option value="2500">Veloce</option>
             <option value="5000" selected>Normale</option>
             <option value="8000">Lento</option>
@@ -534,7 +534,7 @@ details summary { cursor: pointer; font-weight: 600; }
     </details>
   </section>
 
-  <footer class="credit">🎱 Tombola · ideata e realizzata da <a href="../">Arcangelo Clemente</a> · <a href="privacy.html">🔒 Privacy</a> · <span id="ver" title="Se non è questo numero, ricarica la pagina">versione 26.11.2026-c</span></footer>
+  <footer class="credit">🎱 Tombola · ideata e realizzata da <a href="../">Arcangelo Clemente</a> · <a href="privacy.html">🔒 Privacy</a> · <span id="ver" title="Se non è questo numero, ricarica la pagina">versione 26.11.2026-d</span></footer>
 </main>
 
 <script src="analytics.js"></script>
@@ -846,7 +846,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if (state.pmap && state.pmap.map) delete state.pmap.map[n];
     state.marks = state.marks.map(a => a.filter(x => state.drawn.includes(x)));
     log(`↩ Annullato il ${n}`);
-    try { speechSynthesis.cancel(); } catch (e) {}
+    stopVoice();
     save(); render(); broadcast();
   }
   // Tema a tema attivo (adulti o scuola) al posto della smorfia napoletana; '' se si usa la smorfia.
@@ -897,13 +897,23 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       }
       q.push([t, 'it-IT']);
       if ($('smorfia').checked && en.spk) q.push(...en.spk);   // es. il numero detto in inglese
-      speechSynthesis.cancel();
+      stopVoice();
+      const my = ++voiceGen;
+      voiceLeft = q.length;
+      const finito = () => { if (my !== voiceGen) return; voiceLeft = Math.max(0, voiceLeft - 1); if (!voiceLeft) { voiceEnd = Date.now(); clearTimeout(voiceFail); } };
+      const attesa = Math.min(25000, 3000 + q.reduce((n, x) => n + x[0].length, 0) * 110);   // durata stimata + margine
+      voiceFail = setTimeout(() => { if (my === voiceGen) { voiceLeft = 0; voiceEnd = Date.now(); } }, attesa);   // se il browser non avvisa la fine, non blocca l'Auto
       q.forEach(([txt, lang]) => {
         const u = new SpeechSynthesisUtterance(txt);
-        u.lang = lang; u.rate = kids() ? .85 : .95; speechSynthesis.speak(u);
+        u.lang = lang; u.rate = kids() ? .85 : .95; u.onend = finito; u.onerror = finito;
+        speechSynthesis.speak(u);
       });
-    } catch (e) {}
+    } catch (e) { voiceLeft = 0; }
   }
+  // La lettura della voce: l'estrazione automatica aspetta che finisca (e una breve pausa) prima del numero successivo.
+  let voiceGen = 0, voiceLeft = 0, voiceEnd = 0, voiceFail = null;
+  function stopVoice() { voiceGen++; voiceLeft = 0; clearTimeout(voiceFail); try { speechSynthesis.cancel(); } catch (e) {} }
+  const voiceBusy = () => voiceLeft > 0 || Date.now() - voiceEnd < 900;
 
   // ---------- premi ----------
   // Ambo/terno/quaterna/cinquina valgono su una riga; tombola = tutta la cartella.
@@ -1143,18 +1153,24 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   });
 
   // ---------- controlli ----------
-  function stopAuto() { clearInterval(timer); timer = null; $('autoBtn').textContent = '▶ Auto'; }
+  function stopAuto() { clearTimeout(timer); timer = null; $('autoBtn').textContent = '▶ Auto'; }
+  const autoInterval = () => Math.max(+$('speed').value, state.drawAnim ? 5500 : 0);
+  // Ogni estrazione parte dopo l'intervallo scelto, ma mai prima che la voce (o l'animazione) abbia finito.
+  function autoTick() {
+    if (!timer) return;
+    if (drawing || voiceBusy()) { timer = setTimeout(autoTick, 300); return; }
+    draw();
+    if (timer) timer = setTimeout(autoTick, autoInterval());   // se la partita è finita, draw() ha già fermato l'Auto
+  }
   function toggleAuto() {
     if (timer) return stopAuto();
     if (state.drawn.length >= state.max || finita()) return;
     $('autoBtn').textContent = '⏸ Pausa';
-    // il timer parte prima del primo numero: se quel numero chiude la partita, stopAuto() lo ferma davvero
-    timer = setInterval(draw, Math.max(+$('speed').value, state.drawAnim ? 5500 : 0));
-    draw();
+    timer = setTimeout(autoTick, 0);
   }
   function reset(msg) {
     stopAuto();
-    try { speechSynthesis.cancel(); } catch (e) {}
+    stopVoice();
     state.drawn = []; state.won = {}; state.pmap = null; state.gen = (state.gen || 0) + 1; logLines.length = 0;
     if (kids()) newKidTheme(); else newAdultTheme();
     log(msg || 'Nuova partita. Buona fortuna!');
@@ -1619,7 +1635,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   $('limExit').onclick = () => setLim(false);
   $('limAudio').onclick = () => {
     $('speak').checked = !$('speak').checked;
-    if ($('speak').checked) { try { speechSynthesis.cancel(); speechSynthesis.speak(Object.assign(new SpeechSynthesisUtterance('Audio attivo'), { lang: 'it-IT' })); } catch (e) {} }
+    if ($('speak').checked) { try { stopVoice(); speechSynthesis.speak(Object.assign(new SpeechSynthesisUtterance('Audio attivo'), { lang: 'it-IT' })); } catch (e) {} }
     render();
   };
 
