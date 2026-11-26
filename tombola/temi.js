@@ -231,7 +231,7 @@
       ["🤥", "A Pinocchio cresce il naso quando dice le bugie"], ["👠", "Cenerentola perde una scarpetta di cristallo"], ["🐇", "Alice nel Paese delle Meraviglie insegue il Bianconiglio"], ["🧚", "Peter Pan vive nell'Isola che non c'è"],
       ["🐕", "La carica dei 101 ha tanti cuccioli dalmata"], ["🌹", "La Bella e la Bestia: Belle ama leggere i libri"], ["🧜", "Ariel è la Sirenetta che sogna il mondo di sopra"], ["🧞", "Aladdin trova una lampada con dentro il Genio"],
       ["🦁", "Il Re Leone: «Hakuna Matata» significa «nessun problema»"], ["🐻", "Baloo insegna a Mowgli «lo stretto indispensabile»"], ["🐈", "Gli Aristogatti sono gatti eleganti di Parigi"], ["⚔️", "Mulan si veste da soldato per aiutare suo padre"],
-      ["🤠", "In Toy Story i giocatoli prendono vita: Woody e Buzz"], ["🐠", "Alla ricerca di Nemo: Dory dimentica sempre tutto"], ["🐀", "Ratatouille: Remy è un topo che sa cucinare"], ["🚗", "In Cars Saetta McQueen corre sulla pista"],
+      ["🤠", "In Toy Story i giocattoli prendono vita: Woody e Buzz"], ["🐠", "Alla ricerca di Nemo: Dory dimentica sempre tutto"], ["🐀", "Ratatouille: Remy è un topo che sa cucinare"], ["🚗", "In Cars Saetta McQueen corre sulla pista"],
       ["🤖", "WALL-E è un piccolo robot spazzino"], ["🎈", "In Up una casa vola attaccata a tanti palloncini"], ["😀", "In Inside Out le emozioni sono Gioia, Tristezza, Rabbia, Paura e Disgusto"], ["❄️", "In Frozen Elsa ha il potere del ghiaccio"],
       ["⛄", "Olaf è un pupazzo di neve che sogna l'estate"], ["🌺", "Vaiana attraversa l'oceano insieme a Maui"], ["💀", "Coco si svolge durante il Día de Muertos in Messico"], ["💇", "Rapunzel ha capelli lunghissimi"],
       ["🧸", "Winnie the Pooh ama il miele"], ["🦸", "Gli Incredibili sono una famiglia di supereroi"], ["👾", "In Monsters & Co. gli amici sono Sulley e Mike"], ["🔮", "In Encanto la casa della famiglia Madrigal è magica"],
@@ -245,7 +245,7 @@
       ["🎤", "Cristina D'Avena è la voce di tante sigle dei cartoni"], ["🩺", "«Siamo fatti così» racconta il corpo umano"], ["🐱", "Occhi di gatto: tre sorelle ladre d'arte"], ["🏐", "Mila e Shiro: la storia di una giovane pallavolista"],
       ["⚡", "Pokémon: Ash Ketchum e Pikachu"], ["🏴‍☠️", "Rufy, in One Piece, vuole diventare il Re dei Pirati"], ["🍥", "Naruto è un giovane ninja che sogna di diventare Hokage"], ["🟡", "I Simpson sono in onda dal 1989"],
       ["🧽", "SpongeBob vive a Bikini Bottom"], ["🧚", "Le Winx nascono in Italia, dall'idea di Iginio Straffi"], ["🐺", "Lupo Alberto è un cartone italiano creato da Silver"], ["🎩", "Il signor Rossi cerca la felicità nei cartoni di Bruno Bozzetto"],
-      ["🐭", "Topo Gigio è un topolino nato in Italia negli anni Cinquanta"], ["🐱", "Gatto Silvestro insegue Titti senza successo"], ["📼", "Tom e Jerry: il gatto e il topo che si rincorrono"], ["🐺", "Gli Antenati vivono a Bedrock"] ] }
+      ["🐭", "Topo Gigio è un topolino nato in Italia negli anni Cinquanta"], ["🐱", "Gatto Silvestro insegue Titti senza successo"], ["📼", "Tom e Jerry: il gatto e il topo che si rincorrono"] ] }
   };
 
   // ---------- temi per adulti (tombola classica) ----------
