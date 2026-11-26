@@ -125,26 +125,28 @@
     { key: 'fattoria',  name: 'Fattoria',  color: '#65a30d', emoji: ['🐄', '🐖', '🐓', '🐑', '🚜', '🌽', '🐴', '🦆', '🐐', '🥕'] },
     { key: 'giardino',  name: 'Giardino',  color: '#ec4899', emoji: ['🌸', '🦋', '🐝', '🌻', '🐞', '🍀', '🌷', '🐛', '🌼', '🌳'] },
     { key: 'frutta',    name: 'Frutta',    color: '#ef4444', emoji: ['🍎', '🍌', '🍓', '🍒', '🍇', '🍉', '🍐', '🍊', '🍍', '🥝'] },
-    { key: 'sport',     name: 'Sport',     color: '#16a34a', emoji: ['⚽', '🏀', '🏐', '🎾', '🏓', '🚴', '🏊', '🥇', '🏆', '⛸️'] },
+    { key: 'sport',     name: 'Sport',     color: '#16a34a', emoji: ['⚽', '🏀', '🎾', '🏐', '🏈', '⚾', '🏓', '🏸', '🏉', '🏆'] },
     { key: 'dinosauri', name: 'Dinosauri', color: '#0d9488', emoji: ['🦕', '🦖', '🌋', '🥚', '🌴', '🦴', '🐊', '🦎', '🌿', '🪨'] },
     { key: 'natale',    name: 'Natale',    color: '#dc2626', emoji: ['🎄', '🎅', '⛄', '🎁', '🔔', '⭐', '🦌', '❄️', '🧦', '🍪'] }
   ];
   const hash = str => { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
 
-  // Fascia illustrata per una cartella. key = codice (o contenuto) della cartella, choice = 'none' | 'auto' | chiave del tema.
-  function artEl(key, choice, size) {
+  // Piccola immagine per una cartella (un oggetto del tema, in un tondo colorato).
+  // choice = 'none' | 'auto' (tema scelto dal codice) | chiave del tema (idx = n. progressivo della cartella:
+  // cartelle consecutive mostrano oggetti diversi, es. pallone, canestro, racchetta...).
+  function artEl(key, choice, size, idx) {
     if (choice === 'none') return null;
-    const th = THEMES.find(t => t.key === choice) || THEMES[hash(String(key)) % THEMES.length];
-    const em = shuffle(th.emoji.slice(), rng(hash('e' + key))).slice(0, 6);
+    let th = THEMES.find(t => t.key === choice), emo;
+    if (th) emo = th.emoji[Math.abs(idx || 0) % th.emoji.length];
+    else { th = THEMES[hash(String(key)) % THEMES.length]; emo = th.emoji[hash('e' + key) % th.emoji.length]; }
     const d = document.createElement('div');
-    d.className = 'art'; d.title = th.name; d.setAttribute('aria-hidden', 'true');
+    d.className = 'art'; d.title = th.name; d.textContent = emo; d.setAttribute('aria-hidden', 'true');
     Object.assign(d.style, {
-      display: 'flex', justifyContent: 'space-around', alignItems: 'center', fontSize: size || '1.3rem', lineHeight: '1.2',
-      padding: '.08em .3em', margin: '0 0 .35em', borderRadius: '.5em', border: '1.5px solid ' + th.color,
-      background: `linear-gradient(90deg, ${th.color}40, ${th.color}12, ${th.color}40)`,
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flex: 'none',
+      width: '1.6em', height: '1.6em', fontSize: size || '1.15rem', lineHeight: '1', borderRadius: '50%',
+      border: '1.5px solid ' + th.color, background: th.color + '26',
       webkitPrintColorAdjust: 'exact', printColorAdjust: 'exact'
     });
-    em.forEach((e, i) => { const s = document.createElement('span'); s.textContent = e; if (i === 2 || i === 3) s.style.fontSize = '1.25em'; d.appendChild(s); });
     return d;
   }
 

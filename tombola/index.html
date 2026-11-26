@@ -88,8 +88,8 @@ body.lim .prize::after { display: none !important; }
 .cards-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
 .cards { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
 .card { background: #fef3c7; color: #1e1b4b; border-radius: 12px; padding: 10px; box-shadow: 0 6px 18px rgba(0,0,0,.35); }
-.card h3 { font-size: .8rem; margin-bottom: 6px; display: flex; justify-content: space-between; }
-.card h3 em { font-style: normal; color: #b45309; }
+.card h3 { font-size: .8rem; margin-bottom: 6px; display: flex; justify-content: flex-start; align-items: center; gap: 8px; }
+.card h3 em { font-style: normal; color: #b45309; margin-left: auto; }
 .grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 3px; }
 .grid div { aspect-ratio: 1; display: grid; place-items: center; border-radius: 6px; font-weight: 700; font-size: .95rem; background: rgba(0,0,0,.05); }
 .grid div.blank { background: rgba(30,27,75,.18); }
@@ -735,8 +735,8 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       const hits = g.flat().filter(n => n && m.has(n)).length;
       const c = document.createElement('div'); c.className = 'card';
       c.innerHTML = `<h3>Cartella ${i + 1}<em>${hits}/${size}</em></h3>`;
-      const art = TombolaCards.artEl(g.flat().join(','), state.theme, kids() ? '1.7rem' : '1.2rem');
-      if (art) c.appendChild(art);
+      const art = TombolaCards.artEl(g.flat().join(','), state.theme, kids() ? '1.5rem' : '1.2rem', i);
+      if (art) { const h3 = c.querySelector('h3'); h3.insertBefore(art, h3.firstChild); }
       const gr = document.createElement('div'); gr.className = 'grid' + (kids() && state.cols > 3 ? ' dense' : '');
       if (kids()) gr.style.gridTemplateColumns = `repeat(${state.cols}, 1fr)`;
       g.flat().forEach(n => {
