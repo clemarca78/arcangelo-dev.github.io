@@ -418,10 +418,7 @@ details summary { cursor: pointer; font-weight: 600; }
         <label><input type="checkbox" id="smorfia" checked> Smorfia</label>
         <label class="host-only"><input type="checkbox" id="animOn"> 🎬 Animazione</label>
         <label class="host-only">Estrae
-          <select id="drawerSel">
-            <option value="maestra">👩‍🏫 La maestra</option><option value="maestro">👨‍🏫 Il maestro</option><option value="bimba">👧 Una bambina</option>
-            <option value="bimbo">👦 Un bambino</option><option value="nonna">👵 La nonna</option><option value="nonno">👴 Il nonno</option><option value="random">🎲 A sorpresa</option>
-          </select>
+          <select id="drawerSel"></select>
         </label>
         <label class="opt-auto"><input type="checkbox" id="autoMark"> Segna da solo</label>
         <label class="host-only">Ritmo
@@ -754,7 +751,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if (k) {
       const pm = state.pmap && state.pmap.key === k ? state.pmap : null;
       const idx = pm ? (pm.map[n] !== undefined ? pm.map[n] : n - 1 + (pm.off || 0)) : undefined;
-      const t = TombolaTemi.entry(k, n, idx);
+      const t = TombolaTemi.entry(k, n, idx, { drawn: state.drawn, max: state.max });
       if (t) return { it: t.t, e: t.e, d: '', sp: t.sp, spk: t.spk };
     }
     const s = SMORFIA[n];
@@ -1478,7 +1475,40 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
 
 
   // ---------- animazione dell'estrazione ----------
-  const DRAWERS = { maestra: ['👩‍🏫', 'La maestra'], maestro: ['👨‍🏫', 'Il maestro'], bimba: ['👧', 'Una bambina'], bimbo: ['👦', 'Un bambino'], nonna: ['👵', 'La nonna'], nonno: ['👴', 'Il nonno'] };
+  // Chi estrae: [emoji, nome, mano (facoltativa), battute (facoltative)]. I gruppi servono al menu.
+  const DRAWERS = {
+    maestra: ['👩‍🏫', 'La maestra'], maestro: ['👨‍🏫', 'Il maestro'], bimba: ['👧', 'Una bambina'], bimbo: ['👦', 'Un bambino'], nonna: ['👵', 'La nonna'], nonno: ['👴', 'Il nonno'],
+    cuoco: ['👨‍🍳', 'Il cuoco', '🤚', ['Un pizzico di fortuna!', 'Si mescola come una torta!']],
+    mago: ['🧙', 'Il mago', '🪄', ['Abracadabra!', 'Un incantesimo per il numero giusto!']],
+    fata: ['🧚', 'La fata', '✨', ['Un tocco di bacchetta magica!', 'Polvere di stelle sui numeri!']],
+    principessa: ['👸', 'La principessa', '🤚', ['Un numero degno di una principessa!', 'Che numero reale!']],
+    principe: ['🤴', 'Il principe', '🤚', ['Un numero da principe!', 'Estrae sua altezza!']],
+    supereroe: ['🦸', 'Il supereroe', '🤚', ['Il numero arriva in un lampo!', 'Alla velocità della luce!']],
+    supereroina: ['🦸‍♀️', 'La supereroina', '🤚', ['Super poteri, super numero!', 'In volo verso il sacchetto!']],
+    robot: ['🤖', 'Il robot', '🦾', ['Bip bip: calcolo in corso!', 'Estrazione casuale avviata!']],
+    astronauta: ['🧑‍🚀', 'L\'astronauta', '🧤', ['Controllo missione: si estrae!', 'Dallo spazio, un numero fortunato!']],
+    pirata: ['🏴‍☠️', 'Il pirata', '🤚', ['Il tesoro dei numeri!', 'Tutti a bordo: si estrae!']],
+    clown: ['🤡', 'Il clown', '🤚', ['Che numero buffo sta per uscire!', 'Ta-dà!']],
+    babbo: ['🎅', 'Babbo Natale', '🤚', ['Ho, ho, ho! Chi vincerà?', 'Un numero come regalo!']],
+    cane: ['🐶', 'Il cagnolino', '🐾', ['Bau! Annuso il numero giusto!', 'Scodinzolo e pesco!']],
+    gatto: ['🐱', 'Il gattino', '🐾', ['Miao! Una zampata ai numeri!', 'Fusa e numeri!']],
+    orso: ['🐻', 'L\'orsetto', '🐾', ['Pesco con la mia zampona!', 'Che numero goloso!']],
+    volpe: ['🦊', 'La volpe', '🐾', ['Un numero furbo!', 'Astuta come una volpe!']],
+    pinguino: ['🐧', 'Il pinguino', '🐾', ['Dal Polo, un numero freddo!', 'Che numero ghiacciato!']],
+    leone: ['🦁', 'Il leone', '🐾', ['Il re della savana estrae!', 'Ruggisce il numero!']],
+    panda: ['🐼', 'Il panda', '🐾', ['Mastico bambù e numeri!', 'Un numero in bianco e nero!']],
+    coniglio: ['🐰', 'Il coniglietto', '🐾', ['Salto nel sacchetto!', 'Un numero con le orecchie lunghe!']],
+    gufo: ['🦉', 'Il gufo', '🪶', ['Uhu! Un numero saggio!', 'Di notte estraggo meglio!']]
+  };
+  const DRAWER_GROUPS = [['Persone', ['maestra', 'maestro', 'bimba', 'bimbo', 'nonna', 'nonno', 'cuoco']],
+    ['Fantasia', ['mago', 'fata', 'principessa', 'principe', 'supereroe', 'supereroina', 'robot', 'astronauta', 'pirata', 'clown', 'babbo']],
+    ['Animali', ['cane', 'gatto', 'orso', 'volpe', 'pinguino', 'leone', 'panda', 'coniglio', 'gufo']]];
+  (() => {
+    const sel = $('drawerSel');
+    const add = (box, v, t) => { const o = document.createElement('option'); o.value = v; o.textContent = t; box.appendChild(o); };
+    DRAWER_GROUPS.forEach(([label, keys]) => { const g = document.createElement('optgroup'); g.label = label; keys.forEach(k => add(g, k, DRAWERS[k][0] + ' ' + DRAWERS[k][1])); sel.appendChild(g); });
+    add(sel, 'random', '🎲 A sorpresa (un personaggio a caso)');
+  })();
   const reducedMotion = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } };
   function pickDrawer() {
     const keys = Object.keys(DRAWERS);
@@ -1498,7 +1528,8 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       };
       const go = (fn, ms) => T.push(setTimeout(fn, ms));
       const anim = (el, kf, opt) => { const a = el.animate(kf, opt); A.push(a); return a; };
-      const phrases = [`${d[1]} mescola i numeri!`, 'Che numero uscirà?', 'Tutti attenti!', 'Pronti? Si estrae!'];
+      const phrases = [`${d[1]} mescola i numeri!`, 'Che numero uscirà?', 'Tutti attenti!', 'Pronti? Si estrae!', ...(d[3] || [])];
+      $('daHand').textContent = d[2] || '🤚';
       $('daWho').textContent = d[0];
       $('daBubble').textContent = phrases[Math.floor(Math.random() * phrases.length)];
       const ball = $('daBall'); ball.textContent = n == null ? '?' : n; ball.style.opacity = 0;
