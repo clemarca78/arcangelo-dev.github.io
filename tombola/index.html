@@ -78,6 +78,10 @@ select { font: inherit; background: var(--bg); color: var(--text); border: 1px s
 .prize b { display: block; font-size: 1rem; color: var(--text); }
 .prize.won { border-color: var(--gold); background: rgba(251,191,36,.12); color: var(--gold); }
 .prize.won b { color: var(--gold); }
+body:not(.player) .prize { cursor: pointer; transition: transform .1s, border-color .2s; }
+body:not(.player) .prize:hover { border-color: var(--accent); transform: translateY(-2px); }
+body:not(.player) .prize:not(.won)::after { content: '＋ segna'; display: block; font-size: .7rem; color: var(--accent); margin-top: 2px; }
+body.lim .prize::after { display: none !important; }
 
 .cards-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
 .cards { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
@@ -309,6 +313,7 @@ details summary { cursor: pointer; font-weight: 600; }
   <section class="panel needs-join">
     <h2>Premi</h2>
     <div class="prizes" id="prizes"></div>
+    <p class="hint host-only" style="margin-top:8px">Tocca un premio per segnarlo come assegnato (o per toglierlo se ti sei sbagliato).</p>
     <div id="log" style="margin-top:12px"></div>
   </section>
 
@@ -675,6 +680,8 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       const d = document.createElement('div');
       const w = state.won[p.n];
       d.className = 'prize' + (w ? ' won' : '');
+      d.dataset.prize = p.n;
+      if (!isPlayer) d.title = w ? 'Tocca per togliere l\'assegnazione' : 'Tocca per segnare il premio come assegnato';
       const b = document.createElement('b'); b.textContent = p.name;
       d.append(b, w || 'in palio');
       $('prizes').appendChild(d);
@@ -1115,6 +1122,28 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if ($('speak').checked) { try { speechSynthesis.cancel(); speechSynthesis.speak(Object.assign(new SpeechSynthesisUtterance('Audio attivo'), { lang: 'it-IT' })); } catch (e) {} }
     render();
   };
+
+  // ---------- premi segnati a mano ----------
+  // Utile con l'urna fisica o con cartelle non dell'app: la maestra tocca il premio e (se vuole) scrive chi l'ha fatto.
+  $('prizes').addEventListener('click', ev => {
+    const t = ev.target.closest('[data-prize]');
+    if (!t || isPlayer) return;
+    const n = +t.dataset.prize, pr = prizes().find(x => x.n === n);
+    if (!pr) return;
+    if (state.won[n]) {
+      if (!confirm(`Togliere l'assegnazione di "${pr.name}" (${state.won[n]})?`)) return;
+      delete state.won[n];
+      log(`↩ ${pr.name}: assegnazione annullata`);
+    } else {
+      const who = prompt(`${pr.name}! Chi l'ha fatto?\n(nome o codice cartella; puoi lasciare vuoto)`, '');
+      if (who === null) return;
+      state.won[n] = who.trim().slice(0, 40) || 'assegnato';
+      const text = `🎉 ${pr.name}${who.trim() ? ' a ' + who.trim().slice(0, 40) : ''}!`;
+      log(text, true); toast(text);
+      if (state.room) broadcastMsg({ t: 'toast', text });
+    }
+    save(); render(); broadcast();
+  });
 
   load();
   if (!isPlayer) { // compatibilità con partite salvate prima del selettore
