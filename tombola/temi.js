@@ -910,7 +910,26 @@
       ["🔄", "«Ritorno al futuro – Parte II» è del 1989"], ["📅", "Nella Parte II Marty va nel futuro, al 21 ottobre 2015"], ["🛸", "Nella Parte II compare l'hoverboard, lo skateboard che vola"], ["👟", "Le scarpe del 2015 si allacciano da sole"],
       ["🦈", "Al cinema del 2015 danno «Lo squalo 19»"], ["♻️", "Mr. Fusion trasforma i rifiuti in energia per la DeLorean"], ["📖", "Nella Parte II Biff usa un almanacco sportivo per vincere le scommesse"], ["🗓️", "Il 21 ottobre è il «Back to the Future Day»"],
       ["🤠", "La Parte III (1990) è ambientata nel Far West, nel 1885"], ["👩‍🏫", "Nel Far West Doc conosce la maestra Clara Clayton"], ["🐴", "Buford «Cane Pazzo» Tannen è il bisnonno di Biff"], ["🚂", "Alla fine Doc costruisce una locomotiva che viaggia nel tempo"],
-      ["👦", "Doc e Clara hanno due figli, Jules e Verne"], ["📝", "Il messaggio finale di Doc: il futuro non è ancora scritto, ce lo costruiamo noi"], ["🎢", "Alla Universal Studios c'era un'attrazione dedicata a «Ritorno al futuro»"] ] }
+      ["👦", "Doc e Clara hanno due figli, Jules e Verne"], ["📝", "Il messaggio finale di Doc: il futuro non è ancora scritto, ce lo costruiamo noi"], ["🎢", "Alla Universal Studios c'era un'attrazione dedicata a «Ritorno al futuro»"] ] },
+
+    'chuck-norris': { name: "Chuck Norris (fatti veri e barzellette del web)", icon: '🥋', levels: ['5', 'adulti'], items: [
+      ["🥋", "Chuck Norris, all'anagrafe Carlos Ray Norris, nacque nel 1940 a Ryan, in Oklahoma"], ["✈️", "Fece il militare nell'aeronautica americana, in Corea, e lì cominciò con le arti marziali"], ["🏆", "Fu campione del mondo di karate per diversi anni di fila"], ["🥇", "Ha fondato uno stile tutto suo di arti marziali: il Chun Kuk Do"],
+      ["🐉", "Nel film di Bruce Lee «L'urlo di Chen terrorizza anche l'Occidente» (1972) combatte contro di lui nel Colosseo"], ["🏛️", "Il duello nel Colosseo contro Bruce Lee è una delle scene di combattimento più famose del cinema"], ["🎬", "«Missing in Action» (1984) e «Delta Force» (1986) sono due suoi film d'azione"], ["🤠", "Fu il protagonista della serie «Walker Texas Ranger», trasmessa dal 1993 al 2001"],
+      ["💥", "Nel 2012 comparve ne «I mercenari 2»"], ["🧒", "Ha creato Kickstart Kids, che insegna arti marziali e valori ai ragazzi"], ["🌐", "I «Chuck Norris Facts», le battute su di lui, diventarono famosi su internet nel 2005"], ["😂", "Barzelletta del web: «Chuck Norris ha contato fino all'infinito. Due volte»"],
+      ["💪", "Barzelletta del web: «Chuck Norris non fa le flessioni: spinge giù la Terra»"], ["😴", "Barzelletta del web: «Chuck Norris non dorme: aspetta»"], ["⌚", "Barzelletta del web: «Chuck Norris non porta l'orologio: decide lui che ore sono»"], ["➗", "Barzelletta del web: «Chuck Norris sa dividere per zero»"],
+      ["🚪", "Barzelletta del web: «Chuck Norris riesce a sbattere una porta girevole»"], ["🟡", "Barzelletta del web: «Chuck Norris vince a Forza 4 in tre mosse»"], ["🔢", "Barzelletta del web: «Chuck Norris conosce l'ultima cifra del pi greco»"], ["🔍", "Barzelletta del web: «Chuck Norris non cerca su Google: è Google che chiede a lui»"],
+      ["👏", "Barzelletta del web: «Chuck Norris sente il suono di una mano sola che applaude»"], ["🦸", "Chuck Norris è diventato un mito di internet, quasi un supereroe da barzelletta"], ["🥷", "Ha ricevuto la cintura nera in diverse arti marziali, anche nel jiu-jitsu brasiliano"], ["🏋️", "Ha fatto per anni la pubblicità di un attrezzo per la ginnastica in casa, il Total Gym"] ] },
+
+    'simpson': { name: "I Simpson", icon: '🍩', levels: ['5', 'adulti'], items: [
+      ["🍩", "I Simpson sono stati creati da Matt Groening"], ["📺", "I Simpson cominciarono nel 1987 come brevi cartoni nello show di Tracey Ullman"], ["🗓️", "La serie vera e propria partì nel 1989 ed è una delle più lunghe della televisione"], ["🏘️", "La famiglia abita a Springfield, al numero 742 di Evergreen Terrace"],
+      ["👨", "Homer è il papà: lavora alla centrale nucleare, nel settore 7G"], ["🍩", "Homer ama le ciambelle e la birra Duff"], ["😖", "«D'oh!» è l'esclamazione di Homer quando le cose vanno male"], ["👩", "Marge è la mamma, con i capelli blu alti alti"],
+      ["🛹", "Bart è il figlio di dieci anni: monello, con lo skateboard e la fionda"], ["📝", "A inizio puntata Bart scrive una frase sulla lavagna come punizione"], ["🗣️", "«Ciucciati il calzino!» è una battuta di Bart"], ["🎷", "Lisa, la sorella intelligente, suona il sassofono"],
+      ["🌱", "Lisa è vegetariana"], ["👶", "Maggie è la più piccola e ha sempre il ciuccio"], ["🐶", "Il cane di famiglia si chiama Piccolo Aiutante di Babbo Natale"], ["🐱", "Il gatto di famiglia si chiama Palla di Neve"],
+      ["👴", "Nonno Abe Simpson vive in una casa di riposo"], ["🍺", "Moe è il proprietario della taverna dove va Homer"], ["🤡", "Krusty il Clown è il presentatore del programma preferito di Bart"], ["🐭", "In tv Bart e Lisa guardano «Grattachecca e Fichetto»"],
+      ["💰", "Il signor Burns è il padrone ricchissimo della centrale nucleare"], ["😈", "«Eccellente...» dice il signor Burns, unendo le dita delle mani"], ["🧑‍💼", "Smithers è l'assistente fedele del signor Burns"], ["🙋", "Ned Flanders è il vicino gentilissimo di casa Simpson"],
+      ["👋", "«Salve salvino!» è il saluto di Ned Flanders"], ["🍩", "Il capo Wiggum è il poliziotto di Springfield"], ["🏫", "Il preside della scuola si chiama Skinner"], ["📚", "Milhouse è il migliore amico di Bart"],
+      ["📖", "Il negoziante di fumetti è sempre scorbutico"], ["🧬", "I personaggi hanno la pelle gialla e quattro dita per mano"], ["👨‍👩‍👧‍👦", "I nomi di famiglia vengono dalla famiglia di Matt Groening: Homer, Marge, Lisa e Maggie"], ["🔤", "Il nome Bart è l'anagramma di «brat», che in inglese vuol dire monello"],
+      ["🎞️", "«I Simpson – Il film» uscì nel 2007"], ["🏆", "La serie ha vinto moltissimi premi Emmy"], ["🌴", "Matt Groening ha creato anche il cartone «Futurama»"], ["📺", "I Simpson sono la serie animata americana più longeva"] ] }
   };
 
   // ---------- API ----------
@@ -924,8 +943,8 @@
   const CAT_KEYS = {
     [C.animali]: ['animali-versi', 'animali-classi', 'animali-curiosita', 'cuccioli', 'animali-habitat', 'dinosauri-tema', 'animali-modi-di-dire'],
     [C.cartoni]: ['cartoni', 'disney', 'cartoni-oggi', 'cartoni-80-90', 'ghibli', 'anime-classici', 'anime-oggi', 'super-mario', 'roblox', 'one-piece', 'minecraft', 'supereroi',
-                  'videogiochi-classici', 'videogiochi-oggi', 'console', 'pokemon', 'conta-cartoni', 'problemi-piccoli', 'problemi-grandi', 'alfabeto-cartoni', 'colori-cartoni', 'cartoni-nel-mondo', 'inglese-cartoni'],
-    [C.mate]: ['matematica'], [C.feste]: ['feste'], [C.fede]: ['santi', 'chiesa', 'gesu'], [C.divertente]: ['verita', 'mamma', 'proverbi', 'modi-di-dire', 'murphy'], [C.cultura]: ['musica', 'sport', 'cinema', 'sapori', 'capitali', 'cultura', 'toto', 'alberto-sordi', 'ritorno-al-futuro']
+                  'videogiochi-classici', 'videogiochi-oggi', 'console', 'pokemon', 'conta-cartoni', 'problemi-piccoli', 'problemi-grandi', 'alfabeto-cartoni', 'colori-cartoni', 'cartoni-nel-mondo', 'inglese-cartoni', 'simpson'],
+    [C.mate]: ['matematica'], [C.feste]: ['feste'], [C.fede]: ['santi', 'chiesa', 'gesu'], [C.divertente]: ['verita', 'mamma', 'proverbi', 'modi-di-dire', 'murphy', 'chuck-norris'], [C.cultura]: ['musica', 'sport', 'cinema', 'sapori', 'capitali', 'cultura', 'toto', 'alberto-sordi', 'ritorno-al-futuro']
   };
   function catOf(key) {
     if (key.startsWith('mix-')) return C.mix;

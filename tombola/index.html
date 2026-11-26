@@ -85,6 +85,8 @@ select { font: inherit; background: var(--bg); color: var(--text); border: 1px s
 .sezinfo span.vinta { background: rgba(34,197,94,.2); color: var(--text); }
 body.lim .sezinfo { display: none; }
 .gwin[hidden] { display: none; }
+.fine { margin: 10px 0; padding: 10px 12px; border-radius: 12px; background: rgba(251,191,36,.15); border: 1px solid var(--gold); font-weight: 600; }
+.fine[hidden] { display: none; }
 .gwin { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(251,191,36,.15); border: 1px solid var(--gold); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .prizes { display: flex; gap: 8px; flex-wrap: wrap; }
 .prize { flex: 1 1 120px; border: 1px solid var(--border); border-radius: 12px; padding: 10px; text-align: center; font-size: .85rem; color: var(--muted); }
@@ -452,6 +454,7 @@ details summary { cursor: pointer; font-weight: 600; }
         <p class="hint" style="margin-top:8px">Estrai dall'urna, poi tocca il numero sul tabellone o scrivilo qui.</p>
         <p class="hint" style="margin-top:6px">Stai usando l'<b>urna fisica</b>: i pulsanti Estrai e Auto sono nascosti. <button id="urnBack" style="padding:4px 10px">🎱 Estrai con l'app</button></p>
       </div>
+      <div class="fine" id="fine" hidden></div>
       <div class="btns">
         <button class="primary host-only" id="drawBtn">Estrai</button>
         <button class="host-only" id="autoBtn">▶ Auto</button>
@@ -724,6 +727,18 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     const best = Math.max(...card.map(r => r.filter(x => x && m.has(x)).length)), total = card.flat().filter(x => x && m.has(x)).length;
     return prize.n === size ? total === size : best >= prize.n;
   }
+  // Partita finita: la tombola è stata assegnata, oppure il gestore ha completato una sezione del tabellone. Non si estrae più.
+  const finita = () => {
+    const l = prizes();
+    if (l.length && state.won[l[l.length - 1].n]) return true;
+    return sezioniAttive() && SEZIONI.some(g => g.flat().every(n => state.drawn.includes(n)));
+  };
+  const finePerche = () => {
+    const l = prizes(), w = l.length ? state.won[l[l.length - 1].n] : '';
+    if (w) return `🏁 Partita finita: Tombola a ${w}! Per giocare ancora premi «Nuova partita».`;
+    const i = sezioniAttive() ? SEZIONI.findIndex(g => g.flat().every(n => state.drawn.includes(n))) : -1;
+    return i >= 0 ? `🏁 Partita finita: ${gestoreName()} ha completato la sezione ${i + 1}! Per giocare ancora premi «Nuova partita».` : '';
+  };
   const hostPlaying = () => !isPlayer && !!state.hostPlays && (state.play === 'devices' || state.play === 'mixed');
   function marked(i) {
     const out = new Set(state.drawn);
@@ -735,6 +750,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   // ---------- estrazione ----------
   function draw() {
     if (isPlayer || drawing) return;
+    if (finita()) { stopAuto(); return; }
     const out = new Set(state.drawn), r = [];
     for (let n = 1; n <= state.max; n++) if (!out.has(n)) r.push(n);
     if (!r.length) { stopAuto(); return; }
@@ -781,6 +797,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   }
   function registerNumber(n) {
     if (isPlayer) return;
+    if (finita()) { stopAuto(); return; }
     state.drawn.push(n);
     assignPhrase(n);
     if (state.drawn.length === 1) trackStart();
@@ -788,10 +805,11 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     checkPrizes();
     if (autoPrizesOn()) autoAwardRoom();
     save(); render(true); broadcast();
-    if (state.drawn.length >= state.max) stopAuto();
+    if (state.drawn.length >= state.max || finita()) stopAuto();
   }
   // Urna fisica: numero segnato a mano dalla maestra.
   function urnAdd(n) {
+    if (finita()) { toast('La partita è finita: premi «Nuova partita» per ricominciare'); return; }
     if (!Number.isInteger(n) || n < 1 || n > state.max) { toast(`Numero non valido (da 1 a ${state.max})`); return; }
     if (state.drawn.includes(n)) { toast(`Il ${n} è già uscito`); return; }
     registerNumber(n);
@@ -973,7 +991,10 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if (animate && last) { void ball.offsetWidth; ball.classList.add('pop'); }
     renderInfo(last);
     $('counter').textContent = `Estratti: ${state.drawn.length} / ${state.max}`;
-    $('drawBtn').disabled = state.drawn.length >= state.max;
+    const fine = finita();
+    $('drawBtn').disabled = $('autoBtn').disabled = state.drawn.length >= state.max || fine;
+    $('urnNum').disabled = $('urnAdd').disabled = fine;
+    $('fine').hidden = !fine; $('fine').textContent = fine ? finePerche() : '';
 
     $('board').innerHTML = '';
     const sez = sezioniOn();
@@ -1099,7 +1120,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   function stopAuto() { clearInterval(timer); timer = null; $('autoBtn').textContent = '▶ Auto'; }
   function toggleAuto() {
     if (timer) return stopAuto();
-    if (state.drawn.length >= state.max) return;
+    if (state.drawn.length >= state.max || finita()) return;
     $('autoBtn').textContent = '⏸ Pausa';
     draw(); timer = setInterval(draw, Math.max(+$('speed').value, state.drawAnim ? 5500 : 0));
   }
