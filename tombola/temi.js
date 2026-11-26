@@ -873,8 +873,48 @@
       ["🕳️", "Le grotte di Castellana sono tra le più belle d'Italia"], ["🏛️", "Matera, vicina alla Puglia, è famosa per i Sassi"], ["🧀", "La burrata è nata nelle campagne di Andria"] ] }
   };
 
+  // ---------- personaggi e film: Totò, Alberto Sordi, Ritorno al futuro ----------
+  const PERSONAGGI = {
+    'toto': { name: "Tutto Totò", icon: '🎩', levels: ['adulti'], items: [
+      ["🎩", "Totò, cioè Antonio de Curtis, nacque a Napoli, nel rione Sanità, nel 1898"], ["👑", "Lo chiamavano «il principe della risata»"], ["📜", "Aveva un lunghissimo nome da principe, pieno di titoli nobiliari"], ["🧒", "Alla nascita il suo cognome era Clemente"],
+      ["🎬", "Girò quasi cento film"], ["🎭", "Cominciò in teatro, con la rivista e l'avanspettacolo"], ["🤸", "Si muoveva come una marionetta: bastavano il corpo e la faccia per far ridere"], ["🎩", "Bombetta, giacca stretta e pantaloni corti: il costume di tanti suoi personaggi"],
+      ["🎖️", "«Siamo uomini o caporali?» è il titolo di un suo film del 1955"], ["😏", "«Ma mi faccia il piacere!» è una delle sue battute più famose"], ["🙄", "«Quisquilie, pinzillacchere!»: così liquidava le cose da poco"], ["🗣️", "«A prescindere» è un modo di dire che Totò ha reso famoso"],
+      ["🔢", "«È la somma che fa il totale»: una sua celebre battuta"], ["✉️", "Nella lettera alla «malafemmina» detta: «Signorina, veniamo noi con questa mia addirvi...»"], ["🧥", "A Milano, nel Duomo, chiede al vigile: «Noio volevàn savuàr...»"], ["🎞️", "«Totò, Peppino e la malafemmina» è del 1956"],
+      ["🤝", "Con Peppino De Filippo formò una delle coppie comiche più amate del cinema italiano"], ["🎵", "Scrisse anche canzoni: «Malafemmina» è del 1951"], ["✒️", "Scrisse poesie in napoletano: la più famosa è «'A livella»"], ["⚖️", "«'A livella» racconta che davanti alla morte siamo tutti uguali"],
+      ["🍝", "In «Miseria e nobiltà» (1954) mangia gli spaghetti con le mani e se li mette perfino in tasca"], ["💃", "Sophia Loren recitò con lui in «Miseria e nobiltà»"], ["🎨", "«Totò a colori» (1952) fu il primo film italiano girato a colori"], ["🚴", "In «Totò al Giro d'Italia» (1948) compaiono i campioni Coppi e Bartali"],
+      ["🏠", "«Totò cerca casa» (1949) racconta quanto era difficile trovare un alloggio"], ["👮", "«Guardie e ladri» (1951) lo vede in coppia con Aldo Fabrizi"], ["💶", "In «La banda degli onesti» (1956) un portiere e i suoi amici stampano banconote false"], ["🌴", "«Totò sceicco» e «Totò Tarzan» sono film del 1950: due parodie"],
+      ["🏛️", "«Totò e Cleopatra» (1963) è una parodia ambientata tra Egitto e antica Roma"], ["🌆", "«Totò, Peppino e... la dolce vita» (1961) fa il verso al film di Fellini"], ["🐦", "Pasolini lo diresse in «Uccellacci e uccellini» (1966), dove Totò parla con un corvo"], ["🌋", "Recitò anche ne «L'oro di Napoli» (1954), di Vittorio De Sica"],
+      ["🙈", "Negli ultimi anni perse quasi del tutto la vista, ma continuò a lavorare"], ["🕊️", "Morì a Roma nel 1967: ai suoi funerali, a Napoli, c'era una folla enorme"], ["⛪", "È sepolto a Napoli, nel cimitero del Pianto"], ["🏅", "È ricordato come uno dei più grandi attori comici italiani di sempre"] ] },
+
+    'alberto-sordi': { name: "Tutto Alberto Sordi", icon: '🎬', levels: ['adulti'], items: [
+      ["🎬", "Alberto Sordi nacque a Roma, a Trastevere, nel 1920"], ["🏛️", "Il pubblico lo chiamava affettuosamente «Albertone»"], ["🎙️", "Da giovane fu la voce italiana di Oliver Hardy, cioè «Ollio» di Stanlio e Ollio"], ["📻", "Alla radio inventò personaggi come «il compagnuccio della parrocchietta»"],
+      ["🎭", "Esordì in teatro e nel varietà, prima del cinema"], ["🇺🇸", "In «Un americano a Roma» (1954) Nando Moriconi sogna di essere americano"], ["🍝", "Nando davanti ai maccheroni: «Maccarone, m'hai provocato e io ti distruggo, io me te magno!»"], ["🤌", "In «I vitelloni» (1953) di Fellini fa il gesto dell'ombrello e grida «Lavoratori della tomba!»"],
+      ["🦸", "In «Lo sceicco bianco» (1952), di Federico Fellini, è l'eroe dei fotoromanzi"], ["🚔", "In «Il vigile» (1960) è un vigile urbano"], ["🩺", "In «Il medico della mutua» (1968) è il dottor Guido Tersilli"], ["🛻", "In «Una vita difficile» (1961), di Dino Risi, si racconta l'Italia dal dopoguerra al boom"],
+      ["🚗", "«Il boom» (1963) è un film diretto da Vittorio De Sica"], ["⚔️", "In «La grande guerra» (1959), di Monicelli, recita con Vittorio Gassman"], ["🦁", "«La grande guerra» vinse il Leone d'oro alla Mostra di Venezia"], ["🏠", "In «Tutti a casa» (1960) è un sottotenente dopo l'8 settembre 1943"],
+      ["👑", "Nel «Marchese del Grillo» (1981) è un nobile romano dell'Ottocento che fa scherzi a tutti"], ["🗣️", "Nel «Marchese del Grillo» dice: «Io so' io, e voi non siete un...»"], ["😢", "In «Un borghese piccolo piccolo» (1977) ha una parte drammatica"], ["🚕", "Ne «Il tassinaro» (1983) è un tassista romano: tra i passeggeri compaiono Fellini e Andreotti"],
+      ["🔫", "In «Finché c'è guerra c'è speranza» (1974) è un venditore di armi"], ["⚖️", "In «Detenuto in attesa di giudizio» (1971) è un uomo finito nei guai della burocrazia"], ["🧳", "In «Mafioso» (1962) è un siciliano che vive a Milano e torna al paese per le vacanze"], ["🎞️", "«Il vedovo» (1959) lo vede recitare con Franca Valeri"],
+      ["👨‍👦", "Con Carlo Verdone girò «In viaggio con papà» (1982)"], ["🎥", "Il suo primo film da regista è «Fumo di Londra» (1966)"], ["🌎", "Come regista girò anche «Un italiano in America» (1967)"], ["🖋️", "Fu anche sceneggiatore, oltre che attore e regista"],
+      ["🤝", "Lavorò con Fellini, Monicelli, Risi, De Sica e Comencini"], ["🇮🇹", "Per decenni ha raccontato con ironia i pregi e i difetti degli italiani"], ["🏅", "Nel 1995 ricevette il Leone d'oro alla carriera alla Mostra di Venezia"], ["🎂", "Per i suoi 80 anni fu nominato sindaco di Roma per un giorno"],
+      ["🏰", "A Roma c'è la Galleria Alberto Sordi, in piazza Colonna"], ["🏡", "La sua casa romana, Villa Sordi, è diventata un museo"], ["🕯️", "Morì a Roma nel 2003: ai funerali c'era una folla immensa"] ] },
+
+    'ritorno-al-futuro': { name: "Tutto Ritorno al futuro", icon: '⚡', levels: ['5', 'adulti'], items: [
+      ["🎬", "«Ritorno al futuro» (in inglese «Back to the Future») è del 1985 ed è diretto da Robert Zemeckis"], ["🖋️", "Zemeckis scrisse il film insieme a Bob Gale"], ["🎞️", "Il produttore esecutivo era Steven Spielberg"], ["🧑‍🎤", "Marty McFly, il protagonista, ha 17 anni ed è interpretato da Michael J. Fox"],
+      ["🧪", "Il dottor Emmett Brown, detto Doc, è lo scienziato un po' pazzo che inventa la macchina del tempo"], ["🚗", "La macchina del tempo è una DeLorean DMC-12"], ["🏭", "La vera DeLorean fu costruita in Irlanda del Nord"], ["🚪", "La DeLorean ha le portiere che si aprono verso l'alto, come ali di gabbiano"],
+      ["⚡", "Per viaggiare nel tempo la DeLorean deve raggiungere le 88 miglia all'ora, circa 142 chilometri orari"], ["🔋", "Per il salto nel tempo servono 1,21 gigawatt di energia"], ["🔧", "Il «condensatore di flusso» è il cuore della macchina del tempo"], ["☢️", "Nel primo film la DeLorean funziona con il plutonio"],
+      ["🧊", "Nelle prime idee la macchina del tempo doveva essere un frigorifero"], ["🐶", "Einstein, il cane di Doc, è il primo viaggiatore nel tempo: va avanti di un minuto"], ["🏙️", "La città di Marty si chiama Hill Valley"], ["⏰", "Il fulmine colpisce la torre dell'orologio sabato 12 novembre 1955 alle 22:04"],
+      ["🌲", "Nel 1955 Marty investe un pino: il centro commerciale «Twin Pines» diventerà «Lone Pine»"], ["⏪", "Marty torna nel 1955, trent'anni prima"], ["👩", "Nel 1955 Lorraine, la mamma di Marty, si innamora di lui"], ["🧑‍💼", "George McFly, il papà di Marty, da giovane è timido"],
+      ["💪", "Biff Tannen è il bullo di Hill Valley"], ["🥊", "George dà un pugno a Biff e conquista Lorraine"], ["🚛", "Biff finisce in un carro di letame"], ["🏫", "Il preside della scuola di Marty si chiama Strickland"],
+      ["🎸", "Al ballo della scuola Marty suona «Johnny B. Goode»"], ["🌊", "Il ballo della scuola si chiama «Enchantment Under the Sea», cioè «incanto sotto il mare»"], ["🎵", "«The Power of Love», di Huey Lewis and the News, è nella colonna sonora"], ["🎹", "La musica del film è di Alan Silvestri"],
+      ["🛹", "Marty usa lo skateboard per scappare dai guai"], ["😮", "«Grande Giove!» è l'esclamazione preferita di Doc"], ["🩲", "Lorraine chiama Marty «Calvin Klein» perché legge il nome sulla sua biancheria"], ["📸", "La foto di famiglia di Marty sbiadisce quando il passato cambia"],
+      ["🏠", "La casa di Doc nel 1955 è la Gamble House, a Pasadena"], ["⭐", "Eric Stoltz doveva essere Marty, ma fu sostituito da Michael J. Fox"], ["📺", "Michael J. Fox girava anche la serie «Casa Keaton»"], ["🏆", "Il film vinse un Oscar per gli effetti sonori"],
+      ["🔄", "«Ritorno al futuro – Parte II» è del 1989"], ["📅", "Nella Parte II Marty va nel futuro, al 21 ottobre 2015"], ["🛸", "Nella Parte II compare l'hoverboard, lo skateboard che vola"], ["👟", "Le scarpe del 2015 si allacciano da sole"],
+      ["🦈", "Al cinema del 2015 danno «Lo squalo 19»"], ["♻️", "Mr. Fusion trasforma i rifiuti in energia per la DeLorean"], ["📖", "Nella Parte II Biff usa un almanacco sportivo per vincere le scommesse"], ["🗓️", "Il 21 ottobre è il «Back to the Future Day»"],
+      ["🤠", "La Parte III (1990) è ambientata nel Far West, nel 1885"], ["👩‍🏫", "Nel Far West Doc conosce la maestra Clara Clayton"], ["🐴", "Buford «Cane Pazzo» Tannen è il bisnonno di Biff"], ["🚂", "Alla fine Doc costruisce una locomotiva che viaggia nel tempo"],
+      ["👦", "Doc e Clara hanno due figli, Jules e Verne"], ["📝", "Il messaggio finale di Doc: il futuro non è ancora scritto, ce lo costruiamo noi"], ["🎢", "Alla Universal Studios c'era un'attrazione dedicata a «Ritorno al futuro»"] ] }
+  };
+
   // ---------- API ----------
-  const ALL = Object.assign({}, GEN, LISTE, CARTONI, CARTONI_OGGI, FESTE, GIOCHI, VIDEOGIOCHI, ANIME, MURPHY, SCUOLA_CARTONI, ANIMALI, REGIONI, FEDE, MATEMATICA, ADULTI);
+  const ALL = Object.assign({}, GEN, LISTE, CARTONI, CARTONI_OGGI, FESTE, GIOCHI, VIDEOGIOCHI, ANIME, MURPHY, PERSONAGGI, SCUOLA_CARTONI, ANIMALI, REGIONI, FEDE, MATEMATICA, ADULTI);
   Object.keys(ALL).forEach(k => { ALL[k].key = k; });
 
   // Categorie per ordinare i menu (un tema sta in una sola categoria).
@@ -885,7 +925,7 @@
     [C.animali]: ['animali-versi', 'animali-classi', 'animali-curiosita', 'cuccioli', 'animali-habitat', 'dinosauri-tema', 'animali-modi-di-dire'],
     [C.cartoni]: ['cartoni', 'disney', 'cartoni-oggi', 'cartoni-80-90', 'ghibli', 'anime-classici', 'anime-oggi', 'super-mario', 'roblox', 'one-piece', 'minecraft', 'supereroi',
                   'videogiochi-classici', 'videogiochi-oggi', 'console', 'pokemon', 'conta-cartoni', 'problemi-piccoli', 'problemi-grandi', 'alfabeto-cartoni', 'colori-cartoni', 'cartoni-nel-mondo', 'inglese-cartoni'],
-    [C.mate]: ['matematica'], [C.feste]: ['feste'], [C.fede]: ['santi', 'chiesa', 'gesu'], [C.divertente]: ['verita', 'mamma', 'proverbi', 'modi-di-dire', 'murphy'], [C.cultura]: ['musica', 'sport', 'cinema', 'sapori', 'capitali', 'cultura']
+    [C.mate]: ['matematica'], [C.feste]: ['feste'], [C.fede]: ['santi', 'chiesa', 'gesu'], [C.divertente]: ['verita', 'mamma', 'proverbi', 'modi-di-dire', 'murphy'], [C.cultura]: ['musica', 'sport', 'cinema', 'sapori', 'capitali', 'cultura', 'toto', 'alberto-sordi', 'ritorno-al-futuro']
   };
   function catOf(key) {
     if (key.startsWith('mix-')) return C.mix;
