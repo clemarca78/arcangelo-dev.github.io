@@ -734,12 +734,16 @@
   const themesFor = level => Object.keys(ALL).filter(k => ALL[k].levels.includes(level)).map(k => ({ key: k, name: ALL[k].name, icon: ALL[k].icon, cat: catOf(k) }));
 
   // Voce per il numero n del tema: { e: emoji, t: frase, sp?: testo da leggere, spk?: [[testo, lingua]] }
-  function entry(key, n) {
+  // idx (facoltativo) sceglie la frase dell'elenco al posto di quella «di default» del numero.
+  function entry(key, n, idx) {
     const th = ALL[key]; if (!th) return null;
     if (th.f) return th.f(n);
-    const it = th.items[(n - 1) % th.items.length];
+    const L = th.items.length, i = idx != null ? idx : n - 1;
+    const it = th.items[((i % L) + L) % L];
     return { e: it[0], t: it[1] };
   }
+  // Quante frasi ha un tema a elenco (0 per i temi generati dal numero, che sono già tutti diversi).
+  const size = key => (ALL[key] && ALL[key].items) ? ALL[key].items.length : 0;
 
   // Tema a caso per la classe, diverso dal precedente se possibile.
   function pick(level, avoid) {
@@ -759,5 +763,5 @@
   }
   function unregister(key) { if (key.startsWith('mio-')) delete ALL[key]; }
 
-  g.TombolaTemi = { LEVELS, CATEGORIES, register, unregister, themesFor, entry, pick, name: k => ALL[k] ? ALL[k].icon + ' ' + ALL[k].name : '' };
+  g.TombolaTemi = { LEVELS, CATEGORIES, register, unregister, size, themesFor, entry, pick, name: k => ALL[k] ? ALL[k].icon + ' ' + ALL[k].name : '' };
 })(window);
