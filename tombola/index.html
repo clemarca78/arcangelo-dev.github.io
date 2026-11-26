@@ -108,7 +108,17 @@ select { font: inherit; background: var(--bg); color: var(--text); border: 1px s
 .kids .only-kids { display: flex; }
 .opt-auto { display: none; }
 .kids .opt-auto, .player .opt-auto { display: flex; }
-body.player .host-only, body.inroom .host-cards, body.paper .host-cards, body.nojoin .needs-join { display: none !important; }
+body.player .host-only, body.nojoin .needs-join { display: none !important; }
+body.play-paper .host-cards, body.play-devices .host-cards, body.play-mixed .host-cards { display: none !important; }
+#roomPanel, #paperPanel { display: none; }
+body.play-devices #roomPanel, body.play-mixed #roomPanel, body.play-paper #paperPanel, body.play-mixed #paperPanel { display: block; }
+main > header { order: -3; }
+body.started:not(.player) .top { order: -2; }
+.seg { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+.seg button { text-align: left; display: grid; gap: 2px; padding: 10px 12px; }
+.seg button small { font-weight: 400; color: var(--muted); font-size: .78rem; line-height: 1.25; }
+.seg button.active { background: rgba(56,189,248,.18); border-color: var(--accent); }
+.seg button.active small { color: var(--text); }
 #joinPanel { display: none; max-width: 420px; margin: 0 auto; width: 100%; text-align: center; }
 body.nojoin #joinPanel { display: block; }
 #joinPanel input { width: 100%; margin: 10px 0; font-size: 1.2rem; text-align: center; }
@@ -173,6 +183,21 @@ details summary { cursor: pointer; font-weight: 600; }
     <button class="primary" id="joinBtn">Entra</button>
   </section>
 
+  <section class="panel host-only" id="playPanel">
+    <h2>Come giocate?</h2>
+    <div class="seg" id="playSeg">
+      <button data-play="screen"><b>💻 A schermo</b><small>Giochi tu, con le cartelle sullo schermo</small></button>
+      <button data-play="paper"><b>📄 Carta</b><small>Cartelle stampate; controlli i premi con il codice</small></button>
+      <button data-play="devices"><b>📱 Dispositivi</b><small>I giocatori entrano da telefono o tablet</small></button>
+      <button data-play="mixed"><b>🔀 Mista</b><small>Alcuni su carta, altri su dispositivo</small></button>
+    </div>
+    <p class="hint" id="playHint" style="text-align:left;margin-top:10px"></p>
+    <div class="row">
+      <input type="text" id="joinCodeIn" placeholder="Sei un giocatore? Scrivi il codice" maxlength="8" size="28" autocomplete="off">
+      <button id="joinGo">Entra nella stanza</button>
+    </div>
+  </section>
+
   <section class="panel host-only" id="roomPanel">
     <h2>Multiplayer</h2>
     <div id="roomBody"></div>
@@ -183,7 +208,6 @@ details summary { cursor: pointer; font-weight: 600; }
     <p class="hint" style="text-align:left;margin-bottom:10px">A scuola senza dispositivi? Stampa le cartelle, i bambini segnano i numeri a mano. Quando qualcuno chiama un premio, digita il codice scritto sulla sua cartella e controlla.</p>
     <div class="row" style="margin-top:0">
       <button id="printBtn" class="primary" style="font-size:1rem;padding:10px 18px">🖨️ Stampa cartelle</button>
-      <label class="opts" style="margin:0"><input type="checkbox" id="paper"> Gioco con le cartelle di carta (nascondi le mie cartelle)</label>
     </div>
     <div class="row">
       <input type="text" id="chkId" placeholder="Codice cartella (es. C4821-3)" maxlength="14" size="26" autocomplete="off">
@@ -378,7 +402,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   const isPlayer = !!ROOM_CODE;
   const KEY = isPlayer ? 'tombola-player-' + ROOM_CODE : 'tombola-proto-v2';
   const $ = id => document.getElementById(id);
-  let state = { mode: 'classic', max: 90, drawn: [], cards: [], marks: [], won: {}, autoMark: false, gen: 0, room: null, token: '', pname: '', paper: false };
+  let state = { mode: 'classic', max: 90, drawn: [], cards: [], marks: [], won: {}, autoMark: false, gen: 0, room: null, token: '', pname: '', play: 'screen' };
   let timer = null;
   const kids = () => state.mode === 'kids';
   const prizesFor = m => m === 'kids'
@@ -468,7 +492,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   // ---------- premi ----------
   // Ambo/terno/quaterna/cinquina valgono su una riga; tombola = tutta la cartella.
   function checkPrizes() {
-    if (isPlayer || state.room || state.paper) return; // in stanza o con cartelle di carta i premi si assegnano a chiamata
+    if (isPlayer || state.play !== 'screen') return; // fuori dalla modalità a schermo i premi si assegnano a chiamata
     const size = kids() ? 9 : 15;
     state.cards.forEach((g, i) => {
       const m = marked(i);
@@ -513,8 +537,12 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   }
   function render(animate) {
     document.body.classList.toggle('kids', kids());
-    document.body.classList.toggle('paper', !!state.paper && !isPlayer);
-    $('paper').checked = !!state.paper;
+    document.body.classList.toggle('started', state.drawn.length > 0);
+    if (!isPlayer) {
+      ['screen', 'paper', 'devices', 'mixed'].forEach(m => document.body.classList.toggle('play-' + m, state.play === m));
+      document.querySelectorAll('#playSeg button').forEach(b => b.classList.toggle('active', b.dataset.play === state.play));
+      $('playHint').textContent = PLAY_HINTS[state.play];
+    }
     $('modeClassic').classList.toggle('active', !kids());
     $('modeKids').classList.toggle('active', kids());
     $('maxSel').value = state.max;
@@ -752,12 +780,13 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     save(); render(); broadcast();
   }
   function closeRoom() {
-    if (!confirm('Chiudere la stanza? I giocatori verranno scollegati.')) return;
+    if (!confirm('Chiudere la stanza? I giocatori verranno scollegati.')) return false;
     broadcastMsg({ t: 'closed' });
     Object.values(conns).forEach(c => { try { c.close(); } catch (e) {} });
     Object.keys(conns).forEach(k => delete conns[k]);
     try { peer.destroy(); } catch (e) {}
     peer = null; state.room = null; roomError = ''; save(); renderRoom(); render();
+    return true;
   }
   function roomLink() {
     let u = location.origin + location.pathname + '?stanza=' + state.room.code;
@@ -765,7 +794,6 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     return u;
   }
   function renderRoom() {
-    document.body.classList.toggle('inroom', !!state.room && !isPlayer);
     if (isPlayer) return;
     const box = $('roomBody'); box.innerHTML = '';
     if (!state.room) {
@@ -773,10 +801,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       box.append(el('p', 'hint', 'Crea una stanza: i giocatori entrano dal loro telefono o tablet con un codice e ricevono le cartelle. Tu estrai i numeri e controlli i premi.'));
       const row = el('div', 'row');
       const b = el('button', 'primary', '👥 Crea stanza'); b.onclick = createRoom;
-      const inp = el('input'); inp.type = 'text'; inp.placeholder = 'Hai un codice?'; inp.maxLength = 8; inp.size = 10;
-      const go = el('button', null, 'Entra come giocatore');
-      go.onclick = () => { const c = inp.value.trim().toUpperCase(); if (c) location.search = '?stanza=' + encodeURIComponent(c); };
-      row.append(b, inp, go); box.append(row);
+      row.append(b); box.append(row);
       if (roomError) box.append(el('div', 'err', roomError));
       return;
     }
@@ -898,9 +923,33 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   $('printBtn').onclick = () => window.open(`stampa.html?mode=${state.mode}&max=${state.max}&serie=${TombolaCards.randomSerie()}`, '_blank');
   $('chkBtn').onclick = checkPaperCard;
   $('chkId').onkeydown = e => { if (e.key === 'Enter') checkPaperCard(); };
-  $('paper').onchange = () => { state.paper = $('paper').checked; save(); render(); };
+
+  // ---------- come si gioca: schermo / carta / dispositivi / mista ----------
+  const PLAY_HINTS = {
+    screen: 'Giochi tu con le cartelle sullo schermo: i numeri si segnano da soli e i premi sono automatici.',
+    paper: 'I bambini hanno le cartelle stampate. Quando qualcuno alza la mano, digita il codice scritto sulla sua cartella e controlla il premio.',
+    devices: 'Ogni giocatore entra dal proprio telefono o tablet con il codice della stanza e chiama i premi dal suo schermo: li controllo io.',
+    mixed: 'Chi ha il dispositivo chiama i premi dal suo schermo (controllo automatico). Chi ha la carta alza la mano e controlli con il codice. Vince il primo premio valido, in qualunque modo sia chiamato.'
+  };
+  function setPlay(m) {
+    if (m === state.play) return;
+    const needRoom = m === 'devices' || m === 'mixed';
+    if (!needRoom && state.room && !closeRoom()) { render(); return; }
+    state.play = m;
+    if (needRoom && !state.room) createRoom();
+    save(); render(); renderRoom();
+  }
+  document.querySelectorAll('#playSeg button').forEach(b => { b.onclick = () => setPlay(b.dataset.play); });
+  const joinByCode = () => { const c = $('joinCodeIn').value.trim().toUpperCase(); if (c) location.search = '?stanza=' + encodeURIComponent(c); };
+  $('joinGo').onclick = joinByCode;
+  $('joinCodeIn').onkeydown = e => { if (e.key === 'Enter') joinByCode(); };
 
   load();
+  if (!isPlayer) { // compatibilità con partite salvate prima del selettore
+    if (state.paper && state.play === 'screen') state.play = state.room ? 'mixed' : 'paper';
+    else if (state.room && state.play === 'screen') state.play = 'devices';
+    delete state.paper;
+  }
   if (isPlayer) {
     log('In attesa dei numeri…');
     startPlayer();
