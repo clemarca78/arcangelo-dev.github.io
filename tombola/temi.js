@@ -1121,15 +1121,111 @@
   };
   Object.keys(EXTRA3).forEach(k => { ALL[k].items.push(...EXTRA3[k]); });
 
+  // ---------- altri 38 cartoni anni '80 e '90 (per arrivare a 90) e tre temi nuovi: medicina, corpo umano, parrucchieri e barbieri ----------
+  const EXTRA4 = {
+    'cartoni-80-90': [
+      ["⭐", "Seiya è il Cavaliere di Pegaso, nei «Cavalieri dello Zodiaco»"], ["🪐", "Goku, il protagonista di Dragon Ball, è nato su un altro pianeta ed è un Saiyan"], ["👑", "Vegeta è il principe dei Saiyan"], ["🥊", "Ken il guerriero usa la tecnica di Hokuto e urla «Atatatatatata!»"],
+      ["🔫", "Jigen e Goemon sono gli amici di Lupin III"], ["👮", "L'ispettore Zenigata insegue sempre Lupin III"], ["💃", "Fujiko Mine è la bella complice di Lupin III"], ["🤖", "Il Dottor Inferno è il nemico di Mazinga Z"],
+      ["🚀", "L'Arcadia è la nave spaziale di Capitan Harlock"], ["🌹", "Anna dai capelli rossi vive nella fattoria di Green Gables"], ["🦁", "Kimba è un leoncino bianco"], ["🤖", "Arale è una robot bambina nel cartone «Dr. Slump»"],
+      ["🗡️", "D'Artagnan e i moschettieri del re è un cartone con cani al posto delle persone"], ["🦆", "Darkwing Duck è un papero supereroe con il mantello"], ["🐿️", "Chip e Chop sono gli «agenti speciali» che risolvono i casi"], ["🐭", "I Gummi sono orsetti che saltano e bevono succo di gummiberry"],
+      ["🐰", "Roger Rabbit è il coniglio protagonista del film «Chi ha incastrato Roger Rabbit»"], ["🐢", "Le Tartarughe Ninja si chiamano Leonardo, Donatello, Raffaello e Michelangelo"], ["🐀", "Splinter è il maestro delle Tartarughe Ninja"], ["😈", "Shredder è il nemico delle Tartarughe Ninja"],
+      ["🚗", "Optimus Prime è il capo degli Autobot nei Transformers"], ["😤", "Megatron è il capo dei Decepticon"], ["⚽", "Mark Lenders è il rivale di Holly Hutton"], ["🥅", "Benji Price è il portiere di Holly e Benji"],
+      ["🥊", "Rocky Joe è un cartone sulla boxe"], ["🔫", "City Hunter è un cartone con protagonista Ryo Saeba"], ["🐱", "Luna è la gatta parlante di Sailor Moon"], ["🤠", "Lucky Luke spara più veloce della sua ombra"],
+      ["🕵️", "Tintin è un giovane reporter con il cagnolino Milù"], ["🎈", "Willy Fog è il gentiluomo che fa il giro del mondo in 80 giorni"], ["🚀", "Ulisse 31 è una versione spaziale dell'Odissea"], ["🧸", "I Muppet Babies sono i Muppet da piccoli"],
+      ["🍄", "Super Mario Bros. Super Show! è del 1989"], ["🌍", "Capitan Planet ha un anello per ogni potere della natura"], ["🐾", "Digimon sono mostri digitali"], ["🦖", "Dinosaucers sono dinosauri alieni che lottano insieme a ragazzi"],
+      ["🦸", "Il Grande Mazinga è il robot che arriva dopo Mazinga Z"], ["🇯🇵", "In Giappone «Holly e Benji» si chiama «Capitan Tsubasa»"] ],
+  };
+  Object.keys(EXTRA4).forEach(k => { ALL[k].items.push(...EXTRA4[k]); });
+
+  // Temi per mestieri e salute (adulti)
+  const MESTIERI = {
+    'medicina': { name: "Medicina e salute", icon: '🩺', levels: ['adulti'], items: [
+      ["⚕️", "Il simbolo della medicina è il bastone di Asclepio con un serpente avvolto"], ["📜", "Ippocrate, medico dell'antica Grecia, è considerato il padre della medicina"], ["🤝", "Il Giuramento di Ippocrate è l'impegno etico dei medici"], ["🏛️", "Galeno fu un grande medico greco che lavorò a Roma"],
+      ["📖", "Avicenna scrisse il «Canone della medicina»"], ["🦴", "Andrea Vesalio pubblicò nel 1543 un grande trattato di anatomia, dopo aver insegnato a Padova"], ["❤️", "William Harvey descrisse la circolazione del sangue nel 1628"], ["💉", "Edward Jenner realizzò il primo vaccino, contro il vaiolo, nel 1796"],
+      ["🐕", "Louis Pasteur mise a punto un vaccino contro la rabbia"], ["🍄", "Alexander Fleming scoprì la penicillina nel 1928"], ["🧼", "Ignaz Semmelweis capì che lavarsi le mani può salvare vite"], ["🕯️", "Florence Nightingale, «la signora con la lampada», rivoluzionò l'assistenza ai malati"],
+      ["🩻", "Wilhelm Röntgen scoprì i raggi X nel 1895"], ["🔬", "Camillo Golgi, italiano, vinse il Nobel per la medicina nel 1906"], ["🧠", "Rita Levi-Montalcini vinse il Nobel per la medicina nel 1986"], ["🦠", "Il vaiolo è stato dichiarato eradicato nel 1980"],
+      ["💊", "L'aspirina contiene acido acetilsalicilico"], ["🌡️", "La temperatura normale del corpo è intorno ai 36,5-37 gradi"], ["🩸", "La pressione del sangue ideale è intorno a 120/80 mmHg"], ["💓", "A riposo un adulto ha tra 60 e 100 battiti al minuto"],
+      ["🩺", "Lo stetoscopio fu inventato da René Laennec nel 1816"], ["📏", "Lo sfigmomanometro misura la pressione del sangue"], ["📈", "L'elettrocardiogramma registra l'attività elettrica del cuore"], ["🩻", "La radiografia usa i raggi X"],
+      ["🔊", "L'ecografia usa gli ultrasuoni"], ["🧲", "La risonanza magnetica usa un forte campo magnetico"], ["🍩", "La TAC permette di ottenere immagini del corpo a strati"], ["🅰️", "I gruppi sanguigni principali sono A, B, AB e 0"],
+      ["🧪", "Karl Landsteiner scoprì i gruppi sanguigni nel 1901"], ["🩸", "Il gruppo 0 negativo è considerato il donatore universale di globuli rossi"], ["🩸", "Chi ha il gruppo AB positivo può ricevere globuli rossi da tutti i gruppi"], ["💉", "L'insulina fu scoperta nel 1921 da Banting e Best"],
+      ["😴", "L'anestesia con l'etere fu mostrata a Boston nel 1846"], ["🧴", "Joseph Lister introdusse l'antisepsi in chirurgia con l'acido fenico"], ["❤️‍🔥", "Il primo trapianto di cuore umano fu eseguito da Christiaan Barnard nel 1967"], ["🚑", "Il numero unico di emergenza europeo è il 112"],
+      ["🚨", "In Italia il 118 è stato a lungo il numero delle emergenze sanitarie"], ["🚦", "Al pronto soccorso i codici di triage vanno dal rosso, il più urgente, al bianco"], ["🏥", "Il Servizio sanitario nazionale italiano è stato istituito nel 1978"], ["💳", "La tessera sanitaria serve per le prestazioni del Servizio sanitario"],
+      ["➕", "La Croce Rossa nacque per l'idea di Henry Dunant"], ["🌍", "L'Organizzazione mondiale della sanità è nata nel 1948"], ["🩹", "«Primum non nocere», cioè «prima di tutto non nuocere», è un principio attribuito alla tradizione ippocratica"], ["🥼", "Il camice bianco è la divisa tradizionale del medico"],
+      ["🔪", "Il bisturi è il coltello del chirurgo"], ["🧵", "I punti di sutura chiudono le ferite"], ["🦽", "Il gesso immobilizza un osso rotto mentre guarisce"], ["💉", "La siringa serve a iniettare un farmaco o a prelevare sangue"],
+      ["👶", "Il pediatra cura i bambini"], ["🦴", "L'ortopedico si occupa di ossa e articolazioni"], ["❤️", "Il cardiologo cura il cuore"], ["👁️", "L'oculista cura gli occhi"],
+      ["🧴", "Il dermatologo cura la pelle"], ["👂", "L'otorinolaringoiatra cura orecchie, naso e gola"], ["🦷", "L'odontoiatra è il dentista"], ["😴", "L'anestesista si occupa dell'anestesia durante gli interventi"],
+      ["🩻", "Il radiologo interpreta radiografie, ecografie e risonanze"], ["🤰", "L'ostetrica assiste le donne durante il parto"], ["🧑‍⚕️", "L'infermiere assiste i pazienti giorno e notte"], ["🦠", "Gli antibiotici combattono i batteri, non i virus"],
+      ["🧼", "Per lavare bene le mani servono almeno venti secondi"], ["💉", "I vaccini allenano il sistema immunitario a riconoscere un microbo"], ["🩸", "Un uomo può donare il sangue intero al massimo quattro volte l'anno"], ["🥦", "Si consigliano almeno cinque porzioni di frutta e verdura al giorno"],
+      ["🏃", "Per gli adulti si consigliano almeno 150 minuti di attività fisica a settimana"], ["😴", "Un adulto dovrebbe dormire in media 7-9 ore a notte"], ["💧", "È consigliabile bere circa un litro e mezzo di acqua al giorno"], ["🚭", "Il fumo è una delle principali cause di malattie ai polmoni"],
+      ["🍬", "Il diabete è una malattia in cui c'è troppo zucchero nel sangue"], ["🫀", "L'infarto avviene quando una parte del cuore non riceve abbastanza sangue"], ["🤒", "La febbre è un modo del corpo di difendersi dalle infezioni"], ["🤧", "L'influenza è causata da un virus"],
+      ["🦟", "La malaria è trasmessa dalle zanzare"], ["🧬", "Il DNA contiene le istruzioni genetiche delle cellule"], ["📺", "Il «Dottor House» è un medico burbero e geniale di una serie TV"], ["🚑", "In «ER – Medici in prima linea» recitava anche George Clooney"],
+      ["😄", "Patch Adams, interpretato da Robin Williams, curava i pazienti con il buonumore"], ["📺", "«Medico in famiglia» è una serie italiana con Lino Banfi"], ["🐾", "Il veterinario cura gli animali"], ["💊", "I farmaci generici hanno lo stesso principio attivo di quelli di marca"],
+      ["🕐", "Il pronto soccorso è aperto ventiquattr'ore su ventiquattro"], ["🛡️", "Il sistema immunitario ci difende da virus e batteri"], ["📋", "La visita medica comincia dall'anamnesi, cioè dalla storia clinica del paziente"], ["🔬", "Il microscopio permette di osservare cellule e batteri"],
+      ["🧫", "Robert Koch scoprì il batterio della tubercolosi nel 1882"], ["🚰", "John Snow, nel 1854 a Londra, studiò un'epidemia di colera e collegò i casi a una pompa dell'acqua"], ["🌍", "Il 7 aprile è la Giornata mondiale della salute"], ["🎗️", "Il nastro rosa è il simbolo della lotta contro il tumore al seno"],
+      ["🧑‍⚕️", "Il medico di famiglia è il primo punto di riferimento per la salute"], ["🦠", "Louis Pasteur dimostrò che molte malattie sono causate dai microbi"], ["☢️", "Marie Curie scoprì il radio e il polonio, poi usati anche in medicina"] ] },
+
+    'corpo-umano-grandi': { name: "Il corpo umano: curiosità", icon: '🫀', levels: ['adulti'], items: [
+      ["🦴", "Un adulto ha 206 ossa"], ["👶", "Un neonato ha oltre 270 ossa, che crescendo in parte si uniscono"], ["💪", "I muscoli del corpo sono circa 600"], ["🦵", "Il femore è l'osso più lungo del corpo"],
+      ["👂", "La staffa, nell'orecchio, è l'osso più piccolo del corpo"], ["🧴", "La pelle è l'organo più grande del corpo"], ["🩸", "Un adulto ha circa cinque litri di sangue"], ["❤️", "Il cuore batte circa 100.000 volte al giorno"],
+      ["❤️", "Il cuore ha quattro cavità: due atri e due ventricoli"], ["✊", "Il cuore ha più o meno le dimensioni di un pugno chiuso"], ["🫁", "I polmoni sono due, e il destro è un po' più grande del sinistro"], ["🌬️", "A riposo un adulto respira 12-20 volte al minuto"],
+      ["🧠", "Il cervello di un adulto pesa circa un chilo e quattro"], ["🧠", "Il cervello ha circa 86 miliardi di neuroni"], ["⚡", "Il cervello usa circa un quinto dell'energia del corpo"], ["⚖️", "Il cervelletto controlla equilibrio e coordinazione dei movimenti"],
+      ["🧠", "Il cervello ha due emisferi"], ["🦴", "Il midollo spinale passa dentro la colonna vertebrale"], ["🦴", "La colonna vertebrale ha 33 vertebre"], ["🫁", "Le costole sono dodici paia"],
+      ["💀", "Il cranio è formato da 22 ossa"], ["✋", "Ogni mano ha 27 ossa"], ["🦶", "Ogni piede ha 26 ossa"], ["💧", "Il corpo di un adulto è fatto per circa il 60% di acqua"],
+      ["🔴", "I globuli rossi trasportano l'ossigeno"], ["⚪", "I globuli bianchi difendono il corpo dalle infezioni"], ["🩹", "Le piastrine aiutano il sangue a coagulare"], ["🦴", "Il midollo osseo produce le cellule del sangue"],
+      ["⏱️", "Il sangue fa un giro completo del corpo in circa un minuto"], ["🚰", "Le arterie portano il sangue dal cuore al corpo, le vene lo riportano al cuore"], ["🧵", "I capillari sono i vasi sanguigni più piccoli"], ["💪", "Il bicipite è il muscolo che piega il braccio"],
+      ["🍑", "Il grande gluteo è il muscolo più grande del corpo"], ["🦵", "Il tendine d'Achille è il tendine più grosso del corpo"], ["🌬️", "Il diaframma è il muscolo che ci aiuta a respirare"], ["😮‍💨", "Il singhiozzo è una contrazione del diaframma"],
+      ["👅", "La lingua è un muscolo"], ["👅", "Le papille gustative distinguono dolce, salato, acido, amaro e umami"], ["👃", "Il naso riconosce moltissimi odori diversi"], ["👁️", "La cornea è la parte trasparente davanti all'occhio"],
+      ["👁️", "L'iride è la parte colorata dell'occhio"], ["⚫", "La pupilla si stringe quando c'è tanta luce"], ["🔍", "Il cristallino mette a fuoco le immagini"], ["👁️", "La retina è lo strato dell'occhio che raccoglie la luce"],
+      ["👂", "L'orecchio ha tre parti: esterna, media e interna"], ["🐌", "La coclea, detta anche chiocciola, è nell'orecchio interno"], ["⚖️", "L'orecchio interno aiuta anche l'equilibrio"], ["🦷", "Un adulto ha 32 denti, compresi i denti del giudizio"],
+      ["🍼", "I bambini hanno 20 denti da latte"], ["🦷", "Lo smalto dei denti è la sostanza più dura del corpo"], ["😀", "I muscoli del viso permettono di fare tante espressioni diverse"], ["👁️", "Si sbattono le palpebre circa 15-20 volte al minuto"],
+      ["💅", "Le unghie crescono circa tre millimetri al mese"], ["💇", "I capelli crescono circa un centimetro al mese"], ["🖐️", "Le impronte digitali sono diverse per ogni persona"], ["👍", "Il pollice opponibile permette di afferrare gli oggetti"],
+      ["🍽️", "Lo stomaco produce acido cloridrico per digerire il cibo"], ["🌀", "L'intestino tenue è lungo diversi metri"], ["🧈", "Il fegato è un organo che può rigenerarsi"], ["⚖️", "Il fegato pesa circa un chilo e mezzo"],
+      ["🍬", "Il pancreas produce l'insulina"], ["🫘", "I reni sono due e filtrano il sangue"], ["🚽", "La vescica raccoglie l'urina"], ["🦋", "La tiroide è una ghiandola a forma di farfalla nel collo"],
+      ["🧬", "Le cellule umane hanno 46 cromosomi, cioè 23 coppie"], ["🧬", "Il DNA è una lunga molecola a doppia elica"], ["🧫", "Il corpo umano è fatto di migliaia di miliardi di cellule"], ["🛡️", "Il sistema immunitario ci difende da virus e batteri"],
+      ["💭", "Si sogna soprattutto durante la fase REM del sonno"], ["😴", "Un adulto ha bisogno di circa 7-9 ore di sonno per notte"], ["🌡️", "La temperatura normale del corpo è circa 36,5-37 gradi"], ["🥶", "I brividi aiutano il corpo a scaldarsi"],
+      ["💦", "Il sudore aiuta il corpo a raffreddarsi"], ["🧴", "La pelle si rinnova completamente in circa quattro settimane"], ["💧", "Le ghiandole salivari producono più di mezzo litro di saliva al giorno"], ["🤧", "Lo starnuto serve a liberare il naso da polvere e microbi"],
+      ["😮", "Gli sbadigli sono contagiosi"], ["🔄", "A riposo il cuore fa circolare circa cinque litri di sangue al minuto"], ["🧭", "Il sistema nervoso porta i segnali dal cervello a tutto il corpo"], ["⚡", "I nervi trasmettono segnali elettrici"],
+      ["🔨", "Il riflesso del ginocchio si controlla con un piccolo martelletto"], ["🦶", "L'arco del piede ammortizza i passi"], ["🤸", "Le articolazioni, come ginocchio e gomito, collegano le ossa"], ["🔗", "I legamenti collegano un osso all'altro, i tendini collegano i muscoli alle ossa"],
+      ["👃", "La cartilagine è più morbida dell'osso e si trova nel naso e nelle orecchie"], ["🖐️", "I cinque sensi sono vista, udito, olfatto, gusto e tatto"], ["✋", "Le punte delle dita sono molto sensibili al tatto"], ["🩸", "Il sangue è rosso per l'emoglobina, che contiene ferro"],
+      ["💓", "Il cuore è un muscolo che non si ferma mai"], ["🦴", "Le ossa contengono calcio, che le rende dure e robuste"] ] },
+
+    'parrucchieri-barbieri': { name: "Parrucchieri e barbieri", icon: '✂️', levels: ['adulti'], items: [
+      ["✂️", "Le forbici sono lo strumento principale del parrucchiere"], ["💈", "Il palo a strisce rosse e bianche è l'insegna tradizionale dei barbieri"], ["🩸", "Secondo la tradizione, il rosso e il bianco ricordano i salassi che facevano i barbieri-chirurghi"], ["🦷", "Nel Medioevo i barbieri facevano anche piccoli interventi, come togliere i denti"],
+      ["🎭", "«Il barbiere di Siviglia» è un'opera di Gioachino Rossini"], ["🎤", "«Largo al factotum» è l'aria di Figaro nel «Barbiere di Siviglia»"], ["🗣️", "«Figaro qua, Figaro là» è uno dei versi più famosi di Rossini"], ["🎭", "Figaro è il barbiere più famoso della lirica"],
+      ["🧼", "La parola «shampoo» viene da una parola hindi che significa massaggiare"], ["💨", "Il primo asciugacapelli fu inventato da Alexandre Godefroy intorno al 1890"], ["🌊", "L'ondulazione Marcel fu creata dal parrucchiere francese François Marcel Grateau nel 1872"], ["🌀", "La permanente moderna fu inventata da Karl Nessler nel 1906"],
+      ["🎨", "L'Oréal nacque dall'idea del chimico Eugène Schueller, che inventò una tintura per capelli"], ["🪒", "King Camp Gillette inventò il rasoio di sicurezza con la lametta"], ["🪒", "Il rasoio a mano libera ha una lama pieghevole che si affila su una striscia di cuoio"], ["🧴", "Per radere la barba si usano schiuma e pennello"],
+      ["♨️", "Il barbiere usa un asciugamano caldo per ammorbidire la barba"], ["🧴", "Il dopobarba calma la pelle dopo la rasatura"], ["🧬", "I capelli sono fatti di cheratina"], ["🔢", "Sulla testa abbiamo in media circa 100.000 capelli"],
+      ["📏", "I capelli crescono in media circa un centimetro al mese"], ["💇", "Normalmente si perdono tra i 50 e i 100 capelli al giorno"], ["⚪", "I capelli grigi hanno meno melanina"], ["🧑‍🦲", "L'alopecia è la perdita dei capelli"],
+      ["🌱", "Il follicolo è la piccola sacca della pelle da cui nasce il capello"], ["🧴", "Il cuoio capelluto è la pelle che ricopre la testa"], ["🔥", "La piastra liscia i capelli con il calore"], ["🌀", "Il ferro arricciacapelli forma i ricci"],
+      ["💨", "La messa in piega si fa con phon e spazzola"], ["🌀", "I bigodini servono a fare i boccoli"], ["🎨", "La tinta cambia il colore dei capelli"], ["✨", "Le meches sono ciocche più chiare dei capelli"],
+      ["🌅", "Il balayage è una tecnica di colore sfumato, fatta a mano libera"], ["🌗", "L'ombré è una sfumatura che va dallo scuro al chiaro"], ["✂️", "Il caschetto è un taglio a forma di casco, all'altezza del mento"], ["✂️", "Il taglio scalato ha lunghezze diverse"],
+      ["✂️", "La frangia è la parte di capelli che cade sulla fronte"], ["✂️", "Il pixie è un taglio molto corto"], ["🧑‍🎤", "La cresta è un taglio con i capelli lunghi al centro e rasati ai lati"], ["🧔", "Nella sfumatura i capelli sui lati diventano via via più corti"],
+      ["🧢", "Il taglio a spazzola ha i capelli corti e dritti sulla testa"], ["🧔", "Per la barba curata si usano olio e pettine"], ["🥸", "I baffi a manubrio hanno le estremità arricciate"], ["🧔", "Il pizzetto è una piccola barba sul mento"],
+      ["🪒", "Il barbiere rifinisce il contorno di barba e capelli con il rasoio"], ["💅", "La cheratina è usata in alcuni trattamenti lisciati"], ["🔴", "I capelli rossi sono i meno diffusi: riguardano circa l'1-2% delle persone"], ["👱", "I biondi hanno in media più capelli dei rossi"],
+      ["🧅", "Il capello ha tre strati: cuticola, corteccia e midollo"], ["💧", "L'umidità fa gonfiare i capelli e li rende crespi"], ["💨", "Il diffusore aiuta ad asciugare i capelli ricci"], ["✂️", "Le doppie punte si eliminano con la spuntatina"],
+      ["🧴", "Il balsamo rende i capelli più morbidi"], ["🧴", "La maschera nutre i capelli secchi"], ["🌀", "I capelli ricci nascono da un follicolo curvo"], ["🌈", "Il colore dei capelli dipende dalla melanina"],
+      ["👘", "Il parrucchiere fa indossare un mantellino per proteggere i vestiti"], ["🚿", "Il lavatesta è il lavello dove si fa lo shampoo"], ["🪞", "Nel salone ogni postazione ha il suo specchio"], ["🧹", "La spazzola per il collo toglie i capelli tagliati"],
+      ["💨", "La lacca fissa l'acconciatura"], ["🧴", "Il gel dà forma ai capelli"], ["🧴", "La cera modellante dà un effetto opaco"], ["💆", "Il massaggio del cuoio capelluto rilassa"],
+      ["🏺", "Nell'antico Egitto si usavano le parrucche"], ["🎩", "Nel Settecento molti nobili europei portavano parrucche incipriate"], ["👑", "Il re di Francia Luigi XIV rese di moda la parrucca"], ["🏛️", "I barbieri dell'antica Roma si chiamavano tonsores"],
+      ["🎬", "In «Edward mani di forbice» il protagonista ha le forbici al posto delle mani"], ["🎬", "«Shampoo» (1975) è un film con Warren Beatty"], ["🎭", "«Sweeney Todd» è un musical su un barbiere"], ["🏅", "Gli acconciatori partecipano a gare e campionati di hairstyling"],
+      ["✂️", "Le forbici da parrucchiere hanno due anelli: uno per il pollice e uno per l'anulare"], ["🪮", "Il pettine a coda serve a fare la riga e le sezioni"], ["🪮", "Il pettine a denti larghi districa i capelli bagnati"], ["🧼", "Dopo la tinta si consiglia uno shampoo delicato"],
+      ["🧪", "Prima della tinta si fa la prova di tolleranza, cioè il patch test"], ["⏳", "Il tempo di posa è il tempo in cui il prodotto resta sui capelli"], ["💇‍♀️", "Le extension aggiungono lunghezza e volume"], ["🧶", "Le treccine africane sono un'antica acconciatura"],
+      ["🎀", "La treccia alla francese parte dalla sommità della testa"], ["👰", "Lo chignon è una crocchia raccolta sulla nuca"], ["💍", "L'acconciatura da sposa si prova prima del matrimonio"], ["💈", "Quello di barbiere è uno dei mestieri più antichi"],
+      ["🧵", "Un solo capello può sostenere un peso di circa cento grammi"], ["🧔", "La barba cresce circa mezzo millimetro al giorno"],
+      ["🎸", "Il taglio «alla Beatles» fece moda negli anni Sessanta"], ["📐", "Vidal Sassoon rese famosi i tagli geometrici negli anni Sessanta"], ["💃", "Il taglio «alla maschietta» fu di moda negli anni Venti"], ["🎤", "Il ciuffo alto è legato all'immagine di Elvis Presley"],
+      ["⚡", "La macchinetta serve a tagliare i capelli molto corti"] ] }
+  };
+  Object.keys(MESTIERI).forEach(k => { MESTIERI[k].key = k; ALL[k] = MESTIERI[k]; });
+
   // Categorie per ordinare i menu (un tema sta in una sola categoria).
   const C = { mix: '🎲 Mix di temi', scuola: '📚 Scuola', cartoni: '📺 Cartoni, giochi e supereroi', animali: '🐾 Animali', regioni: "🇮🇹 Regioni d'Italia",
-              feste: '🎉 Feste e tradizioni', fede: '✝️ Santi, Chiesa e Vangelo', divertente: '😂 Divertente', cultura: '🎵 Cultura e passioni', mate: '📐 Matematica e statistica', mio: '✏️ I miei temi' };
-  const CATEGORIES = [C.mix, C.scuola, C.cartoni, C.animali, C.regioni, C.feste, C.fede, C.divertente, C.cultura, C.mate, C.mio];
+              feste: '🎉 Feste e tradizioni', fede: '✝️ Santi, Chiesa e Vangelo', divertente: '😂 Divertente', cultura: '🎵 Cultura e passioni', mate: '📐 Matematica e statistica', mestieri: '🧑‍⚕️ Mestieri e salute', mio: '✏️ I miei temi' };
+  const CATEGORIES = [C.mix, C.scuola, C.cartoni, C.animali, C.regioni, C.feste, C.fede, C.divertente, C.cultura, C.mestieri, C.mate, C.mio];
   const CAT_KEYS = {
     [C.animali]: ['animali-versi', 'animali-classi', 'animali-curiosita', 'cuccioli', 'animali-habitat', 'dinosauri-tema', 'animali-modi-di-dire'],
     [C.cartoni]: ['cartoni', 'disney', 'cartoni-oggi', 'cartoni-80-90', 'ghibli', 'anime-classici', 'anime-oggi', 'super-mario', 'roblox', 'one-piece', 'minecraft', 'supereroi',
                   'videogiochi-classici', 'videogiochi-oggi', 'console', 'pokemon', 'conta-cartoni', 'problemi-piccoli', 'problemi-grandi', 'alfabeto-cartoni', 'colori-cartoni', 'cartoni-nel-mondo', 'inglese-cartoni', 'simpson'],
-    [C.mate]: ['matematica'], [C.feste]: ['feste'], [C.fede]: ['santi', 'chiesa', 'gesu'], [C.divertente]: ['verita', 'mamma', 'proverbi', 'modi-di-dire', 'murphy', 'chuck-norris'], [C.cultura]: ['musica', 'sport', 'cinema', 'sapori', 'capitali', 'cultura', 'toto', 'alberto-sordi', 'ritorno-al-futuro']
+    [C.mate]: ['matematica'], [C.mestieri]: ['medicina', 'corpo-umano-grandi', 'parrucchieri-barbieri'], [C.feste]: ['feste'], [C.fede]: ['santi', 'chiesa', 'gesu'], [C.divertente]: ['verita', 'mamma', 'proverbi', 'modi-di-dire', 'murphy', 'chuck-norris'], [C.cultura]: ['musica', 'sport', 'cinema', 'sapori', 'capitali', 'cultura', 'toto', 'alberto-sordi', 'ritorno-al-futuro']
   };
   function catOf(key) {
     if (key.startsWith('mix-')) return C.mix;
@@ -1155,7 +1251,7 @@
         ALL[key] = { key, name, icon: '🎲', levels: [level], items };
       };
       make('tutto', "Tutto un po' (mix di tutti i temi)", base);
-      [['scuola', C.scuola], ['cartoni', C.cartoni], ['animali', C.animali], ['regioni', C.regioni], ['fede', C.fede], ['divertente', C.divertente], ['cultura', C.cultura]]
+      [['scuola', C.scuola], ['cartoni', C.cartoni], ['animali', C.animali], ['regioni', C.regioni], ['fede', C.fede], ['divertente', C.divertente], ['cultura', C.cultura], ['mestieri', C.mestieri]]
         .forEach(([suffix, cat]) => make(suffix, 'Mix: ' + cat.replace(/^\S+\s/, ''), all.filter(k => catOf(k) === cat)));
     });
   }

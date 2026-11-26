@@ -892,24 +892,43 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if (!$('speak').checked || !('speechSynthesis' in window)) return;
     try {
       const en = entry(n), q = [];
-      let t = kids() ? words(n) : String(n);
+      q.push([(kids() ? words(n) : String(n)) + '.', 'it-IT']);   // prima il numero
       if ($('smorfia').checked) {
-        t += '. ' + TombolaTemi.speakable(en.sp || en.it);   // sigle e simboli letti come si pronunciano
+        spezza(TombolaTemi.speakable(en.sp || en.it)).forEach(c => q.push([c, 'it-IT']));   // poi la frase, a pezzi brevi (sigle e simboli letti come si pronunciano)
       }
-      q.push([t, 'it-IT']);
       if ($('smorfia').checked && en.spk) q.push(...en.spk);   // es. il numero detto in inglese
       stopVoice();
       const my = ++voiceGen;
       voiceLeft = q.length;
       const finito = () => { if (my !== voiceGen) return; voiceLeft = Math.max(0, voiceLeft - 1); if (!voiceLeft) { voiceEnd = Date.now(); clearTimeout(voiceFail); } };
-      const attesa = Math.min(25000, 3000 + q.reduce((n, x) => n + x[0].length, 0) * 110);   // durata stimata + margine
-      voiceFail = setTimeout(() => { if (my === voiceGen) { voiceLeft = 0; voiceEnd = Date.now(); } }, attesa);   // se il browser non avvisa la fine, non blocca l'Auto
+      const attesa = 3000 + q.reduce((n, x) => n + x[0].length, 0) * 110, t0 = Date.now();   // durata stimata + margine
+      // Se il browser non avvisa la fine non blocca l'Auto: ma se sta ancora parlando aspetta, per non tagliare la lettura.
+      const guardia = () => {
+        if (my !== voiceGen) return;
+        const parla = (speechSynthesis.speaking || speechSynthesis.pending) && Date.now() - t0 < 60000;
+        if (parla) voiceFail = setTimeout(guardia, 1500); else { voiceLeft = 0; voiceEnd = Date.now(); }
+      };
+      voiceFail = setTimeout(guardia, attesa);
       q.forEach(([txt, lang]) => {
         const u = new SpeechSynthesisUtterance(txt);
         u.lang = lang; u.rate = kids() ? .85 : .95; u.onend = finito; u.onerror = finito;
         speechSynthesis.speak(u);
       });
     } catch (e) { voiceLeft = 0; }
+  }
+  // Divide una frase lunga in pezzi di circa 100 caratteri, a fine periodo o a una virgola: i browser tendono a interrompere le letture molto lunghe.
+  function spezza(t) {
+    const out = [];
+    String(t).split(/(?<=[.!?;:])\s+/).forEach(per => {
+      let r = per.trim();
+      while (r.length > 130) {
+        let i = r.lastIndexOf(', ', 110); if (i < 40) i = r.lastIndexOf(' ', 110); if (i < 40) i = 110;
+        out.push(r.slice(0, i + 1).trim()); r = r.slice(i + 1).trim();
+      }
+      if (r) out.push(r);
+    });
+    // unisce i pezzi molto brevi a quello precedente
+    return out.reduce((a, x) => { if (a.length && (a[a.length - 1].length + x.length) < 90) a[a.length - 1] += ' ' + x; else a.push(x); return a; }, []);
   }
   // La lettura della voce: l'estrazione automatica aspetta che finisca (e una breve pausa) prima del numero successivo.
   let voiceGen = 0, voiceLeft = 0, voiceEnd = 0, voiceFail = null;
@@ -1219,7 +1238,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   // Il dispositivo del maestro (host) decide tutto: estrae, distribuisce le cartelle e verifica i premi.
   // I giocatori si collegano con il codice stanza; nessun server di gioco.
   // Versione dell'app (da aggiornare a ogni modifica): compare in alto e in fondo alla pagina, anche sui telefoni dei giocatori.
-  const VERSION = '26.11.2026-e';
+  const VERSION = '26.11.2026-g';
   $('verHead').textContent = 'versione ' + VERSION; $('ver').textContent = 'versione ' + VERSION;
   const PREFIX = 'tombola-clm-';
   const PEER_OPTS = {};
