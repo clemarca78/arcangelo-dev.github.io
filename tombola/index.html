@@ -84,6 +84,8 @@ body:not(.player) .prize { cursor: pointer; transition: transform .1s, border-co
 body:not(.player) .prize:hover { border-color: var(--accent); transform: translateY(-2px); }
 body:not(.player) .prize:not(.won)::after { content: '＋ segna'; display: block; font-size: .7rem; color: var(--accent); margin-top: 2px; }
 body.lim .prize::after { display: none !important; }
+.prize.locked { opacity: .6; }
+body:not(.player) .prize.locked:not(.won)::after { content: '🔒 prima ' attr(data-lock); color: var(--muted); }
 
 .cards-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
 .cards { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
@@ -310,7 +312,7 @@ details summary { cursor: pointer; font-weight: 600; }
       <label class="hint">Classe <select id="levelSel"></select></label>
       <label class="hint">Tema <select id="kthemeSel"></select></label>
       <label class="hint">La pallina racconta
-        <select id="ksmSel"><option value="tema">📚 Un tema di scuola</option><option value="napoletana">🎭 La smorfia napoletana</option></select>
+        <select id="ksmSel"><option value="tema">🎯 Il tema scelto qui sopra</option><option value="napoletana">🎭 La smorfia napoletana (per bambini)</option></select>
       </label>
     </div>
     <p class="hint" id="kidHint" style="text-align:left;margin-top:8px"></p>
@@ -443,7 +445,7 @@ details summary { cursor: pointer; font-weight: 600; }
   <section class="panel needs-join">
     <h2>Premi</h2>
     <div class="prizes" id="prizes"></div>
-    <p class="hint host-only" style="margin-top:8px">Tocca un premio per segnarlo come assegnato (o per toglierlo se ti sei sbagliato).</p>
+    <p class="hint host-only" style="margin-top:8px">Tocca un premio per segnarlo come assegnato (o per toglierlo se ti sei sbagliato). I premi si assegnano in ordine: prima l'Ambo, poi il Terno e così via.</p>
     <div id="log" style="margin-top:12px"></div>
   </section>
 
@@ -610,6 +612,9 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   const kids = () => state.mode === 'kids';
   const prizesFor = (m, cols) => TombolaCards.prizes(m, cols);
   const prizes = () => prizesFor(state.mode, state.cols);
+  // I premi si assegnano in ordine (ambo, terno, quaterna, cinquina, tombola): non si salta un premio.
+  const prizeBlocker = n => { const l = prizes(), i = l.findIndex(p => p.n === n); for (let j = 0; j < i; j++) if (!state.won[l[j].n]) return l[j].name; return null; };
+  const laterAssigned = n => { const l = prizes(), i = l.findIndex(p => p.n === n); for (let j = l.length - 1; j > i; j--) if (state.won[l[j].n]) return l[j].name; return null; };
   const cardSize = () => kids() ? 3 * state.cols : 15;
 
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
@@ -889,7 +894,9 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       const w = state.won[p.n];
       d.className = 'prize' + (w ? ' won' : '');
       d.dataset.prize = p.n;
-      if (!isPlayer) d.title = w ? 'Tocca per togliere l\'assegnazione' : 'Tocca per segnare il premio come assegnato';
+      const need = !isPlayer && !w ? prizeBlocker(p.n) : null;
+      if (need) { d.classList.add('locked'); d.dataset.lock = need; }
+      if (!isPlayer) d.title = w ? 'Tocca per togliere l\'assegnazione' : need ? 'Prima va assegnato «' + need + '»' : 'Tocca per segnare il premio come assegnato';
       const b = document.createElement('b'); b.textContent = p.name;
       d.append(b, w || 'in palio');
       $('prizes').appendChild(d);
@@ -918,7 +925,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       c.appendChild(gr);
       if (isPlayer || hostPlaying()) {
         const cl = document.createElement('div'); cl.className = 'claims';
-        prizes().filter(p => !state.won[p.n]).forEach(p => {
+        (() => { const nx = prizes().find(p => !state.won[p.n]); return nx ? [nx] : []; })().forEach(p => {   // solo il prossimo premio, in ordine
           const bt = document.createElement('button');
           bt.dataset.claim = p.n; bt.dataset.card = i; bt.textContent = '📣 ' + p.name;
           cl.appendChild(bt);
@@ -1114,6 +1121,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     const card = state.cards[i], pr = prizes().find(x => x.n === n);
     if (!card || !pr) return;
     if (state.won[n]) { toast(`${pr.name} è già stato assegnato`); return; }
+    { const need = prizeBlocker(n); if (need) { toast(`Prima va chiamato «${need}»`); return; } }
     const m = new Set(state.drawn), size = cardSize();
     const best = Math.max(...card.map(r => r.filter(x => x && m.has(x)).length));
     const total = card.flat().filter(x => x && m.has(x)).length;
@@ -1129,6 +1137,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     const p = state.room.players[token], pr = prizes().find(x => x.n === n), card = p && p.cards[i];
     if (!pr || !card) return;
     if (state.won[n]) { sendTo(token, { t: 'toast', text: `${pr.name} è già stato assegnato` }); return; }
+    { const need = prizeBlocker(n); if (need) { sendTo(token, { t: 'toast', text: `Prima va chiamato «${need}»` }); return; } }
     const m = new Set(state.drawn), size = cardSize();
     const best = Math.max(...card.map(r => r.filter(x => x && m.has(x)).length));
     const total = card.flat().filter(x => x && m.has(x)).length;
@@ -1296,7 +1305,9 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       const won = state.won[p.n];
       const tag = el('span', ok ? 'ok' : 'no', (ok ? '✔ ' : '✘ ') + p.name + (won ? ' (già assegnato)' : ''));
       v.append(tag);
-      if (ok && !won && c.mode === state.mode) {
+      if (ok && !won && c.mode === state.mode && prizeBlocker(p.n)) {
+        v.append(el('span', 'no', `(prima assegna «${prizeBlocker(p.n)}»)`));
+      } else if (ok && !won && c.mode === state.mode) {
         const b = el('button', null, 'Assegna ' + p.name);
         b.onclick = () => {
           state.won[p.n] = 'Cartella ' + c.id;
@@ -1325,17 +1336,17 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     paper: [
       ["Come funziona", "Stampi le cartelle dal pulsante «Stampa cartelle»: ognuna ha un codice e un QR code. I giocatori segnano i numeri a mano. Quando qualcuno chiama un premio, premi «📷 Scansiona QR» e inquadra il QR sulla sua cartella (oppure digita il codice): l'app mostra la cartella con i numeri usciti e ti dice se il premio è valido."],
       ["Cosa serve", "Una stampante e un dispositivo per chi estrae (meglio se collegato a una LIM o a un proiettore). Per scansionare i QR serve la fotocamera di quel dispositivo e il gioco aperto da internet. I giocatori non hanno bisogno di alcun dispositivo."],
-      ["I premi", "Li assegni tu, dopo il controllo, con «Assegna». Oppure tocchi il premio nel riquadro Premi per segnarlo a mano."],
+      ["I premi", "Li assegni tu, dopo il controllo, con «Assegna». Oppure tocchi il premio nel riquadro Premi per segnarlo a mano. I premi si assegnano in ordine: prima l'Ambo, poi il Terno e così via."],
       ["Da sapere", "Controlla con la stessa modalità e gli stessi numeri per riga con cui hai stampato: se non coincidono, l'app ti avvisa."] ],
     devices: [
       ["Come funziona", "Apri una stanza e mostri il codice o il QR. Ogni giocatore entra dal proprio telefono o tablet, sceglie quante cartelle prendere e tocca i numeri quando escono. Per chiamare un premio preme «📣» e l'app lo controlla."],
       ["Cosa serve", "Un dispositivo per ogni giocatore, con internet. Sulla Wi-Fi di una scuola la connessione tra dispositivi può essere bloccata: provala prima."],
-      ["I premi", "Chiamati dai giocatori e controllati in automatico: il primo premio valido vince, chi sbaglia riceve «Falso allarme!»."],
+      ["I premi", "Chiamati dai giocatori e controllati in automatico: il primo premio valido vince, chi sbaglia riceve «Falso allarme!». I premi si chiamano in ordine: prima l'Ambo, poi il Terno e così via."],
       ["Da sapere", "Puoi giocare anche tu con «Gioco anch'io» (nel pannello Multiplayer). Fino a 40 giocatori. Se chi estrae chiude la pagina, la stanza si riapre con lo stesso codice."] ],
     mixed: [
       ["Come funziona", "È «Dispositivi» più «Carta»: chi ha il tablet entra nella stanza e chiama i premi dal suo schermo, chi ha il foglio alza la mano e tu inquadri il QR sulla sua cartella con «📷 Scansiona QR» (o digiti il codice)."],
       ["Cosa serve", "Internet per i dispositivi e una stampante per le cartelle di carta."],
-      ["I premi", "Vince il primo premio valido, in qualunque modo sia chiamato: dal tablet, a voce con il codice o toccandolo a mano."],
+      ["I premi", "Vince il primo premio valido, in qualunque modo sia chiamato: dal tablet, a voce con il codice o toccandolo a mano. I premi si assegnano in ordine: prima l'Ambo, poi il Terno e così via."],
       ["Da sapere", "Un premio assegnato da un lato compare subito anche sull'altro, e sparisce dai pulsanti sulle cartelle dei giocatori."] ]
   };
   const SRC_INFO = {
@@ -1410,10 +1421,14 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     const n = +t.dataset.prize, pr = prizes().find(x => x.n === n);
     if (!pr) return;
     if (state.won[n]) {
+      const later = laterAssigned(n);
+      if (later) { toast(`Prima togli «${later}»: è stato assegnato dopo`); return; }
       if (!confirm(`Togliere l'assegnazione di "${pr.name}" (${state.won[n]})?`)) return;
       delete state.won[n];
       log(`↩ ${pr.name}: assegnazione annullata`);
     } else {
+      const need = prizeBlocker(n);
+      if (need) { toast(`Prima va assegnato «${need}»`); return; }
       const who = prompt(`${pr.name}! Chi l'ha fatto?\n(nome o codice cartella; puoi lasciare vuoto)`, '');
       if (who === null) return;
       state.won[n] = who.trim().slice(0, 40) || 'assegnato';
