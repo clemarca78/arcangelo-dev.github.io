@@ -330,6 +330,12 @@ details summary { cursor: pointer; font-weight: 600; }
     <h2>✏️ I miei temi</h2>
     <p class="hint" style="text-align:left;margin-bottom:8px">Crea un tema tutto tuo: per esempio i modi di dire del tuo paese, le frasi della tua classe o i ricordi di famiglia. A ogni numero estratto la pallina racconta una frase del tuo elenco.</p>
     <div id="myThemesList"></div>
+    <div class="row" style="margin:8px 0 0">
+      <button id="mtExportAll">⬇️ Esporta tutti</button>
+      <button id="mtImport">⬆️ Importa da file</button>
+      <input type="file" id="mtFile" accept=".json,.txt,application/json,text/plain" hidden>
+      <span class="hint" id="mtIoMsg"></span>
+    </div>
     <details id="myEditor">
       <summary>➕ Crea o modifica un tema</summary>
       <input type="text" id="mtName" maxlength="40" placeholder="Nome del tema (es. Modi di dire di Ginosa)" autocomplete="off">
@@ -807,6 +813,8 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   }
 
   // ---------- rendering ----------
+  // Le frasi dei temi (anche quelle scritte o importate dall'utente) si mostrano sempre come testo, mai come HTML.
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   function renderInfo(last) {
     const el = $('info'); el.innerHTML = '';
     if (!last) return;
@@ -817,7 +825,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       h += `<div class="dec">${decomp(last)} · ${last % 2 ? 'dispari' : 'pari'}</div>`;
     }
     if ($('smorfia').checked) {
-      h += `<div class="smorf"><b>${e.e}</b>${e.d ? e.d + ' <i>— ' + e.it + '</i>' : e.it}</div>`;
+      h += `<div class="smorf"><b>${esc(e.e)}</b>${e.d ? esc(e.d) + ' <i>— ' + esc(e.it) + '</i>' : esc(e.it)}</div>`;
     }
     el.innerHTML = h;
   }
@@ -941,7 +949,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     for (let n = 1; n <= 90; n++) {
       const e = entry(n);
       const d = document.createElement('div');
-      d.innerHTML = `<b>${n}</b> ${e.e} ${e.d ? e.d + ' <i>— ' + e.it + '</i>' : e.it}`;
+      d.innerHTML = `<b>${n}</b> ${esc(e.e)} ${e.d ? esc(e.d) + ' <i>— ' + esc(e.it) + '</i>' : esc(e.it)}`;
       el.appendChild(d);
     }
   }
@@ -1581,9 +1589,9 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if (!state.custom.length) box.append(el('p', 'hint', 'Nessun tema ancora: creane uno qui sotto.'));
     state.custom.forEach(c => {
       const row = el('div', 'mt-item');
-      const use = el('button', null, '▶ Usa'), ed = el('button', null, '✏️ Modifica'), del = el('button', null, '🗑️ Elimina');
-      use.onclick = () => useCustom(c.key); ed.onclick = () => editCustom(c.key); del.onclick = () => deleteCustom(c.key);
-      row.append(el('b', null, '✏️ ' + c.name), el('span', 'hint', `${c.items.length} frasi`), use, ed, del);
+      const use = el('button', null, '▶ Usa'), ed = el('button', null, '✏️ Modifica'), ex = el('button', null, '⬇️ Esporta'), del = el('button', null, '🗑️ Elimina');
+      use.onclick = () => useCustom(c.key); ed.onclick = () => editCustom(c.key); ex.onclick = () => exportThemes([c], slugOf(c.name)); del.onclick = () => deleteCustom(c.key);
+      row.append(el('b', null, '✏️ ' + c.name), el('span', 'hint', `${c.items.length} frasi`), use, ed, ex, del);
       box.appendChild(row);
     });
   }
@@ -1620,6 +1628,62 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     editingKey = null; $('mtName').value = ''; $('mtText').value = '';
     $('mtMsg').textContent = `✔ Salvato «${t.name}» con ${items.length} frasi. Premi «Usa» per attivarlo.`;
     save(); refillThemeMenus(); renderMyThemes(); broadcast();
+  };
+  // ---------- esporta e importa i miei temi ----------
+  // Il file è un piccolo JSON: { app, versione, creato, temi: [{ nome, frasi: [[emoji, testo], ...] }] }.
+  const ioMsg = t => { $('mtIoMsg').textContent = t; };
+  const slugOf = n => String(n).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'tema';
+  function exportThemes(list, label) {
+    if (!list.length) { ioMsg('Non hai ancora temi da esportare.'); return; }
+    const data = { app: 'tombola-arcangelo-clemente', versione: 1, creato: new Date().toISOString(), temi: list.map(c => ({ nome: c.name, frasi: c.items.map(i => [i[0], i[1]]) })) };
+    const blob = new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `tombola-temi-${label}-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+    ioMsg(`✔ File scaricato: ${list.length} ${list.length === 1 ? 'tema' : 'temi'}.`);
+  }
+  // I file possono arrivare da altri: via i caratteri di controllo e lunghezze limitate. I testi si mostrano sempre come testo (mai come HTML).
+  const pulisci = s => String(s == null ? '' : s).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').trim();
+  function frasiValide(frasi) {
+    const out = [];
+    (Array.isArray(frasi) ? frasi : []).slice(0, 300).forEach(f => {
+      let e = '', t = '';
+      if (Array.isArray(f)) { e = pulisci(f[0]); t = pulisci(f[1]); }
+      else if (typeof f === 'string') { const m = f.trim().match(EMOJI_START); if (m) { e = m[1]; t = pulisci(m[2]); } else t = pulisci(f); }
+      else if (f && typeof f === 'object') { e = pulisci(f.emoji || f.e); t = pulisci(f.testo || f.t || f.frase); }
+      t = t.slice(0, 160); e = (e || '💬').slice(0, 12);
+      if (t) out.push([e, t]);
+    });
+    return out;
+  }
+  function leggiFile(testo, nomeFile) {
+    let dati = null; try { dati = JSON.parse(testo); } catch (e) {}
+    const temi = [];
+    if (dati && typeof dati === 'object') {
+      const lista = Array.isArray(dati) ? dati : Array.isArray(dati.temi) ? dati.temi : (dati.nome || dati.name) ? [dati] : [];
+      lista.forEach(t => { if (!t || typeof t !== 'object') return; const nome = pulisci(t.nome || t.name).slice(0, 40), items = frasiValide(t.frasi || t.items); if (nome && items.length >= 3) temi.push({ nome, items }); });
+    } else {   // testo semplice: una frase per riga, il nome del tema è il nome del file
+      const items = frasiValide(String(testo).split('\n')), nome = pulisci(String(nomeFile).replace(/\.[^.]*$/, '')).slice(0, 40) || 'Tema importato';
+      if (items.length >= 3) temi.push({ nome, items });
+    }
+    return temi;
+  }
+  $('mtExportAll').onclick = () => exportThemes(state.custom, 'tutti');
+  $('mtImport').onclick = () => $('mtFile').click();
+  $('mtFile').onchange = async () => {
+    const f = $('mtFile').files[0]; $('mtFile').value = ''; if (!f) return;
+    if (f.size > 1024 * 1024) { ioMsg('Il file è troppo grande (massimo 1 MB).'); return; }
+    let testo; try { testo = await f.text(); } catch (e) { ioMsg('Non riesco a leggere il file.'); return; }
+    const temi = leggiFile(testo, f.name);
+    if (!temi.length) { ioMsg('Nel file non ho trovato temi validi: servono un nome e almeno 3 frasi.'); return; }
+    let aggiunti = 0, saltati = 0;
+    temi.forEach(t => {
+      if (state.custom.length >= 20) { saltati++; return; }
+      let nome = t.nome, k = 2; while (state.custom.some(c => c.name === nome)) nome = `${t.nome.slice(0, 34)} (${k++})`;
+      state.custom.push({ key: 'mio-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: nome, icon: '✏️', items: t.items });
+      aggiunti++;
+    });
+    save(); refillThemeMenus(); renderMyThemes(); broadcast();
+    ioMsg(`✔ Importati ${aggiunti} ${aggiunti === 1 ? 'tema' : 'temi'}${saltati ? ` (${saltati} non importati: il limite è 20 temi)` : ''}.`);
   };
   $('mtCancel').onclick = () => { editingKey = null; $('mtName').value = ''; $('mtText').value = ''; $('mtMsg').textContent = ''; };
 
