@@ -718,7 +718,7 @@
   Object.keys(ALL).forEach(k => { ALL[k].key = k; });
 
   // Categorie per ordinare i menu (un tema sta in una sola categoria).
-  const CATEGORIES = ['📚 Scuola', '📺 Cartoni, giochi e supereroi', '🐾 Animali', '🇮🇹 Regioni d\'Italia', '🎉 Feste e tradizioni', '😂 Divertente', '🎵 Cultura e passioni'];
+  const CATEGORIES = ['📚 Scuola', '📺 Cartoni, giochi e supereroi', '🐾 Animali', '🇮🇹 Regioni d\'Italia', '🎉 Feste e tradizioni', '😂 Divertente', '🎵 Cultura e passioni', '✏️ I miei temi'];
   const CAT_KEYS = {
     1: ['animali-versi', 'animali-classi', 'animali-curiosita', 'cuccioli', 'animali-habitat', 'dinosauri-tema', 'animali-modi-di-dire'],
     2: ['cartoni', 'disney', 'cartoni-oggi', 'cartoni-80-90', 'ghibli', 'anime-classici', 'anime-oggi', 'super-mario', 'roblox', 'one-piece', 'minecraft', 'supereroi',
@@ -726,6 +726,7 @@
     4: ['feste'], 5: ['verita', 'mamma', 'proverbi', 'modi-di-dire', 'murphy'], 6: ['musica', 'sport', 'cinema', 'sapori', 'capitali', 'cultura']
   };
   function catOf(key) {
+    if (key.startsWith('mio-')) return CATEGORIES[7];
     if (key === 'puglia' || key === 'regioni' || key.startsWith('reg-')) return CATEGORIES[3];
     for (const i in CAT_KEYS) if (CAT_KEYS[i].includes(key)) return CATEGORIES[i];
     return CATEGORIES[0];   // tutto il resto è materia di scuola
@@ -747,5 +748,16 @@
     return l[Math.floor(Math.random() * l.length)];
   }
 
-  g.TombolaTemi = { LEVELS, CATEGORIES, themesFor, entry, pick, name: k => ALL[k] ? ALL[k].icon + ' ' + ALL[k].name : '' };
+  // Temi scritti dall'utente (chiave «mio-...»): disponibili per tutte le classi e per gli adulti.
+  function register(themes) {
+    Object.keys(themes).forEach(k => {
+      const t = themes[k];
+      if (!k.startsWith('mio-') || !t || !Array.isArray(t.items) || !t.items.length) return;
+      ALL[k] = { key: k, name: String(t.name || 'Il mio tema').slice(0, 40), icon: t.icon || '✏️', levels: TUTTI,
+                 items: t.items.slice(0, 300).map(i => [String(i[0]).slice(0, 12), String(i[1]).slice(0, 200)]) };
+    });
+  }
+  function unregister(key) { if (key.startsWith('mio-')) delete ALL[key]; }
+
+  g.TombolaTemi = { LEVELS, CATEGORIES, register, unregister, themesFor, entry, pick, name: k => ALL[k] ? ALL[k].icon + ' ' + ALL[k].name : '' };
 })(window);
