@@ -795,7 +795,7 @@
     });
   }
   buildMixes();
-  const themesFor = level => Object.keys(ALL).filter(k => ALL[k].levels.includes(level)).map(k => ({ key: k, name: ALL[k].name, icon: ALL[k].icon, cat: catOf(k) }));
+  const themesFor = level => Object.keys(ALL).filter(k => ALL[k].levels.includes(level)).map(k => ({ key: k, name: ALL[k].name, icon: ALL[k].icon, cat: catOf(k), optIn: !!ALL[k].optIn }));
 
   // Voce per il numero n del tema: { e: emoji, t: frase, sp?: testo da leggere, spk?: [[testo, lingua]] }
   // idx (facoltativo) sceglie la frase dell'elenco al posto di quella «di default» del numero.
