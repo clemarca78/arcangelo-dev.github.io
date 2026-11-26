@@ -296,6 +296,40 @@
       ["🤝", "Anche tu puoi essere un eroe aiutando gli altri"] ] }
   };
 
+  // ---------- videogiochi e manga: Super Mario, Roblox, One Piece ----------
+  const GIOCHI = {
+    'super-mario': { name: "Super Mario", icon: '🍄', levels: TUTTI, items: [
+      ["🍄", "Mario è un idraulico con il cappello rosso e la M"], ["💚", "Luigi è il fratello di Mario e veste di verde"], ["🍄", "Il fungo fa diventare Mario grande"], ["⭐", "La Stella rende Mario invincibile per pochi secondi"],
+      ["🔥", "Il Fiore di fuoco permette di lanciare palle di fuoco"], ["🪙", "Mario raccoglie le monete mentre salta"], ["👑", "La principessa Peach viene rapita da Bowser"], ["🐢", "Bowser è il re dei Koopa"],
+      ["🐢", "Le Koopa Troopa sono tartarughe che camminano"], ["🍄", "I Goomba si schiacciano saltandoci sopra"], ["🟢", "Mario entra nei tubi verdi"], ["🏁", "Alla fine del livello c'è una bandiera"],
+      ["🦖", "Yoshi è un dinosauro verde con una lingua lunghissima"], ["🍄", "Toad è un piccolo fungo amico di Peach"], ["🦍", "Donkey Kong è un grande gorilla"], ["🕹️", "Mario è comparso per la prima volta in Donkey Kong, nel 1981"],
+      ["🎮", "Super Mario Bros è uscito nel 1985"], ["🏎️", "Mario Kart è il gioco di corse con i personaggi di Mario"], ["🍌", "In Mario Kart si lanciano gusci e bucce di banana"], ["💣", "Bob-omba è una bomba che cammina"],
+      ["🟡", "Wario è il cattivone con il cappello giallo"], ["🟣", "Waluigi è il compagno di Wario"], ["🌟", "Rosalinda è la principessa delle stelle"], ["🌌", "In Super Mario Galaxy si salta di pianeta in pianeta"],
+      ["🍄", "Il Regno dei Funghi è la casa di Peach"], ["🎮", "Nintendo è un'azienda giapponese"], ["🎬", "Nel film del 2023 Chris Pratt ha dato la voce a Mario"], ["🎹", "La musichetta di Super Mario è famosissima"],
+      ["🌋", "Il castello di Bowser è pieno di lava"], ["👻", "In Luigi's Mansion Luigi cattura i fantasmi con un aspirapolvere"], ["👻", "I Boo si nascondono quando li guardi"], ["🌿", "Le piante Piranha escono dai tubi"],
+      ["🧱", "Mario rompe i mattoni con la testa"], ["❓", "I blocchi con il punto interrogativo nascondono premi"], ["🎲", "Mario Party è un gioco di gare e giochi in compagnia"], ["🎾", "Mario gioca anche a tennis, golf e calcio"],
+      ["🐱", "In Super Mario 3D World Mario si trasforma in gatto"], ["🐢", "Il guscio rosso insegue gli avversari in Mario Kart"] ] },
+    'roblox': { name: "Roblox", icon: '🧱', levels: ['1', '2', '3', '4', '5', 'adulti'], items: [
+      ["🧱", "Roblox è una piattaforma dove si gioca ai giochi creati da altri giocatori"], ["🛠️", "Con Roblox Studio si creano i propri giochi"], ["🧍", "Il personaggio di Roblox si chiama avatar"], ["🟩", "Gli avatar hanno un aspetto a blocchetti"],
+      ["💎", "La moneta di Roblox si chiama Robux"], ["🐾", "In Adopt Me! si adottano e si crescono gli animaletti"], ["🏙️", "In Brookhaven si vive in una città con gli amici"], ["🏃", "Un obby è un percorso a ostacoli da superare"],
+      ["🍕", "In Work at a Pizza Place si lavora in una pizzeria"], ["🏠", "In Welcome to Bloxburg si costruisce e si arreda una casa"], ["🌪️", "In Natural Disaster Survival si sopravvive a terremoti e tornado"], ["🏰", "In Royale High si va in una scuola da principesse"],
+      ["🍎", "Blox Fruits è un gioco ispirato a One Piece"], ["🐱", "In MeepCity si incontrano gli amici e si gioca con i Meep"], ["🚪", "In Doors si scappa dai mostri in un hotel misterioso"], ["📅", "Roblox è nato nel 2006"],
+      ["👨‍💻", "I giochi di Roblox si programmano in Lua"], ["🔒", "Non dare mai nome, indirizzo o password a chi conosci solo online"], ["👨‍👩‍👧", "Gli adulti possono attivare il controllo parentale"], ["👥", "In Roblox si gioca online con gli amici"],
+      ["🛍️", "Nel catalogo si comprano vestiti e accessori per l'avatar"], ["🎤", "Su Roblox ci sono stati anche concerti virtuali"], ["🧑‍🏫", "Roblox si usa anche a scuola per imparare a programmare"], ["⏱️", "Fai delle pause: non giocare per troppo tempo"],
+      ["🛑", "Se qualcuno ti scrive cose che non ti piacciono, dillo a un adulto"], ["🎮", "Roblox si può giocare su computer, tablet e telefono"], ["🧠", "Creare un gioco è un ottimo modo per imparare a programmare"], ["🏗️", "In Roblox si possono costruire città, castelli e parchi giochi"],
+      ["🏆", "Un gioco su Roblox può essere giocato da milioni di persone"], ["🧩", "Un gioco ha un creatore, che si chiama sviluppatore"] ] },
+    'one-piece': { name: "One Piece", icon: '🏴‍☠️', levels: ['3', '4', '5', 'adulti'], items: [
+      ["🏴‍☠️", "Monkey D. Rufy sogna di diventare il Re dei Pirati"], ["🍖", "Rufy adora mangiare la carne"], ["👒", "Rufy porta un cappello di paglia"], ["🍇", "Rufy ha mangiato il frutto Gom Gom e ha il corpo di gomma"],
+      ["⚔️", "Roronoa Zoro combatte con tre spade"], ["🍊", "Nami è la navigatrice e ama i mandarini"], ["🎯", "Usop è il cecchino che racconta tante bugie"], ["👨‍🍳", "Sanji è il cuoco e combatte con i calci"],
+      ["🦌", "Chopper è una renna che fa il dottore"], ["📚", "Nico Robin è l'archeologa della ciurma"], ["🔧", "Franky è il carpentiere cyborg"], ["🎻", "Brook è uno scheletro musicista"],
+      ["🐟", "Jinbe è un uomo-pesce, il timoniere della ciurma"], ["⛵", "La prima nave della ciurma è la Going Merry"], ["☀️", "La seconda nave si chiama Thousand Sunny"], ["💀", "La bandiera dei pirati di Cappello di Paglia ha un teschio con il cappello"],
+      ["🍇", "I Frutti del Diavolo danno poteri ma tolgono la capacità di nuotare"], ["🗺️", "Il tesoro leggendario si chiama One Piece"], ["🌊", "La Rotta Maggiore (Grand Line) è il mare più pericoloso"], ["👑", "Gol D. Roger era il Re dei Pirati"],
+      ["🔥", "Ace è il fratello di Rufy"], ["🏴‍☠️", "Barbabianca è uno dei pirati più potenti"], ["🎩", "Shanks il Rosso ha affidato il cappello a Rufy"], ["⚓", "La Marina cerca di fermare i pirati"],
+      ["🇯🇵", "One Piece è un manga di Eiichiro Oda"], ["📖", "Il manga One Piece è iniziato nel 1997"], ["📺", "L'anime di One Piece va in onda dal 1999"], ["💰", "I pirati ricercati hanno una taglia sulla testa"],
+      ["🧭", "Il Log Pose è la bussola della Grand Line"], ["🏜️", "Alabasta è un regno nel deserto"], ["☁️", "Skypiea è un'isola in mezzo alle nuvole"], ["🐋", "Laboon è una balena gigantesca"],
+      ["🎌", "Wano è un paese ispirato al Giappone antico"], ["🫧", "L'Isola degli Uomini-Pesce si trova sul fondo del mare"], ["🌴", "La ciurma di Cappello di Paglia viaggia di isola in isola"], ["🤝", "In One Piece l'amicizia è più forte di tutto"] ] }
+  };
+
   // ---------- temi per adulti (tombola classica) ----------
   const ADULTI = {
     'verita': { name: "Verità universali", icon: '😂', levels: ['adulti'], items: [
@@ -401,7 +435,7 @@
   };
 
   // ---------- API ----------
-  const ALL = Object.assign({}, GEN, LISTE, CARTONI, CARTONI_OGGI, FESTE, ADULTI);
+  const ALL = Object.assign({}, GEN, LISTE, CARTONI, CARTONI_OGGI, FESTE, GIOCHI, ADULTI);
   Object.keys(ALL).forEach(k => { ALL[k].key = k; });
 
   const themesFor = level => Object.keys(ALL).filter(k => ALL[k].levels.includes(level)).map(k => ({ key: k, name: ALL[k].name, icon: ALL[k].icon }));
