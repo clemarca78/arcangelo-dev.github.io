@@ -266,6 +266,82 @@
       ["🏐", "Mila e Shiro giocano a pallavolo"], ["🐕", "Remi viaggia con il cane Capi"], ["🐢", "Tom e Jerry si rincorrono da una vita"] ] }
   };
 
+  // ---------- feste, tradizioni e supereroi (per tutte le età) ----------
+  const TUTTI = ['asilo', '1', '2', '3', '4', '5', 'adulti'];
+  const FESTE = {
+    'feste': { name: "Feste e tradizioni", icon: '🎉', levels: TUTTI, items: [
+      ["🎄", "A Natale si fa l'albero e si scartano i regali"], ["🌙", "La sera del 24 dicembre è la Vigilia di Natale"], ["🐑", "Il presepe racconta la nascita di Gesù"], ["🍰", "Panettone e pandoro sono i dolci tipici del Natale"],
+      ["🎅", "Babbo Natale arriva con la slitta e le renne"], ["⭐", "L'Epifania è il 6 gennaio: arriva la Befana"], ["🧹", "La Befana viaggia su una scopa e porta dolci (o carbone)"], ["🥳", "La notte di San Silvestro, il 31 dicembre, si aspetta l'anno nuovo"],
+      ["🥣", "A Capodanno si mangiano le lenticchie per portare fortuna"], ["💘", "San Valentino è il 14 febbraio, la festa degli innamorati"], ["🎭", "A Carnevale ci si veste in maschera"], ["🥟", "A Carnevale si mangiano chiacchiere e frappe"],
+      ["🎭", "Il Carnevale di Venezia è famoso per le sue maschere"], ["🍊", "A Ivrea c'è la battaglia delle arance"], ["🌼", "L'8 marzo è la Festa della donna, con le mimose"], ["👨", "Il 19 marzo è la Festa del papà, San Giuseppe"],
+      ["🍩", "Il 19 marzo si mangiano le zeppole di San Giuseppe"], ["🐣", "A Pasqua si regalano le uova di cioccolato"], ["🕊️", "La colomba è il dolce tipico della Pasqua"], ["🧺", "Il lunedì dopo Pasqua è la Pasquetta, la gita fuori porta"],
+      ["🇮🇹", "Il 25 aprile è la Festa della Liberazione"], ["⚒️", "Il 1° maggio è la Festa dei lavoratori"], ["💐", "La Festa della mamma è la seconda domenica di maggio"], ["🗳️", "Il 2 giugno è la Festa della Repubblica"],
+      ["🔥", "Nella notte di San Giovanni, il 24 giugno, si accendono i falò"], ["🏇", "Il Palio di Siena si corre il 2 luglio e il 16 agosto"], ["🎆", "Il 15 agosto è Ferragosto"], ["🏖️", "A Ferragosto si fa il picnic o la grigliata con gli amici"],
+      ["🎃", "Il 31 ottobre è Halloween"], ["🕯️", "Il 2 novembre si ricordano i defunti"], ["🌰", "L'11 novembre è San Martino: castagne e vino nuovo"], ["🕯️", "Il 13 dicembre è Santa Lucia, che in alcune regioni porta i doni ai bambini"],
+      ["💡", "In Puglia le feste patronali si illuminano con le luminarie"], ["🔥", "A Novoli, a gennaio, si accende la grande Focara per Sant'Antonio Abate"], ["🎶", "La Notte della Taranta si tiene ad agosto nel Salento"], ["⛪", "San Nicola è il patrono di Bari"],
+      ["🌸", "A Noto e a Genzano si fanno le Infiorate"], ["🕊️", "San Gennaro è il patrono di Napoli"], ["🧸", "A Napoli via San Gregorio Armeno è la via dei presepi"], ["⛵", "La Regata storica si svolge a Venezia in settembre"],
+      ["⚔️", "Il Calcio storico si gioca a Firenze in giugno"], ["🎂", "Per il compleanno si soffiano le candeline e si esprime un desiderio"], ["🍽️", "La domenica in Italia si pranza in famiglia"], ["🥂", "Per fare il brindisi ci si guarda negli occhi"],
+      ["🍬", "Ai matrimoni si regalano i confetti"], ["🎁", "La sera dell'Epifania si dice: «l'Epifania tutte le feste porta via»"] ] },
+    'supereroi': { name: "Supereroi", icon: '🦸', levels: TUTTI, items: [
+      ["⭐", "Superman viene dal pianeta Krypton"], ["🟢", "La kryptonite è il punto debole di Superman"], ["📰", "Clark Kent lavora al Daily Planet"], ["🦇", "Batman è Bruce Wayne e vive a Gotham City"],
+      ["🧠", "Batman non ha superpoteri: usa intelligenza e tecnologia"], ["🚗", "Il Batmobile è l'auto di Batman"], ["🃏", "Il Joker è il nemico più famoso di Batman"], ["🕷️", "Peter Parker diventa Spider-Man dopo il morso di un ragno"],
+      ["🕸️", "Spider-Man lancia ragnatele per muoversi in città"], ["💬", "«Da un grande potere derivano grandi responsabilità» dice Spider-Man"], ["🛡️", "Capitan America ha uno scudo rotondo"], ["⚡", "Thor è il dio del tuono e ha il martello Mjolnir"],
+      ["🤖", "Iron Man è Tony Stark, con la sua armatura"], ["💚", "Hulk diventa verde e fortissimo quando si arrabbia"], ["👑", "Black Panther viene dal regno di Wakanda"], ["🏹", "Occhio di Falco è un arciere"],
+      ["🐜", "Ant-Man può rimpicciolirsi"], ["🔮", "Doctor Strange usa la magia"], ["🦸", "Gli Avengers sono la squadra dei Vendicatori"], ["🌟", "La Justice League riunisce Superman, Batman, Wonder Woman e altri"],
+      ["💫", "Wonder Woman è Diana, principessa delle Amazzoni"], ["🪢", "Wonder Woman ha il Lazo della Verità"], ["⚡", "Flash è l'uomo più veloce del mondo"], ["🔱", "Aquaman parla con i pesci e comanda il mare"],
+      ["💍", "Lanterna Verde ha un anello speciale"], ["🌩️", "Shazam si trasforma pronunciando una parola magica"], ["🦸", "Gli Incredibili sono una famiglia di supereroi"], ["🪨", "La Cosa dei Fantastici Quattro è fatta di roccia"],
+      ["🐆", "Miles Morales è un altro Spider-Man"], ["💎", "Thanos cerca le Gemme dell'Infinito"], ["🦆", "Paperinik è l'alter ego di Paperino"], ["🐶", "Super Pippo è il supereroe più goffo del mondo"],
+      ["🕶️", "Diabolik è un ladro italiano creato dalle sorelle Giussani nel 1962"], ["🔍", "Dylan Dog è l'indagatore dell'incubo"], ["📅", "Superman debuttò nel 1938"], ["📅", "Batman debuttò nel 1939"],
+      ["📅", "Capitan America debuttò nel 1941"], ["📅", "Spider-Man debuttò nel 1962"], ["🐺", "Wolverine ha gli artigli di adamantio"], ["🎭", "I supereroi hanno spesso un costume e un'identità segreta"],
+      ["🤝", "Anche tu puoi essere un eroe aiutando gli altri"] ] }
+  };
+
+  // ---------- videogiochi e manga: Super Mario, Roblox, One Piece ----------
+  const GIOCHI = {
+    'super-mario': { name: "Super Mario", icon: '🍄', levels: TUTTI, items: [
+      ["🍄", "Mario è un idraulico con il cappello rosso e la M"], ["💚", "Luigi è il fratello di Mario e veste di verde"], ["🍄", "Il fungo fa diventare Mario grande"], ["⭐", "La Stella rende Mario invincibile per pochi secondi"],
+      ["🔥", "Il Fiore di fuoco permette di lanciare palle di fuoco"], ["🪙", "Mario raccoglie le monete mentre salta"], ["👑", "La principessa Peach viene rapita da Bowser"], ["🐢", "Bowser è il re dei Koopa"],
+      ["🐢", "Le Koopa Troopa sono tartarughe che camminano"], ["🍄", "I Goomba si schiacciano saltandoci sopra"], ["🟢", "Mario entra nei tubi verdi"], ["🏁", "Alla fine del livello c'è una bandiera"],
+      ["🦖", "Yoshi è un dinosauro verde con una lingua lunghissima"], ["🍄", "Toad è un piccolo fungo amico di Peach"], ["🦍", "Donkey Kong è un grande gorilla"], ["🕹️", "Mario è comparso per la prima volta in Donkey Kong, nel 1981"],
+      ["🎮", "Super Mario Bros è uscito nel 1985"], ["🏎️", "Mario Kart è il gioco di corse con i personaggi di Mario"], ["🍌", "In Mario Kart si lanciano gusci e bucce di banana"], ["💣", "Bob-omba è una bomba che cammina"],
+      ["🟡", "Wario è il cattivone con il cappello giallo"], ["🟣", "Waluigi è il compagno di Wario"], ["🌟", "Rosalinda è la principessa delle stelle"], ["🌌", "In Super Mario Galaxy si salta di pianeta in pianeta"],
+      ["🍄", "Il Regno dei Funghi è la casa di Peach"], ["🎮", "Nintendo è un'azienda giapponese"], ["🎬", "Nel film del 2023 Chris Pratt ha dato la voce a Mario"], ["🎹", "La musichetta di Super Mario è famosissima"],
+      ["🌋", "Il castello di Bowser è pieno di lava"], ["👻", "In Luigi's Mansion Luigi cattura i fantasmi con un aspirapolvere"], ["👻", "I Boo si nascondono quando li guardi"], ["🌿", "Le piante Piranha escono dai tubi"],
+      ["🧱", "Mario rompe i mattoni con la testa"], ["❓", "I blocchi con il punto interrogativo nascondono premi"], ["🎲", "Mario Party è un gioco di gare e giochi in compagnia"], ["🎾", "Mario gioca anche a tennis, golf e calcio"],
+      ["🐱", "In Super Mario 3D World Mario si trasforma in gatto"], ["🐢", "Il guscio rosso insegue gli avversari in Mario Kart"] ] },
+    'roblox': { name: "Roblox", icon: '🧱', levels: ['1', '2', '3', '4', '5', 'adulti'], items: [
+      ["🧱", "Roblox è una piattaforma dove si gioca ai giochi creati da altri giocatori"], ["🛠️", "Con Roblox Studio si creano i propri giochi"], ["🧍", "Il personaggio di Roblox si chiama avatar"], ["🟩", "Gli avatar hanno un aspetto a blocchetti"],
+      ["💎", "La moneta di Roblox si chiama Robux"], ["🐾", "In Adopt Me! si adottano e si crescono gli animaletti"], ["🏙️", "In Brookhaven si vive in una città con gli amici"], ["🏃", "Un obby è un percorso a ostacoli da superare"],
+      ["🍕", "In Work at a Pizza Place si lavora in una pizzeria"], ["🏠", "In Welcome to Bloxburg si costruisce e si arreda una casa"], ["🌪️", "In Natural Disaster Survival si sopravvive a terremoti e tornado"], ["🏰", "In Royale High si va in una scuola da principesse"],
+      ["🍎", "Blox Fruits è un gioco ispirato a One Piece"], ["🐱", "In MeepCity si incontrano gli amici e si gioca con i Meep"], ["🚪", "In Doors si scappa dai mostri in un hotel misterioso"], ["📅", "Roblox è nato nel 2006"],
+      ["👨‍💻", "I giochi di Roblox si programmano in Lua"], ["🔒", "Non dare mai nome, indirizzo o password a chi conosci solo online"], ["👨‍👩‍👧", "Gli adulti possono attivare il controllo parentale"], ["👥", "In Roblox si gioca online con gli amici"],
+      ["🛍️", "Nel catalogo si comprano vestiti e accessori per l'avatar"], ["🎤", "Su Roblox ci sono stati anche concerti virtuali"], ["🧑‍🏫", "Roblox si usa anche a scuola per imparare a programmare"], ["⏱️", "Fai delle pause: non giocare per troppo tempo"],
+      ["🛑", "Se qualcuno ti scrive cose che non ti piacciono, dillo a un adulto"], ["🎮", "Roblox si può giocare su computer, tablet e telefono"], ["🧠", "Creare un gioco è un ottimo modo per imparare a programmare"], ["🏗️", "In Roblox si possono costruire città, castelli e parchi giochi"],
+      ["🏆", "Un gioco su Roblox può essere giocato da milioni di persone"], ["🧩", "Un gioco ha un creatore, che si chiama sviluppatore"] ] },
+    'one-piece': { name: "One Piece", icon: '🏴‍☠️', levels: ['3', '4', '5', 'adulti'], items: [
+      ["🏴‍☠️", "Monkey D. Rufy sogna di diventare il Re dei Pirati"], ["🍖", "Rufy adora mangiare la carne"], ["👒", "Rufy porta un cappello di paglia"], ["🍇", "Rufy ha mangiato il frutto Gom Gom e ha il corpo di gomma"],
+      ["⚔️", "Roronoa Zoro combatte con tre spade"], ["🍊", "Nami è la navigatrice e ama i mandarini"], ["🎯", "Usop è il cecchino che racconta tante bugie"], ["👨‍🍳", "Sanji è il cuoco e combatte con i calci"],
+      ["🦌", "Chopper è una renna che fa il dottore"], ["📚", "Nico Robin è l'archeologa della ciurma"], ["🔧", "Franky è il carpentiere cyborg"], ["🎻", "Brook è uno scheletro musicista"],
+      ["🐟", "Jinbe è un uomo-pesce, il timoniere della ciurma"], ["⛵", "La prima nave della ciurma è la Going Merry"], ["☀️", "La seconda nave si chiama Thousand Sunny"], ["💀", "La bandiera dei pirati di Cappello di Paglia ha un teschio con il cappello"],
+      ["🍇", "I Frutti del Diavolo danno poteri ma tolgono la capacità di nuotare"], ["🗺️", "Il tesoro leggendario si chiama One Piece"], ["🌊", "La Rotta Maggiore (Grand Line) è il mare più pericoloso"], ["👑", "Gol D. Roger era il Re dei Pirati"],
+      ["🔥", "Ace è il fratello di Rufy"], ["🏴‍☠️", "Barbabianca è uno dei pirati più potenti"], ["🎩", "Shanks il Rosso ha affidato il cappello a Rufy"], ["⚓", "La Marina cerca di fermare i pirati"],
+      ["🇯🇵", "One Piece è un manga di Eiichiro Oda"], ["📖", "Il manga One Piece è iniziato nel 1997"], ["📺", "L'anime di One Piece va in onda dal 1999"], ["💰", "I pirati ricercati hanno una taglia sulla testa"],
+      ["🧭", "Il Log Pose è la bussola della Grand Line"], ["🏜️", "Alabasta è un regno nel deserto"], ["☁️", "Skypiea è un'isola in mezzo alle nuvole"], ["🐋", "Laboon è una balena gigantesca"],
+      ["🎌", "Wano è un paese ispirato al Giappone antico"], ["🫧", "L'Isola degli Uomini-Pesce si trova sul fondo del mare"], ["🌴", "La ciurma di Cappello di Paglia viaggia di isola in isola"], ["🤝", "In One Piece l'amicizia è più forte di tutto"] ] },
+    'minecraft': { name: "Minecraft", icon: '⛏️', levels: ['1', '2', '3', '4', '5', 'adulti'], items: [
+      ["⛏️", "In Minecraft si scava e si costruisce con i blocchi"], ["🧟", "Il Creeper è il mostro verde che esplode"], ["🧍", "Steve e Alex sono i personaggi di Minecraft"], ["💎", "I diamanti servono per fare gli attrezzi più resistenti"],
+      ["🪵", "Si comincia raccogliendo il legno degli alberi"], ["🛏️", "Dormendo nel letto si fa passare la notte"], ["🌙", "Di notte arrivano i mostri"], ["🧟", "Gli zombie compaiono quando è buio"],
+      ["💀", "Gli scheletri sparano con l'arco"], ["🕷️", "I ragni si arrampicano sui muri"], ["🐖", "Si possono allevare maiali, mucche, pecore e galline"], ["🐺", "I lupi si addomesticano con le ossa"],
+      ["🐱", "I gatti si addomesticano con il pesce"], ["🐴", "Il cavallo si doma e poi si cavalca"], ["🔨", "Con il banco da lavoro si costruiscono gli oggetti"], ["⚒️", "Il piccone serve per scavare la pietra"],
+      ["🌋", "La lava è pericolosissima"], ["🏠", "Con i blocchi si può costruire una casa"], ["🌲", "Un bioma è un ambiente: foresta, deserto, giungla..."], ["🔥", "Il Nether è un mondo pieno di fuoco"],
+      ["🐉", "L'Ender Dragon vive nell'End"], ["🟣", "L'Enderman è alto, nero e si teletrasporta"], ["🛡️", "L'armatura protegge il giocatore"], ["❤️", "I cuori sono la vita del giocatore"],
+      ["🍖", "Se hai fame devi mangiare"], ["🧪", "Le pozioni si preparano nel banco di pozioni"], ["🔴", "La redstone serve per costruire circuiti"], ["🚂", "Con le rotaie si costruiscono i binari per i carrelli"],
+      ["🏘️", "Gli abitanti dei villaggi si scambiano oggetti"], ["🟢", "Gli slime sono cubi verdi che saltano"], ["🗡️", "La spada serve a difendersi dai mostri"], ["🎮", "Minecraft è stato creato da Markus Persson, detto Notch"],
+      ["📅", "La versione completa di Minecraft è uscita nel 2011"], ["🏢", "Oggi Minecraft appartiene a Microsoft"], ["🎬", "Nel 2025 è uscito il film di Minecraft"], ["🏫", "Minecraft Education si usa anche a scuola"],
+      ["🧱", "Il mondo di Minecraft è fatto di blocchi cubici"], ["🌍", "Ogni mondo di Minecraft è enorme e creato a caso"], ["🛠️", "In modalità creativa hai blocchi infiniti e puoi volare"], ["⚔️", "In modalità sopravvivenza devi raccogliere risorse e difenderti"],
+      ["👥", "Si può giocare insieme agli amici"] ] }
+  };
+
   // ---------- temi per adulti (tombola classica) ----------
   const ADULTI = {
     'verita': { name: "Verità universali", icon: '😂', levels: ['adulti'], items: [
@@ -371,7 +447,7 @@
   };
 
   // ---------- API ----------
-  const ALL = Object.assign({}, GEN, LISTE, CARTONI, CARTONI_OGGI, ADULTI);
+  const ALL = Object.assign({}, GEN, LISTE, CARTONI, CARTONI_OGGI, FESTE, GIOCHI, ADULTI);
   Object.keys(ALL).forEach(k => { ALL[k].key = k; });
 
   const themesFor = level => Object.keys(ALL).filter(k => ALL[k].levels.includes(level)).map(k => ({ key: k, name: ALL[k].name, icon: ALL[k].icon }));

@@ -120,9 +120,11 @@ body.player .cards-bar.player-only { display: flex; }
 .stepper button { width: 38px; padding: 6px 0; font-size: 1.2rem; }
 .stepper span { font-weight: 800; font-size: 1.3rem; min-width: 1.6em; text-align: center; }
 .opt-auto { display: none; }
-.kids .opt-auto, .player .opt-auto { display: flex; }
+.kids .opt-auto, .player .opt-auto, .host-plays .opt-auto { display: flex; }
 body.player .host-only, body.nojoin .needs-join { display: none !important; }
 body.play-paper .host-cards, body.play-devices .host-cards, body.play-mixed .host-cards { display: none !important; }
+body.host-plays.play-devices:not(.lim) .host-cards, body.host-plays.play-mixed:not(.lim) .host-cards { display: block !important; }
+body.host-plays.started .host-cards { order: -1; }
 #roomPanel, #paperPanel { display: none; }
 body.play-devices #roomPanel, body.play-mixed #roomPanel, body.play-paper #paperPanel, body.play-mixed #paperPanel { display: block; }
 main > header { order: -3; }
@@ -504,7 +506,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   const LIM_VIEW = isPlayer && Q.get('lim') === '1';   // schermo LIM collegato alla stanza (solo spettatore)
   const KEY = LIM_VIEW ? 'tombola-lim-' + ROOM_CODE : isPlayer ? 'tombola-player-' + ROOM_CODE : 'tombola-proto-v2';
   const $ = id => document.getElementById(id);
-  let state = { mode: 'classic', max: 90, drawn: [], cards: [], marks: [], won: {}, autoMark: false, gen: 0, room: null, token: '', pname: '', play: 'screen', cols: 3, theme: 'auto', source: 'app', level: '1', themeMode: 'auto', sTheme: '', kidSmorfia: 'tema', adultMode: 'napoletana', aTheme: '' };
+  let state = { mode: 'classic', max: 90, drawn: [], cards: [], marks: [], won: {}, autoMark: false, gen: 0, room: null, token: '', pname: '', play: 'screen', cols: 3, theme: 'auto', source: 'app', level: '1', themeMode: 'auto', sTheme: '', kidSmorfia: 'tema', adultMode: 'napoletana', aTheme: '', hostPlays: false, hostName: '' };
   let timer = null, limOn = false;
   const kids = () => state.mode === 'kids';
   const prizesFor = (m, cols) => TombolaCards.prizes(m, cols);
@@ -555,9 +557,11 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   }
 
   // numeri considerati "segnati" su una cartella
+  // Il banditore gioca anche lui (stanza con dispositivi): segna a mano e chiama i premi come un giocatore.
+  const hostPlaying = () => !isPlayer && !!state.hostPlays && (state.play === 'devices' || state.play === 'mixed');
   function marked(i) {
     const out = new Set(state.drawn);
-    if (isPlayer) return state.autoMark ? out : new Set(state.marks[i] || []);
+    if (isPlayer || hostPlaying()) return state.autoMark ? out : new Set(state.marks[i] || []);
     if (!kids() || state.autoMark) return out;
     return new Set(state.marks[i] || []);
   }
@@ -677,6 +681,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     document.body.classList.toggle('kids', kids());
     document.body.classList.toggle('started', state.drawn.length > 0);
     document.body.classList.toggle('lim', LIM_VIEW || limOn);
+    document.body.classList.toggle('host-plays', hostPlaying());
     document.body.classList.toggle('src-urn', !isPlayer && state.source === 'urn');
     $('board').style.setProperty('--rows', Math.ceil(state.max / 10));
     document.querySelectorAll('#srcSeg button').forEach(b => b.classList.toggle('active', b.dataset.src === state.source));
@@ -709,7 +714,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       $('cardsLimit').textContent = locked ? 'Cartelle bloccate: la partita è iniziata'
         : `Puoi prenderne fino a ${mx}${state.late ? '' : ', prima che inizi la partita'}`;
     }
-    $('cardsHint').textContent = isPlayer
+    $('cardsHint').textContent = isPlayer || hostPlaying()
       ? (state.autoMark ? 'I numeri estratti si segnano da soli. Chiama il premio quando lo hai!' : 'Tocca i numeri sulla cartella quando escono. Hai un premio? Chiamalo!')
       : kids() && !state.autoMark
         ? 'Tocca i numeri sulla cartella quando escono!'
@@ -768,7 +773,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
         gr.appendChild(d);
       });
       c.appendChild(gr);
-      if (isPlayer) {
+      if (isPlayer || hostPlaying()) {
         const cl = document.createElement('div'); cl.className = 'claims';
         prizes().filter(p => !state.won[p.n]).forEach(p => {
           const bt = document.createElement('button');
@@ -798,8 +803,9 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   $('cards').addEventListener('click', ev => {
     const cb = ev.target.closest('[data-claim]');
     if (cb && isPlayer) { send({ t: 'claim', prize: +cb.dataset.claim, card: +cb.dataset.card }); return; }
+    if (cb && hostPlaying()) { claimLocal(+cb.dataset.claim, +cb.dataset.card); return; }
     const t = ev.target.closest('[data-n]');
-    if (!t || !(kids() || isPlayer) || state.autoMark) return;
+    if (!t || !(kids() || isPlayer || hostPlaying()) || state.autoMark) return;
     const n = +t.dataset.n, i = +t.dataset.card;
     if (!state.drawn.includes(n)) {
       t.classList.remove('shake'); void t.offsetWidth; t.classList.add('shake');
@@ -958,6 +964,22 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     save(); renderRoom(); sendTo(token, snapshot(token));
   }
   // Verifica di un premio chiamato da un giocatore (conta solo ciò che è davvero uscito).
+  // Premio chiamato dal banditore con le proprie cartelle (stesso controllo dei giocatori).
+  function claimLocal(n, i) {
+    const card = state.cards[i], pr = prizes().find(x => x.n === n);
+    if (!card || !pr) return;
+    if (state.won[n]) { toast(`${pr.name} è già stato assegnato`); return; }
+    const m = new Set(state.drawn), size = cardSize();
+    const best = Math.max(...card.map(r => r.filter(x => x && m.has(x)).length));
+    const total = card.flat().filter(x => x && m.has(x)).length;
+    if (!(n === size ? total === size : best >= n)) { toast('Falso allarme! Controlla bene i numeri 🧐'); return; }
+    const who = (state.hostName || '').trim() || 'Il banditore';
+    state.won[n] = `${who} · Cartella ${i + 1}`;
+    const text = `🎉 ${pr.name} a ${who}!`;
+    log(text, true); toast(text);
+    if (state.room) broadcastMsg({ t: 'toast', text });
+    save(); render(); broadcast();
+  }
   function claim(token, n, i) {
     const p = state.room.players[token], pr = prizes().find(x => x.n === n), card = p && p.cards[i];
     if (!pr || !card) return;
@@ -1031,6 +1053,13 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     const lab2 = el('label', 'hint'); lab2.style.cssText = 'display:flex;gap:6px;align-items:center'; lab2.append(late, 'Si possono prendere anche a partita iniziata');
     const cl = el('button', null, 'Chiudi stanza'); cl.onclick = closeRoom;
     row.append(cp, lab, lab2, cl); right.append(row);
+    const hp = el('div', 'row');
+    const hc = el('input'); hc.type = 'checkbox'; hc.checked = !!state.hostPlays;
+    hc.onchange = () => { state.hostPlays = hc.checked; save(); render(); };
+    const hl = el('label', 'hint'); hl.style.cssText = 'display:flex;gap:6px;align-items:center'; hl.append(hc, "🎟️ Gioco anch'io (le mie cartelle compaiono sotto il tabellone)");
+    const hn = el('input'); hn.type = 'text'; hn.maxLength = 20; hn.size = 14; hn.placeholder = 'Il mio nome'; hn.value = state.hostName || '';
+    hn.oninput = () => { state.hostName = hn.value; save(); };
+    hp.append(hl, hn); right.append(hp);
     if (roomError) right.append(el('div', 'err', roomError));
     const list = el('div', 'plist');
     if (!players.length) list.append(el('p', 'hint', 'In attesa dei giocatori… fai scansionare il QR o condividi il codice.'));
