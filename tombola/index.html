@@ -278,6 +278,7 @@ details summary { cursor: pointer; font-weight: 600; }
     <h2>Entra nella stanza <span id="joinCode"></span></h2>
     <input type="text" id="joinName" maxlength="20" placeholder="Il tuo nome" autocomplete="off">
     <button class="primary" id="joinBtn">Entra</button>
+    <p class="hint" style="margin-top:10px">Scrivi il tuo nome o un nome di fantasia: lo vedrà solo chi estrae. <a href="privacy.html" style="color:var(--accent)">Privacy</a></p>
   </section>
 
   <section class="panel host-only kid-only" id="kidPanel">
@@ -446,9 +447,10 @@ details summary { cursor: pointer; font-weight: 600; }
     </details>
   </section>
 
-  <footer class="credit">🎱 Tombola · ideata e realizzata da <a href="../">Arcangelo Clemente</a></footer>
+  <footer class="credit">🎱 Tombola · ideata e realizzata da <a href="../">Arcangelo Clemente</a> · <a href="privacy.html">🔒 Privacy</a></footer>
 </main>
 
+<script src="analytics.js"></script>
 <script src="temi.js"></script>
 <script src="cartelle.js"></script>
 <script src="lib/peerjs.min.js"></script>
@@ -580,7 +582,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   const KEY = LIM_VIEW ? 'tombola-lim-' + ROOM_CODE : isPlayer ? 'tombola-player-' + ROOM_CODE : 'tombola-proto-v2';
   const $ = id => document.getElementById(id);
   let state = { mode: 'classic', max: 90, drawn: [], cards: [], marks: [], won: {}, autoMark: false, gen: 0, room: null, token: '', pname: '', play: 'screen', cols: 3, theme: 'auto', source: 'app', level: '1', themeMode: 'auto', sTheme: '', kidSmorfia: 'tema', adultMode: 'napoletana', aTheme: '', hostPlays: false, hostName: '', custom: [], drawAnim: false, drawer: 'maestra' };
-  let timer = null, limOn = false, drawing = false;
+  let timer = null, limOn = false, drawing = false, playerTracked = false;
   const kids = () => state.mode === 'kids';
   const prizesFor = (m, cols) => TombolaCards.prizes(m, cols);
   const prizes = () => prizesFor(state.mode, state.cols);
@@ -656,9 +658,19 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     playDrawAnimation(n, who).then(() => { drawing = false; if (state.gen === g && !state.drawn.includes(n)) registerNumber(n); });
   }
   // Un numero è uscito (estratto dall'app o dall'urna fisica).
+  // Statistiche anonime: una sola volta per partita, al primo numero. Mai nomi, codici stanza o frasi personali.
+  function trackStart() {
+    const modo = kids() ? 'bambini' : 'classica';
+    TombolaStats.track(`partita/${modo}-${state.play}`);
+    const k = kids() ? (state.kidSmorfia === 'tema' ? state.sTheme : 'napoletana') : (state.adultMode !== 'napoletana' ? state.aTheme : 'napoletana');
+    TombolaStats.track('tema/' + (k && k.startsWith('mio-') ? 'personalizzato' : (k || 'napoletana')));
+    if (kids()) TombolaStats.track('classe/' + state.level);
+    if (state.source === 'urn') TombolaStats.track('estrazione/urna-fisica');
+  }
   function registerNumber(n) {
     if (isPlayer) return;
     state.drawn.push(n);
+    if (state.drawn.length === 1) trackStart();
     say(n);
     checkPrizes();
     save(); render(true); broadcast();
@@ -982,6 +994,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   function broadcastMsg(msg) { Object.keys(conns).forEach(t => sendTo(t, msg)); }
 
   function createRoom() {
+    TombolaStats.track('stanza-creata');
     state.room = { code: newCode(), maxCards: 4, lateCards: false, players: {} };
     openRoom(state.room.code, 0); save();
   }
@@ -1175,6 +1188,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   function playerMsg(m) {
     if (!m) return;
     if (m.t === 'state') {
+      if (!playerTracked) { playerTracked = true; TombolaStats.track('giocatore-collegato'); }
       if (m.ct) TombolaTemi.register({ [m.ct.key]: m.ct });
       const prev = state.drawn.length;
       if (m.gen !== state.gen) state.marks = m.cards.map(() => []);
@@ -1518,6 +1532,8 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   fillThemeSel();
   fillAdultSel();
   renderMyThemes();
+  TombolaStats.pageview(isPlayer ? (LIM_VIEW ? '/tombola/lim' : '/tombola/giocatore') : '/tombola/', 'Tombola');
+  $('printBtn').addEventListener('click', () => TombolaStats.track('stampa/apri-da-gioco'));
   if (!isPlayer) { // compatibilità con partite salvate prima del selettore
     if (state.paper && state.play === 'screen') state.play = state.room ? 'mixed' : 'paper';
     else if (state.room && state.play === 'screen') state.play = 'devices';

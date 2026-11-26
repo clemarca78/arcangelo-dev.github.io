@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tombola – Privacy</title>
+<meta name="author" content="Arcangelo Clemente">
+<meta name="robots" content="noindex">
+<style>
+  :root { --bg: #0b1120; --text: #f1f5f9; --muted: #94a3b8; --accent: #38bdf8; --border: rgba(255,255,255,.12); }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 20px 16px 40px; background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.55; }
+  main { max-width: 720px; margin: 0 auto; }
+  a { color: var(--accent); }
+  h1 { font-size: 1.6rem; margin: 6px 0 4px; }
+  h2 { font-size: 1.05rem; margin: 26px 0 6px; color: var(--accent); }
+  p, li { color: #e2e8f0; }
+  ul { padding-left: 20px; display: grid; gap: 4px; }
+  .muted { color: var(--muted); font-size: .9rem; }
+  .box { border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; background: rgba(255,255,255,.04); }
+</style>
+</head>
+<body>
+<main>
+  <p><a href="./">← Torna alla Tombola</a></p>
+  <h1>🔒 Privacy</h1>
+  <p class="muted">La Tombola è un gioco gratuito di Arcangelo Clemente. Ultimo aggiornamento: 26 novembre 2026.</p>
+
+  <div class="box"><b>In breve:</b> nessun account, nessun cookie, nessuna pubblicità. Non raccogliamo dati personali. Le partite restano sul tuo dispositivo e si contano soltanto, in modo anonimo, gli usi del gioco.</div>
+
+  <h2>Cosa resta sul tuo dispositivo</h2>
+  <ul>
+    <li>La partita in corso, le impostazioni e i temi che scrivi in «I miei temi» sono salvati <b>nel tuo browser</b> e non vengono inviati a nessun server dell'autore.</li>
+    <li>Per cancellarli basta svuotare i dati del sito dalle impostazioni del browser.</li>
+  </ul>
+
+  <h2>Il multiplayer (stanze con codice o QR)</h2>
+  <ul>
+    <li>I dispositivi si collegano direttamente tra loro. Per stabilire il collegamento usano servizi pubblici di terze parti (il servizio di segnalazione PeerJS e server di rete STUN), che possono vedere dati tecnici come l'indirizzo IP e un identificativo temporaneo del collegamento.</li>
+    <li>Il contenuto del gioco (numeri, cartelle, premi, frasi dei temi) viaggia tra i dispositivi e non viene salvato su un server.</li>
+    <li>Il nome che scrivi per entrare in una stanza lo vede solo chi estrae. <b>Per i bambini consigliamo un nome di fantasia o il solo nome.</b></li>
+  </ul>
+
+  <h2>Statistiche anonime</h2>
+  <p id="statsState" class="box">Controllo lo stato delle statistiche…</p>
+  <ul>
+    <li>Si usa <a href="https://www.goatcounter.com" target="_blank" rel="noopener">GoatCounter</a>, un servizio rispettoso della privacy: <b>senza cookie</b>, senza profilazione e senza identificare le persone.</li>
+    <li>Si contano le visite alla pagina e alcuni eventi anonimi: partita iniziata (e in quale modalità), stanza creata, apertura della stampa e tema pronto usato.</li>
+    <li><b>Non vengono mai inviati</b> i nomi dei giocatori, i codici delle stanze né le frasi dei temi che scrivi tu.</li>
+    <li>Se il tuo browser ha attivato «Do Not Track» o «Global Privacy Control», le statistiche non partono.</li>
+  </ul>
+
+  <h2>Altri servizi</h2>
+  <ul>
+    <li>Le pagine sono ospitate su GitHub Pages, che può registrare gli accessi come qualsiasi sito web.</li>
+    <li>La lettura ad alta voce usa la sintesi vocale del tuo dispositivo: nulla viene inviato fuori.</li>
+  </ul>
+
+  <h2>Contatti</h2>
+  <p>Per domande o richieste scrivi all'autore: i contatti sono nella <a href="../#contatti">home del sito</a>.</p>
+</main>
+<script src="analytics.js"></script>
+<script>
+  document.getElementById('statsState').textContent = TombolaStats.enabled
+    ? '✅ Le statistiche anonime sono attive su questo sito.'
+    : '⏸️ In questo momento le statistiche anonime non sono attive (oppure il tuo browser ha chiesto di non essere tracciato).';
+  TombolaStats.pageview('/tombola/privacy', 'Privacy');
+</script>
+</body>
+</html>

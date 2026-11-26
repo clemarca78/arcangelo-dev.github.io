@@ -84,11 +84,12 @@ button.sec { background: #e2e8f0; color: #1e293b; }
     <label class="chk"><input type="checkbox" id="tokens"> Cartellini da ritagliare (per il sacchetto)</label>
     <button id="print" type="button">🖨️ Stampa</button>
   </div>
-  <p style="margin:0 0 6px;font-size:.8rem;color:#64748b">Tombola · ideata e realizzata da Arcangelo Clemente</p>
+  <p style="margin:0 0 6px;font-size:.8rem;color:#64748b">Tombola · ideata e realizzata da Arcangelo Clemente · <a href="privacy.html">Privacy</a></p>
   <p id="hint" style="margin:0">Per stamparle di nuovo uguali, ricorda il numero della prima serie.</p>
 </div>
 <div class="sheets" id="sheets"></div>
 
+<script src="analytics.js"></script>
 <script src="cartelle.js"></script>
 <script>
 (() => {
@@ -159,7 +160,8 @@ button.sec { background: #e2e8f0; color: #1e293b; }
   }
   ['mode', 'max', 'cols', 'theme', 'pages', 'first', 'board', 'tokens'].forEach(id => $(id).addEventListener('input', render));
   $('rnd').onclick = () => { $('first').value = TombolaCards.randomSerie(); render(); };
-  $('print').onclick = () => window.print();
+  $('print').onclick = () => { TombolaStats.track('stampa/stampato'); window.print(); };
+  TombolaStats.pageview('/tombola/stampa', 'Stampa cartelle');
   render();
 })();
 </script>
