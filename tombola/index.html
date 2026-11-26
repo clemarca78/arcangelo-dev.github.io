@@ -85,6 +85,8 @@ select { font: inherit; background: var(--bg); color: var(--text); border: 1px s
 .sezinfo span.vinta { background: rgba(34,197,94,.2); color: var(--text); }
 body.lim .sezinfo { display: none; }
 .gwin[hidden] { display: none; }
+.fine { margin: 10px 0; padding: 10px 12px; border-radius: 12px; background: rgba(251,191,36,.15); border: 1px solid var(--gold); font-weight: 600; }
+.fine[hidden] { display: none; }
 .gwin { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(251,191,36,.15); border: 1px solid var(--gold); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .prizes { display: flex; gap: 8px; flex-wrap: wrap; }
 .prize { flex: 1 1 120px; border: 1px solid var(--border); border-radius: 12px; padding: 10px; text-align: center; font-size: .85rem; color: var(--muted); }
@@ -452,6 +454,7 @@ details summary { cursor: pointer; font-weight: 600; }
         <p class="hint" style="margin-top:8px">Estrai dall'urna, poi tocca il numero sul tabellone o scrivilo qui.</p>
         <p class="hint" style="margin-top:6px">Stai usando l'<b>urna fisica</b>: i pulsanti Estrai e Auto sono nascosti. <button id="urnBack" style="padding:4px 10px">🎱 Estrai con l'app</button></p>
       </div>
+      <div class="fine" id="fine" hidden></div>
       <div class="btns">
         <button class="primary host-only" id="drawBtn">Estrai</button>
         <button class="host-only" id="autoBtn">▶ Auto</button>
@@ -479,8 +482,8 @@ details summary { cursor: pointer; font-weight: 600; }
 
     <div class="panel">
       <h2>Tabellone</h2>
-      <div class="row host-only adult-only" id="sezRow" style="margin-bottom:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
-        <label class="hint" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="sezOn"> 🧩 Tabellone a sezioni: le 6 sezioni da 15 numeri (blocchi 3×5) sono le cartelle del gestore, che può vincere anche lui</label>
+      <div class="row host-only" id="sezRow" style="margin-bottom:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+        <label class="hint" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="sezOn"> 🧩 Tabellone a sezioni: i blocchi 3×5 del tabellone sono le cartelle del gestore, che può vincere anche lui</label>
         <input type="text" id="gestoreName" maxlength="20" size="14" placeholder="Nome del gestore">
         <button id="sezNew" title="Passa il tabellone a un altro gestore">🔄 Cambia gestore</button>
       </div>
@@ -712,18 +715,44 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   // numeri considerati "segnati" su una cartella
   // Il banditore gioca anche lui (stanza con dispositivi): segna a mano e chiama i premi come un giocatore.
   // Tabellone a sezioni (solo tombola classica, vista del gestore): le 6 sezioni sono le 6 cartelle di una serie e coprono 1..90.
-  const sezioniOn = () => !isPlayer && !kids() && !!state.sezioni;
+  const sezioniOn = () => !isPlayer && !!state.sezioni;
   const gestoreName = () => (state.gestore || '').trim() || 'Il gestore';
   // Come sul tabellone standard: 6 sezioni da 3 righe x 5 colonne (1-5/11-15/21-25, 6-10/16-20/26-30, 31-35...).
-  const SEZIONI = Array.from({ length: 6 }, (_, s) => [0, 1, 2].map(r => [0, 1, 2, 3, 4].map(c => (Math.floor(s / 2) * 3 + r) * 10 + (s % 2) * 5 + c + 1)));
-  const sezioniCards = () => SEZIONI;
-  const sezOf = n => { const r = Math.floor((n - 1) / 10), c = (n - 1) % 10; return r < 9 ? Math.floor(r / 3) * 2 + (c >= 5 ? 1 : 0) : -1; };
-  const sezioniAttive = () => !isPlayer && !kids() && !!state.sezioni;
+  // Il tabellone ha 10 colonne: ogni sezione è un blocco di 3 righe x 5 colonne (2 righe se i numeri sono solo 20).
+  const sezCache = {};
+  const sezioni = () => {
+    const m = state.max;
+    if (!sezCache[m]) {
+      const rows = Math.ceil(m / 10), out = [];
+      for (let b = 0; b * 3 < rows; b++) for (let h = 0; h < 2; h++) {
+        const g = [];
+        for (let r = b * 3; r < Math.min(rows, b * 3 + 3); r++) { const row = []; for (let c = 0; c < 5; c++) { const n = r * 10 + h * 5 + c + 1; if (n <= m) row.push(n); } g.push(row); }
+        out.push(g);
+      }
+      sezCache[m] = out;
+    }
+    return sezCache[m];
+  };
+  const sezioniCards = () => sezioni();
+  const sezOf = n => { const r = Math.floor((n - 1) / 10), c = (n - 1) % 10; return Math.floor(r / 3) * 2 + (c >= 5 ? 1 : 0); };
+  const sezioniAttive = () => !isPlayer && !!state.sezioni;
   function raggiuntoDa(card, prize, drawn) {
-    const m = new Set(drawn), size = cardSize();
+    const m = new Set(drawn), l = prizes(), tomb = l.length && prize.n === l[l.length - 1].n;
     const best = Math.max(...card.map(r => r.filter(x => x && m.has(x)).length)), total = card.flat().filter(x => x && m.has(x)).length;
-    return prize.n === size ? total === size : best >= prize.n;
+    return tomb ? total === card.flat().length : best >= prize.n;
   }
+  // Partita finita: la tombola è stata assegnata, oppure il gestore ha completato una sezione del tabellone. Non si estrae più.
+  const finita = () => {
+    const l = prizes();
+    if (l.length && state.won[l[l.length - 1].n]) return true;
+    return sezioniAttive() && sezioni().some(g => g.flat().every(n => state.drawn.includes(n)));
+  };
+  const finePerche = () => {
+    const l = prizes(), w = l.length ? state.won[l[l.length - 1].n] : '';
+    if (w) return `🏁 Partita finita: Tombola a ${w}! Per giocare ancora premi «Nuova partita».`;
+    const i = sezioniAttive() ? sezioni().findIndex(g => g.flat().every(n => state.drawn.includes(n))) : -1;
+    return i >= 0 ? `🏁 Partita finita: ${gestoreName()} ha completato la sezione ${i + 1}! Per giocare ancora premi «Nuova partita».` : '';
+  };
   const hostPlaying = () => !isPlayer && !!state.hostPlays && (state.play === 'devices' || state.play === 'mixed');
   function marked(i) {
     const out = new Set(state.drawn);
@@ -735,6 +764,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   // ---------- estrazione ----------
   function draw() {
     if (isPlayer || drawing) return;
+    if (finita()) { stopAuto(); return; }
     const out = new Set(state.drawn), r = [];
     for (let n = 1; n <= state.max; n++) if (!out.has(n)) r.push(n);
     if (!r.length) { stopAuto(); return; }
@@ -773,7 +803,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if (hostPlaying()) gruppi.push({ name: (state.hostName || '').trim() || 'Il banditore', cards: state.cards });
     if (sezioniAttive()) gruppi.push({ name: gestoreName(), cards: sezioniCards(), sez: true });
     const vincitori = [];
-    gruppi.forEach(g => { const i = g.cards.findIndex(raggiunto); if (i >= 0) vincitori.push({ name: g.name, i, sez: g.sez }); });
+    gruppi.forEach(g => { const i = g.cards.findIndex(c => g.sez ? raggiuntoDa(c, next, state.drawn) : raggiunto(c)); if (i >= 0) vincitori.push({ name: g.name, i, sez: g.sez }); });
     if (!vincitori.length) return;
     state.won[next.n] = vincitori.map(v => `${v.name} · ${v.sez ? 'Sezione' : 'Cartella'} ${v.i + 1}`).join(' + ').slice(0, 120);
     const text = `🎉 ${next.name} a ${vincitori.map(v => v.name).join(' e ')}!`;
@@ -781,6 +811,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   }
   function registerNumber(n) {
     if (isPlayer) return;
+    if (finita()) { stopAuto(); return; }
     state.drawn.push(n);
     assignPhrase(n);
     if (state.drawn.length === 1) trackStart();
@@ -788,10 +819,11 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     checkPrizes();
     if (autoPrizesOn()) autoAwardRoom();
     save(); render(true); broadcast();
-    if (state.drawn.length >= state.max) stopAuto();
+    if (state.drawn.length >= state.max || finita()) stopAuto();
   }
   // Urna fisica: numero segnato a mano dalla maestra.
   function urnAdd(n) {
+    if (finita()) { toast('La partita è finita: premi «Nuova partita» per ricominciare'); return; }
     if (!Number.isInteger(n) || n < 1 || n > state.max) { toast(`Numero non valido (da 1 a ${state.max})`); return; }
     if (state.drawn.includes(n)) { toast(`Il ${n} è già uscito`); return; }
     registerNumber(n);
@@ -973,7 +1005,10 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if (animate && last) { void ball.offsetWidth; ball.classList.add('pop'); }
     renderInfo(last);
     $('counter').textContent = `Estratti: ${state.drawn.length} / ${state.max}`;
-    $('drawBtn').disabled = state.drawn.length >= state.max;
+    const fine = finita();
+    $('drawBtn').disabled = $('autoBtn').disabled = state.drawn.length >= state.max || fine;
+    $('urnNum').disabled = $('urnAdd').disabled = fine;
+    $('fine').hidden = !fine; $('fine').textContent = fine ? finePerche() : '';
 
     $('board').innerHTML = '';
     const sez = sezioniOn();
@@ -986,19 +1021,19 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       const d = document.createElement('div');
       d.textContent = n; d.dataset.n = n;
       if (out.has(n)) d.className = 'out' + (n === last ? ' last' : '');
-      if (sez && state.max === 90) {
+      if (sez) {
         const k = sezOf(n), r = Math.floor((n - 1) / 10), c = (n - 1) % 10;
         if (c === 5) d.classList.add('sl');
-        if (r === 3 || r === 6) d.classList.add('st');
+        if (r > 0 && r % 3 === 0) d.classList.add('st');
         if (r % 3 === 0 && c % 5 === 0) d.dataset.s = k + 1;
         if (vinteS.has(k)) d.classList.add('sv');
       }
       $('board').appendChild(d);
     }
     const si = $('sezInfo'); si.innerHTML = ''; si.hidden = !sez;
-    if (sez) SEZIONI.forEach((g, i) => {
+    if (sez) sezioni().forEach((g, i) => {
       const hits = g.flat().filter(n => out.has(n)).length;
-      const sp = document.createElement('span'); sp.textContent = `Sezione ${i + 1}: ${hits}/15`; if (vinteS.has(i)) sp.className = 'vinta'; si.appendChild(sp);
+      const sp = document.createElement('span'); sp.textContent = `Sezione ${i + 1}: ${hits}/${g.flat().length}`; if (vinteS.has(i)) sp.className = 'vinta'; si.appendChild(sp);
     });
     // premio raggiunto da una sezione del gestore ma non ancora assegnato (carta/misto o urna): proposta di assegnazione
     const gw = $('gwin'); gw.hidden = true; gw.innerHTML = '';
@@ -1099,7 +1134,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   function stopAuto() { clearInterval(timer); timer = null; $('autoBtn').textContent = '▶ Auto'; }
   function toggleAuto() {
     if (timer) return stopAuto();
-    if (state.drawn.length >= state.max) return;
+    if (state.drawn.length >= state.max || finita()) return;
     $('autoBtn').textContent = '⏸ Pausa';
     draw(); timer = setInterval(draw, Math.max(+$('speed').value, state.drawAnim ? 5500 : 0));
   }
