@@ -718,19 +718,43 @@
   Object.keys(ALL).forEach(k => { ALL[k].key = k; });
 
   // Categorie per ordinare i menu (un tema sta in una sola categoria).
-  const CATEGORIES = ['📚 Scuola', '📺 Cartoni, giochi e supereroi', '🐾 Animali', '🇮🇹 Regioni d\'Italia', '🎉 Feste e tradizioni', '😂 Divertente', '🎵 Cultura e passioni', '✏️ I miei temi'];
+  const C = { mix: '🎲 Mix di temi', scuola: '📚 Scuola', cartoni: '📺 Cartoni, giochi e supereroi', animali: '🐾 Animali', regioni: "🇮🇹 Regioni d'Italia",
+              feste: '🎉 Feste e tradizioni', divertente: '😂 Divertente', cultura: '🎵 Cultura e passioni', mio: '✏️ I miei temi' };
+  const CATEGORIES = [C.mix, C.scuola, C.cartoni, C.animali, C.regioni, C.feste, C.divertente, C.cultura, C.mio];
   const CAT_KEYS = {
-    1: ['animali-versi', 'animali-classi', 'animali-curiosita', 'cuccioli', 'animali-habitat', 'dinosauri-tema', 'animali-modi-di-dire'],
-    2: ['cartoni', 'disney', 'cartoni-oggi', 'cartoni-80-90', 'ghibli', 'anime-classici', 'anime-oggi', 'super-mario', 'roblox', 'one-piece', 'minecraft', 'supereroi',
-        'conta-cartoni', 'problemi-piccoli', 'problemi-grandi', 'alfabeto-cartoni', 'colori-cartoni', 'cartoni-nel-mondo', 'inglese-cartoni'],
-    4: ['feste'], 5: ['verita', 'mamma', 'proverbi', 'modi-di-dire', 'murphy'], 6: ['musica', 'sport', 'cinema', 'sapori', 'capitali', 'cultura']
+    [C.animali]: ['animali-versi', 'animali-classi', 'animali-curiosita', 'cuccioli', 'animali-habitat', 'dinosauri-tema', 'animali-modi-di-dire'],
+    [C.cartoni]: ['cartoni', 'disney', 'cartoni-oggi', 'cartoni-80-90', 'ghibli', 'anime-classici', 'anime-oggi', 'super-mario', 'roblox', 'one-piece', 'minecraft', 'supereroi',
+                  'conta-cartoni', 'problemi-piccoli', 'problemi-grandi', 'alfabeto-cartoni', 'colori-cartoni', 'cartoni-nel-mondo', 'inglese-cartoni'],
+    [C.feste]: ['feste'], [C.divertente]: ['verita', 'mamma', 'proverbi', 'modi-di-dire', 'murphy'], [C.cultura]: ['musica', 'sport', 'cinema', 'sapori', 'capitali', 'cultura']
   };
   function catOf(key) {
-    if (key.startsWith('mio-')) return CATEGORIES[7];
-    if (key === 'puglia' || key === 'regioni' || key.startsWith('reg-')) return CATEGORIES[3];
-    for (const i in CAT_KEYS) if (CAT_KEYS[i].includes(key)) return CATEGORIES[i];
-    return CATEGORIES[0];   // tutto il resto è materia di scuola
+    if (key.startsWith('mix-')) return C.mix;
+    if (key.startsWith('mio-')) return C.mio;
+    if (key === 'puglia' || key === 'regioni' || key.startsWith('reg-')) return C.regioni;
+    for (const c in CAT_KEYS) if (CAT_KEYS[c].includes(key)) return c;
+    return C.scuola;   // tutto il resto è materia di scuola
   }
+
+  // Mix di temi: per ogni classe (e per gli adulti) un tema che pesca da tanti temi insieme, così una partita
+  // intera ha centinaia di frasi diverse. Si usano solo i temi pronti (non quelli personali), uguali su ogni dispositivo.
+  function buildMixes() {
+    Object.keys(ALL).filter(k => k.startsWith('mix-')).forEach(k => delete ALL[k]);
+    ['asilo', '1', '2', '3', '4', '5', 'adulti'].forEach(level => {
+      const base = Object.keys(ALL).filter(k => !k.startsWith('mix-') && !k.startsWith('mio-') && ALL[k].items && ALL[k].levels.includes(level));
+      const make = (suffix, name, keys) => {
+        if (keys.length < 2) return;
+        const seen = new Set(), items = [];
+        keys.forEach(k => ALL[k].items.forEach(it => { if (!seen.has(it[1])) { seen.add(it[1]); items.push(it); } }));
+        if (items.length < 40) return;
+        const key = 'mix-' + level + '-' + suffix;
+        ALL[key] = { key, name, icon: '🎲', levels: [level], items };
+      };
+      make('tutto', "Tutto un po' (mix di tutti i temi)", base);
+      [['scuola', C.scuola], ['cartoni', C.cartoni], ['animali', C.animali], ['regioni', C.regioni], ['divertente', C.divertente], ['cultura', C.cultura]]
+        .forEach(([suffix, cat]) => make(suffix, 'Mix: ' + cat.replace(/^\S+\s/, ''), base.filter(k => catOf(k) === cat)));
+    });
+  }
+  buildMixes();
   const themesFor = level => Object.keys(ALL).filter(k => ALL[k].levels.includes(level)).map(k => ({ key: k, name: ALL[k].name, icon: ALL[k].icon, cat: catOf(k) }));
 
   // Voce per il numero n del tema: { e: emoji, t: frase, sp?: testo da leggere, spk?: [[testo, lingua]] }
@@ -747,7 +771,7 @@
 
   // Tema a caso per la classe, diverso dal precedente se possibile.
   function pick(level, avoid) {
-    let l = themesFor(level).map(t => t.key);
+    let l = themesFor(level).map(t => t.key).filter(k => !k.startsWith('mix-'));   // a caso: solo temi singoli
     if (l.length > 1) l = l.filter(k => k !== avoid);
     return l[Math.floor(Math.random() * l.length)];
   }

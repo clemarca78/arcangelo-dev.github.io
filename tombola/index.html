@@ -663,7 +663,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     const modo = kids() ? 'bambini' : 'classica';
     TombolaStats.track(`partita/${modo}-${state.play}`);
     const k = kids() ? (state.kidSmorfia === 'tema' ? state.sTheme : 'napoletana') : (state.adultMode !== 'napoletana' ? state.aTheme : 'napoletana');
-    TombolaStats.track('tema/' + (k && k.startsWith('mio-') ? 'personalizzato' : (k || 'napoletana')));
+    TombolaStats.track('tema/' + (k && k.startsWith('mio-') ? 'personalizzato' : k && k.startsWith('mix-') ? 'mix' : (k || 'napoletana')));
     if (kids()) TombolaStats.track('classe/' + state.level);
     if (state.source === 'urn') TombolaStats.track('estrazione/urna-fisica');
   }
@@ -703,10 +703,11 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   function assignPhrase(n) {
     const k = activeThemeKey(), L = k ? TombolaTemi.size(k) : 0;
     if (!L) return;
-    if (!state.pmap || state.pmap.key !== k) state.pmap = { key: k, map: {} };
+    // «off» cambia a ogni partita: lo stesso numero non mostra sempre la stessa frase
+    if (!state.pmap || state.pmap.key !== k) state.pmap = { key: k, off: Math.floor(Math.random() * L), map: {} };
     const map = state.pmap.map, cnt = Array(L).fill(0);
     Object.values(map).forEach(i => { cnt[i]++; });
-    let idx = (n - 1) % L;
+    let idx = (n - 1 + state.pmap.off) % L;
     if (cnt[idx] > 0) {
       const min = Math.min(...cnt), cand = [];
       cnt.forEach((c, i) => { if (c === min) cand.push(i); });
@@ -714,10 +715,16 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     }
     map[n] = idx;
   }
+  // Suggerimento per i temi con poche frasi: un mix ne ha centinaia.
+  function moreHint(key) {
+    const L = key ? TombolaTemi.size(key) : 0;
+    return L > 0 && L < 90 && !key.startsWith('mix-') ? ` Questo tema ha ${L} frasi: con un «Mix di temi» ne trovi centinaia.` : '';
+  }
   function entry(n) {
     const k = activeThemeKey();
     if (k) {
-      const idx = state.pmap && state.pmap.key === k ? state.pmap.map[n] : undefined;
+      const pm = state.pmap && state.pmap.key === k ? state.pmap : null;
+      const idx = pm ? (pm.map[n] !== undefined ? pm.map[n] : n - 1 + (pm.off || 0)) : undefined;
       const t = TombolaTemi.entry(k, n, idx);
       if (t) return { it: t.t, e: t.e, d: '', sp: t.sp, spk: t.spk };
     }
@@ -813,9 +820,9 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       $('levelSel').value = state.level; $('kthemeSel').value = state.themeMode; $('ksmSel').value = state.kidSmorfia;
       $('amSel').value = state.adultMode;
       $('adultHint').textContent = state.adultMode === 'napoletana' ? 'La pallina racconta la smorfia napoletana. Scegli un tema per cambiare.'
-        : 'Tema di questa partita: ' + TombolaTemi.name(state.aTheme) + (state.adultMode === 'auto' ? ' (cambia a ogni nuova partita)' : '');
+        : 'Tema di questa partita: ' + TombolaTemi.name(state.aTheme) + (state.adultMode === 'auto' ? ' (cambia a ogni nuova partita)' : '') + moreHint(state.aTheme);
       $('kidHint').textContent = state.kidSmorfia === 'tema'
-        ? 'Tema di questa partita: ' + TombolaTemi.name(state.sTheme) + (state.themeMode === 'auto' ? ' (cambia a ogni nuova partita)' : '')
+        ? 'Tema di questa partita: ' + TombolaTemi.name(state.sTheme) + (state.themeMode === 'auto' ? ' (cambia a ogni nuova partita)' : '') + moreHint(state.sTheme)
         : 'La pallina racconta la smorfia napoletana, in versione per bambini.';
     }
     $('autoMark').checked = !!state.autoMark;
