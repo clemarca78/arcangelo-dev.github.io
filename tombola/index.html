@@ -162,6 +162,14 @@ body.lim #toast { font-size: clamp(1.6rem, 5vh, 3.4rem); top: 3vh; padding: 18px
 body.lim .credit { display: none; }
 .adult-only { display: block; }
 body.kids .adult-only { display: none; }
+.warn { border: 1px solid var(--pink); background: rgba(236,72,153,.12); padding: 10px 14px; border-radius: 12px; font-size: .9rem; }
+.warn[hidden] { display: none; }
+.savenote summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+.savenote ul { margin: 10px 0 0 18px; display: grid; gap: 5px; font-size: .88rem; line-height: 1.4; color: #e2e8f0; }
+.savenote p { margin-top: 10px; font-size: .88rem; line-height: 1.4; color: #e2e8f0; }
+.note-player { display: none; text-align: left; }
+body.player .note-player { display: block; }
+body.lim #saveNote, body.lim #storeWarn { display: none !important; }
 .kid-only { display: none; }
 /* lettura QR con la fotocamera */
 #scanDlg { border: 1px solid var(--border); border-radius: 16px; background: var(--bg); color: var(--text); padding: 14px; width: min(92vw, 520px); }
@@ -299,11 +307,29 @@ details summary { cursor: pointer; font-weight: 600; }
     <div class="counter"><span id="netStatus"></span> <span id="counter"></span></div>
   </header>
 
+  <div class="warn" id="storeWarn" hidden>⚠️ Questo browser non permette di salvare i dati (forse stai usando la navigazione privata, oppure i dati del sito sono bloccati o la memoria è piena). La partita non verrà ricordata: se ricarichi o chiudi la pagina andrà persa.</div>
+
+  <details class="panel savenote host-only" id="saveNote">
+    <summary>ℹ️ Dove si salva la partita (e quando si può perdere)</summary>
+    <p><b>Dove si salva:</b> la partita in corso, i numeri usciti, le cartelle, i tuoi temi e le impostazioni restano <b>solo nel browser di questo dispositivo</b>. Non vengono salvati su internet né su un server.</p>
+    <p><b>Quando si può perdere:</b></p>
+    <ul>
+      <li>se cancelli i dati del sito o la cronologia del browser;</li>
+      <li>se giochi in navigazione privata (incognito): alla chiusura sparisce tutto;</li>
+      <li>se apri il gioco su un altro dispositivo o in un altro browser: lì la tua partita non c'è;</li>
+      <li>se il browser libera spazio: alcuni (Safari soprattutto) cancellano i dati dei siti che non apri da una settimana;</li>
+      <li>se la memoria è piena o il browser blocca il salvataggio (in quel caso compare un avviso rosso qui sopra).</li>
+    </ul>
+    <p><b>Giocando con i dispositivi:</b> se chi estrae chiude la pagina, spegne il dispositivo o perde internet, la partita riparte da dove era e la stanza si riapre con lo stesso codice; i giocatori si ricollegano da soli. Se invece i dati del browser sono andati persi, la stanza va ricreata e i giocatori rientrano con nuove cartelle.</p>
+    <p><b>Consigli:</b> non usare la navigazione privata; con le cartelle di carta tieni anche un tabellone stampato su cui segnare i numeri, è la copia di sicurezza; i temi che scrivi si salvano con «Esporta».</p>
+  </details>
+
   <section class="panel" id="joinPanel">
     <h2>Entra nella stanza <span id="joinCode"></span></h2>
     <input type="text" id="joinName" maxlength="20" placeholder="Il tuo nome" autocomplete="off">
     <button class="primary" id="joinBtn">Entra</button>
     <p class="hint" style="margin-top:10px">Scrivi il tuo nome o un nome di fantasia: lo vedrà solo chi estrae. <a href="privacy.html" style="color:var(--accent)">Privacy</a></p>
+    <p class="hint" style="margin-top:6px">Le tue cartelle e i numeri che segni restano su questo dispositivo: non usare la navigazione privata, o dovrai rientrare con nuove cartelle.</p>
   </section>
 
   <section class="panel host-only kid-only" id="kidPanel">
@@ -466,6 +492,7 @@ details summary { cursor: pointer; font-weight: 600; }
       <span class="hint" id="cardsLimit"></span>
     </div>
     <p class="hint" id="cardsHint" style="margin-bottom:10px"></p>
+    <p class="hint note-player">ℹ️ Le tue cartelle sono salvate solo su questo dispositivo: se cambi browser, usi la navigazione privata o cancelli i dati del sito, dovrai rientrare con nuove cartelle.</p>
     <div class="cards" id="cards"></div>
   </section>
 
@@ -620,7 +647,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   const laterAssigned = n => { const l = prizes(), i = l.findIndex(p => p.n === n); for (let j = l.length - 1; j > i; j--) if (state.won[l[j].n]) return l[j].name; return null; };
   const cardSize = () => kids() ? 3 * state.cols : 15;
 
-  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { const w = $('storeWarn'); if (w) w.hidden = false; } };
   const load = () => {
     try {
       const s = JSON.parse(localStorage.getItem(KEY));
@@ -699,6 +726,26 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if (kids()) TombolaStats.track('classe/' + state.level);
     if (state.source === 'urn') TombolaStats.track('estrazione/urna-fisica');
   }
+  // Con soli dispositivi (nessuna cartella di carta) il gioco conosce tutte le cartelle e può assegnare i premi da solo.
+  const autoPrizesOn = () => !isPlayer && !!state.room && state.play === 'devices' && !!state.room.autoPrizes;
+  // Dopo ogni numero: se il prossimo premio (in ordine) è stato raggiunto da qualche cartella, lo assegna.
+  // Se più giocatori lo raggiungono con lo stesso numero, lo hanno tutti (ex aequo). Al massimo un premio per estrazione.
+  function autoAwardRoom() {
+    const next = prizes().find(p => !state.won[p.n]); if (!next) return;
+    const m = new Set(state.drawn), size = cardSize();
+    const raggiunto = card => {
+      const best = Math.max(...card.map(r => r.filter(x => x && m.has(x)).length)), total = card.flat().filter(x => x && m.has(x)).length;
+      return next.n === size ? total === size : best >= next.n;
+    };
+    const gruppi = Object.values(state.room.players).map(p => ({ name: p.name, cards: p.cards }));
+    if (hostPlaying()) gruppi.push({ name: (state.hostName || '').trim() || 'Il banditore', cards: state.cards });
+    const vincitori = [];
+    gruppi.forEach(g => { const i = g.cards.findIndex(raggiunto); if (i >= 0) vincitori.push({ name: g.name, i }); });
+    if (!vincitori.length) return;
+    state.won[next.n] = vincitori.map(v => `${v.name} · Cartella ${v.i + 1}`).join(' + ').slice(0, 120);
+    const text = `🎉 ${next.name} a ${vincitori.map(v => v.name).join(' e ')}!`;
+    log(text, true); toast(text); broadcastMsg({ t: 'toast', text });
+  }
   function registerNumber(n) {
     if (isPlayer) return;
     state.drawn.push(n);
@@ -706,6 +753,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if (state.drawn.length === 1) trackStart();
     say(n);
     checkPrizes();
+    if (autoPrizesOn()) autoAwardRoom();
     save(); render(true); broadcast();
     if (state.drawn.length >= state.max) stopAuto();
   }
@@ -868,7 +916,9 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
         : `Puoi prenderne fino a ${mx}${state.late ? '' : ', prima che inizi la partita'}`;
     }
     $('cardsHint').textContent = isPlayer || hostPlaying()
-      ? (state.autoMark ? 'I numeri estratti si segnano da soli. Chiama il premio quando lo hai!' : 'Tocca i numeri sulla cartella quando escono. Hai un premio? Chiamalo!')
+      ? ((isPlayer && state.autoPrizes) || (hostPlaying() && autoPrizesOn())
+          ? (state.autoMark ? 'I numeri estratti si segnano da soli e anche i premi vengono assegnati da soli!' : 'Tocca i numeri sulla cartella quando escono: i premi vengono assegnati da soli!')
+          : state.autoMark ? 'I numeri estratti si segnano da soli. Chiama il premio quando lo hai!' : 'Tocca i numeri sulla cartella quando escono. Hai un premio? Chiamalo!')
       : kids() && !state.autoMark
         ? 'Tocca i numeri sulla cartella quando escono!'
         : 'I numeri estratti si segnano da soli.';
@@ -928,7 +978,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
         gr.appendChild(d);
       });
       c.appendChild(gr);
-      if (isPlayer || hostPlaying()) {
+      if ((isPlayer && !state.autoPrizes) || (hostPlaying() && !autoPrizesOn())) {   // con i premi automatici non serve chiamarli
         const cl = document.createElement('div'); cl.className = 'claims';
         (() => { const nx = prizes().find(p => !state.won[p.n]); return nx ? [nx] : []; })().forEach(p => {   // solo il prossimo premio, in ordine
           const bt = document.createElement('button');
@@ -1048,7 +1098,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   function dealAll() { if (state.room) Object.values(state.room.players).forEach(p => p.cards = dealCards(p.cards.length || 1)); }
   function snapshot(token) {
     const p = state.room.players[token] || { cards: [] };
-    return { t: 'state', mode: state.mode, max: state.max, cols: state.cols, theme: state.theme, level: state.level, sTheme: state.sTheme, kidSmorfia: state.kidSmorfia, aTheme: state.adultMode !== 'napoletana' ? state.aTheme : '', ct: customOf(), pm: state.pmap, drawn: state.drawn, won: state.won, gen: state.gen, cards: p.cards, maxCards: state.room.maxCards || 4, late: !!state.room.lateCards };
+    return { t: 'state', mode: state.mode, max: state.max, cols: state.cols, theme: state.theme, level: state.level, sTheme: state.sTheme, kidSmorfia: state.kidSmorfia, aTheme: state.adultMode !== 'napoletana' ? state.aTheme : '', ct: customOf(), pm: state.pmap, auto: autoPrizesOn(), drawn: state.drawn, won: state.won, gen: state.gen, cards: p.cards, maxCards: state.room.maxCards || 4, late: !!state.room.lateCards };
   }
   function sendTo(token, msg) { const c = conns[token]; if (c && c.open) { try { c.send(msg); } catch (e) {} } }
   function broadcast() { if (state.room) Object.keys(conns).forEach(t => sendTo(t, snapshot(t))); }
@@ -1141,6 +1191,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   function claim(token, n, i) {
     const p = state.room.players[token], pr = prizes().find(x => x.n === n), card = p && p.cards[i];
     if (!pr || !card) return;
+    if (autoPrizesOn()) { sendTo(token, { t: 'toast', text: 'I premi si assegnano da soli: non serve chiamarli' }); return; }
     if (state.won[n]) { sendTo(token, { t: 'toast', text: `${pr.name} è già stato assegnato` }); return; }
     { const need = prizeBlocker(n); if (need) { sendTo(token, { t: 'toast', text: `Prima va chiamato «${need}»` }); return; } }
     const m = new Set(state.drawn), size = cardSize();
@@ -1219,6 +1270,18 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     const hn = el('input'); hn.type = 'text'; hn.maxLength = 20; hn.size = 14; hn.placeholder = 'Il mio nome'; hn.value = state.hostName || '';
     hn.oninput = () => { state.hostName = hn.value; save(); };
     hp.append(hl, hn); right.append(hp);
+    // premi: a chiamata oppure automatici (solo se giocano tutti da dispositivo)
+    const ap = el('div', 'row');
+    if (state.play === 'devices') {
+      const ac = el('input'); ac.type = 'checkbox'; ac.checked = !!R.autoPrizes;
+      ac.onchange = () => { R.autoPrizes = ac.checked; save(); render(); broadcast(); };
+      const al = el('label', 'hint'); al.style.cssText = 'display:flex;gap:6px;align-items:center';
+      al.append(ac, '🤖 Premi automatici: il gioco li assegna da solo (ambo, terno…) senza che i giocatori debbano chiamarli');
+      ap.append(al);
+    } else {
+      ap.append(el('span', 'hint', '🤖 I premi automatici sono disponibili solo con la modalità «Dispositivi»: con le cartelle di carta il gioco non conosce le cartelle, quindi i premi si chiamano o si controllano con il QR.'));
+    }
+    right.append(ap);
     if (roomError) right.append(el('div', 'err', roomError));
     const list = el('div', 'plist');
     if (!players.length) list.append(el('p', 'hint', 'In attesa dei giocatori… fai scansionare il QR o condividi il codice.'));
@@ -1256,7 +1319,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       const prev = state.drawn.length;
       if (m.gen !== state.gen) state.marks = m.cards.map(() => []);
       else state.marks = m.cards.map((_, i) => state.marks[i] || []);
-      Object.assign(state, { pmap: m.pm || null, mode: m.mode, max: m.max, cols: m.cols || 3, theme: m.theme || 'auto', level: m.level || '1', sTheme: m.sTheme || '', kidSmorfia: m.kidSmorfia || 'tema', aTheme: m.aTheme || '', maxCards: m.maxCards || 4, late: !!m.late, drawn: m.drawn, won: m.won, gen: m.gen, cards: m.cards });
+      Object.assign(state, { pmap: m.pm || null, autoPrizes: !!m.auto, mode: m.mode, max: m.max, cols: m.cols || 3, theme: m.theme || 'auto', level: m.level || '1', sTheme: m.sTheme || '', kidSmorfia: m.kidSmorfia || 'tema', aTheme: m.aTheme || '', maxCards: m.maxCards || 4, late: !!m.late, drawn: m.drawn, won: m.won, gen: m.gen, cards: m.cards });
       state.marks = state.marks.map(a => a.filter(n => state.drawn.includes(n)));
       if (!state.drawn.length) { logLines.length = 0; log('Nuova partita. Buona fortuna!'); }
       save(); setStatus(`🟢 Stanza ${ROOM_CODE} · ${state.pname} ·`);
@@ -1337,22 +1400,26 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       ["Come funziona", "L'app estrae i numeri e segna da sola le tue cartelle. Ambo, terno, quaterna, cinquina e tombola sono assegnati in automatico, senza che tu debba controllare nulla."],
       ["Cosa serve", "Un solo dispositivo (computer, tablet o telefono). Per mostrarlo a tutti puoi collegarlo a una TV o a una LIM e usare la vista 📺 LIM."],
       ["I premi", "Automatici: compaiono nel riquadro Premi con il nome della cartella che li ha fatti."],
-      ["Da sapere", "Giochi con le tue cartelle (da 1 a 6). Se vuoi far giocare altre persone, ognuna con la propria cartella, scegli Carta, Dispositivi o Mista."] ],
+      ["Da sapere", "Giochi con le tue cartelle (da 1 a 6). Se vuoi far giocare altre persone, ognuna con la propria cartella, scegli Carta, Dispositivi o Mista."],
+      ["Se si interrompe", "La partita è salvata solo in questo browser: se chiudi la pagina riparte da dove era, ma si perde se cancelli i dati del sito o giochi in navigazione privata."] ],
     paper: [
       ["Come funziona", "Stampi le cartelle dal pulsante «Stampa cartelle»: ognuna ha un codice e un QR code. I giocatori segnano i numeri a mano. Quando qualcuno chiama un premio, premi «📷 Scansiona QR» e inquadra il QR sulla sua cartella (oppure digita il codice): l'app mostra la cartella con i numeri usciti e ti dice se il premio è valido."],
       ["Cosa serve", "Una stampante e un dispositivo per chi estrae (meglio se collegato a una LIM o a un proiettore). Per scansionare i QR serve la fotocamera di quel dispositivo e il gioco aperto da internet. I giocatori non hanno bisogno di alcun dispositivo."],
       ["I premi", "Li assegni tu, dopo il controllo, con «Assegna». Oppure tocchi il premio nel riquadro Premi per segnarlo a mano. I premi si assegnano in ordine: prima l'Ambo, poi il Terno e così via."],
-      ["Da sapere", "Controlla con la stessa modalità e gli stessi numeri per riga con cui hai stampato: se non coincidono, l'app ti avvisa."] ],
+      ["Da sapere", "Controlla con la stessa modalità e gli stessi numeri per riga con cui hai stampato: se non coincidono, l'app ti avvisa."],
+      ["Se si interrompe", "I numeri usciti sono salvati solo in questo browser (si perdono con i dati del sito o in navigazione privata). Tieni un tabellone stampato su cui segnarli: è la tua copia di sicurezza."] ],
     devices: [
       ["Come funziona", "Apri una stanza e mostri il codice o il QR. Ogni giocatore entra dal proprio telefono o tablet, sceglie quante cartelle prendere e tocca i numeri quando escono. Per chiamare un premio preme «📣» e l'app lo controlla."],
       ["Cosa serve", "Un dispositivo per ogni giocatore, con internet. Sulla Wi-Fi di una scuola la connessione tra dispositivi può essere bloccata: provala prima."],
-      ["I premi", "Chiamati dai giocatori e controllati in automatico: il primo premio valido vince, chi sbaglia riceve «Falso allarme!». I premi si chiamano in ordine: prima l'Ambo, poi il Terno e così via."],
-      ["Da sapere", "Puoi giocare anche tu con «Gioco anch'io» (nel pannello Multiplayer). Fino a 40 giocatori. Se chi estrae chiude la pagina, la stanza si riapre con lo stesso codice."] ],
+      ["I premi", "Chiamati dai giocatori e controllati in automatico: il primo premio valido vince, chi sbaglia riceve «Falso allarme!». I premi si chiamano in ordine: prima l'Ambo, poi il Terno e così via. Se preferisci, attiva «🤖 Premi automatici» nel pannello Multiplayer: il gioco li assegna da solo."],
+      ["Da sapere", "Puoi giocare anche tu con «Gioco anch'io» (nel pannello Multiplayer). Fino a 40 giocatori."],
+      ["Se si interrompe", "Se chi estrae chiude la pagina o perde internet, la stanza si riapre con lo stesso codice e i giocatori si ricollegano da soli. Se i dati del browser vanno persi (dati del sito cancellati, navigazione privata), la stanza va ricreata e i giocatori rientrano con nuove cartelle."] ],
     mixed: [
       ["Come funziona", "È «Dispositivi» più «Carta»: chi ha il tablet entra nella stanza e chiama i premi dal suo schermo, chi ha il foglio alza la mano e tu inquadri il QR sulla sua cartella con «📷 Scansiona QR» (o digiti il codice)."],
       ["Cosa serve", "Internet per i dispositivi e una stampante per le cartelle di carta."],
       ["I premi", "Vince il primo premio valido, in qualunque modo sia chiamato: dal tablet, a voce con il codice o toccandolo a mano. I premi si assegnano in ordine: prima l'Ambo, poi il Terno e così via."],
-      ["Da sapere", "Un premio assegnato da un lato compare subito anche sull'altro, e sparisce dai pulsanti sulle cartelle dei giocatori."] ]
+      ["Da sapere", "Un premio assegnato da un lato compare subito anche sull'altro, e sparisce dai pulsanti sulle cartelle dei giocatori. Con le cartelle di carta i premi non possono essere automatici: il gioco conosce solo le cartelle dei dispositivi."],
+      ["Se si interrompe", "Valgono le regole di Dispositivi e di Carta: dati solo nel browser di chi estrae, stanza che si riapre con lo stesso codice, tabellone stampato come copia di sicurezza."] ]
   };
   const SRC_INFO = {
     app: [
@@ -1744,6 +1811,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   $('scanStop').onclick = stopScan;
   $('scanDlg').addEventListener('cancel', stopScan);
 
+  try { localStorage.setItem('tombola-prova', '1'); localStorage.removeItem('tombola-prova'); } catch (e) { $('storeWarn').hidden = false; }   // browser che non salva (es. navigazione privata)
   load();
   registerCustom();
   fillThemeSel();
