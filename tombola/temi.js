@@ -216,7 +216,7 @@
 
   // ---------- cartoni animati ----------
   const CARTONI = {
-    'cartoni': { name: "Personaggi dei cartoni", icon: '📺', levels: ['asilo', '1', '2', '3', '4', '5'], items: [
+    'cartoni': { name: "Personaggi dei cartoni", icon: '📺', levels: ['asilo', '1', '2', '3', '4', '5', 'adulti'], items: [
       ["🐷", "Peppa Pig adora saltare nelle pozzanghere di fango"], ["👧", "Masha è la bambina vivace che vive vicino a Orso"], ["🐶", "La Pimpa è la cagnolina bianca a pois rossi"], ["🐕", "Bluey è una cagnolina blu che gioca con la sua famiglia"],
       ["🚒", "Nei Paw Patrol i cuccioli soccorrono chi è in difficoltà"], ["🐰", "Bing è un coniglietto che scopre il mondo con Flop"], ["⚡", "Pikachu è un Pokémon giallo che fa le scintille"], ["🧽", "SpongeBob vive in un ananas sotto il mare"],
       ["🍌", "I Minions sono gialli e parlano una lingua buffissima"], ["🐕", "Scooby-Doo ha paura di tutto ma risolve i misteri"], ["🐤", "Titti è un canarino giallo che sfugge a Gatto Silvestro"], ["🥕", "Bugs Bunny è un coniglio che adora le carote"],
