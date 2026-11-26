@@ -342,6 +342,39 @@
       ["👥", "Si può giocare insieme agli amici"] ] }
   };
 
+  // ---------- cartoni giapponesi ----------
+  const ANIME = {
+    'ghibli': { name: "Studio Ghibli", icon: '🌳', levels: TUTTI, items: [
+      ["🌳", "Il mio vicino Totoro è un film del 1988"], ["🚌", "In Totoro c'è un autobus a forma di gatto"], ["👧", "Satsuki e Mei sono le due sorelline di Totoro"], ["⚫", "I Susuwatari sono piccoli spiritelli di fuliggine"],
+      ["🧹", "Kiki consegna i pacchi volando su una scopa"], ["🐈‍⬛", "Il gatto nero di Kiki si chiama Jiji"], ["🐟", "Ponyo è un pesciolino rosso che vuole diventare bambina"], ["🌊", "Ponyo vuole mangiare il prosciutto con Sosuke"],
+      ["🏆", "«La città incantata» ha vinto l'Oscar per l'animazione nel 2003"], ["🐉", "In «La città incantata» Haku è un drago"], ["🎭", "Senza Volto è lo spirito mascherato della «Città incantata»"], ["🏰", "Il castello errante di Howl cammina su zampe di metallo"],
+      ["🔥", "Calcifer è il demone del fuoco del castello di Howl"], ["👵", "Sophie viene trasformata in una vecchietta"], ["🏔️", "Laputa è un castello che vola nel cielo"], ["✈️", "Porco Rosso è un pilota con la testa di maiale"],
+      ["🐺", "Principessa Mononoke è un film del 1997"], ["🪶", "Il ragazzo e l'airone ha vinto l'Oscar nel 2024"], ["🧑‍🎨", "Hayao Miyazaki è il regista dei film più famosi dello Studio Ghibli"], ["🎹", "Joe Hisaishi ha composto le musiche di molti film Ghibli"],
+      ["🏢", "Lo Studio Ghibli è stato fondato nel 1985"], ["🌳", "Il simbolo dello Studio Ghibli è Totoro"], ["✏️", "I film Ghibli sono quasi tutti disegnati a mano"], ["🧚", "Arrietty è una ragazzina alta come un dito"],
+      ["🌬️", "Nausicaä della Valle del vento è del 1984"], ["🏛️", "Il Museo Ghibli si trova a Mitaka, vicino a Tokyo"], ["🎬", "Isao Takahata ha fondato lo studio insieme a Miyazaki"], ["🌿", "I film Ghibli parlano spesso del rispetto per la natura"],
+      ["🤝", "Nei film Ghibli i protagonisti sono spesso ragazzine coraggiose"], ["🍙", "Nei film Ghibli il cibo è sempre disegnato in modo goloso"] ] },
+    'anime-classici': { name: "Anime classici (anni '70-'90)", icon: '📼', levels: ['adulti'], items: [
+      ["🤖", "Goldrake è arrivato in Italia nel 1978"], ["🤖", "Mazinga Z è il robot gigante guidato da Koji Kabuto"], ["🎀", "Candy Candy è un'orfana bionda con i codini"], ["👑", "Lady Oscar è ambientata alla corte di Versailles"],
+      ["⛰️", "Heidi è un anime giapponese tratto da un romanzo svizzero"], ["🌎", "Marco va dagli Appennini alle Ande a cercare la mamma"], ["🌾", "Anna dai capelli rossi vive a Green Gables"], ["🚀", "«Conan, il ragazzo del futuro» è la prima serie di Miyazaki"],
+      ["🏴‍☠️", "Capitan Harlock è un pirata dello spazio"], ["👊", "«Tu sei già morto» dice Ken il guerriero"], ["🐉", "Dragon Ball è tratto dal manga di Akira Toriyama"], ["🤖", "Arale è la robottina di Dr. Slump"],
+      ["🎨", "Osamu Tezuka è chiamato il «dio dei manga»"], ["🦁", "Kimba il leone bianco è un'opera di Osamu Tezuka"], ["🚀", "Astro Boy è il bambino robot di Tezuka"], ["🤖", "Mobile Suit Gundam è del 1979"],
+      ["🥊", "Rocky Joe è la storia di un giovane pugile"], ["🏐", "Mila e Shiro giocano a pallavolo"], ["⚽", "Holly e Benji giocano a calcio su campi lunghissimi"], ["🏀", "Slam Dunk racconta una squadra di basket di un liceo"],
+      ["⭐", "Seiya è il protagonista dei Cavalieri dello Zodiaco"], ["🐱", "Occhi di gatto: tre sorelle ladre d'arte"], ["🔫", "City Hunter è il detective Ryo Saeba"], ["✨", "L'incantevole Creamy si trasforma in una ragazza più grande"],
+      ["🌙", "Sailor Moon è tratto dal manga di Naoko Takeuchi"], ["🧢", "Lupin III è un ladro gentiluomo"], ["⚡", "Pokémon è nato in Giappone nel 1996 come videogioco"], ["💻", "Digimon è del 1999"],
+      ["🃏", "Yu-Gi-Oh! è il cartone dei duelli con le carte"], ["🤖", "Neon Genesis Evangelion è del 1995"], ["🚬", "Cowboy Bebop è una serie del 1998 su cacciatori di taglie nello spazio"], ["🏍️", "Akira è un film di fantascienza del 1988"],
+      ["🌐", "Ghost in the Shell è un film del 1995"], ["📺", "Le sigle italiane dei cartoni giapponesi sono entrate nella storia"], ["🍥", "Doraemon è nato in Giappone come manga nel 1969"], ["📖", "In Giappone il manga si legge da destra a sinistra"] ] },
+    'anime-oggi': { name: "Anime e manga di oggi", icon: '🎌', levels: ['3', '4', '5', 'adulti'], items: [
+      ["🗡️", "In Demon Slayer Tanjiro vuole salvare la sorella Nezuko"], ["🦸", "In My Hero Academia quasi tutti hanno un superpotere chiamato Quirk"], ["🏐", "Haikyu!! è un anime sulla pallavolo"], ["🔬", "In Dr. Stone si ricostruisce la civiltà con la scienza"],
+      ["👧", "In Spy x Family la piccola Anya legge nel pensiero"], ["🍥", "Naruto sogna di diventare Hokage"], ["🏴‍☠️", "Rufy, in One Piece, sogna di diventare il Re dei Pirati"], ["🐉", "In Dragon Ball Goku cerca le sette sfere del drago"],
+      ["⚡", "Pikachu è il Pokémon più famoso"], ["💻", "Nei Digimon i mostri digitali si evolvono"], ["🃏", "Yu-Gi-Oh! è il cartone dei duelli con le carte"], ["🌀", "Beyblade è il gioco delle trottole da battaglia"],
+      ["⚽", "Inazuma Eleven è un anime sul calcio"], ["🏀", "Kuroko's Basket è un anime sul basket"], ["🔍", "Detective Conan è un detective con il corpo di un bambino"], ["🌸", "Sakura Card Captor deve ritrovare le carte magiche"],
+      ["👦", "Shin Chan è un bambino dispettoso"], ["🤖", "Doraemon ha una tasca magica"], ["📖", "Un manga è un fumetto giapponese, un anime è un cartone animato giapponese"], ["🗼", "La capitale del Giappone è Tokyo"],
+      ["🍙", "L'onigiri è una polpetta di riso"], ["🙇", "Sensei significa maestro"], ["👋", "Senpai è il compagno più grande a cui ci si ispira"], ["🥰", "Kawaii significa «carino»"],
+      ["🎭", "Il cosplay è travestirsi da un personaggio"], ["📚", "Un fan appassionato di anime e manga si chiama otaku"], ["🎴", "I manga si leggono da destra a sinistra"], ["🌸", "In Giappone la fioritura dei ciliegi è una festa"],
+      ["🍜", "Il ramen è una zuppa di noodles giapponese"], ["🍣", "Il sushi è fatto di riso e pesce crudo o verdure"], ["🥋", "Il judo è un'arte marziale giapponese"], ["🏯", "Il castello è il simbolo del Giappone antico"],
+      ["🗻", "Il Monte Fuji è il simbolo del Giappone"], ["🎋", "Il Tanabata è la festa delle stelle del Giappone"], ["🏆", "Il Giappone ha dato al mondo manga e videogiochi"], ["✏️", "Un mangaka è chi disegna i manga"] ] }
+  };
+
   // ---------- temi per adulti (tombola classica) ----------
   const ADULTI = {
     'verita': { name: "Verità universali", icon: '😂', levels: ['adulti'], items: [
@@ -447,7 +480,7 @@
   };
 
   // ---------- API ----------
-  const ALL = Object.assign({}, GEN, LISTE, CARTONI, CARTONI_OGGI, FESTE, GIOCHI, ADULTI);
+  const ALL = Object.assign({}, GEN, LISTE, CARTONI, CARTONI_OGGI, FESTE, GIOCHI, ANIME, ADULTI);
   Object.keys(ALL).forEach(k => { ALL[k].key = k; });
 
   const themesFor = level => Object.keys(ALL).filter(k => ALL[k].levels.includes(level)).map(k => ({ key: k, name: ALL[k].name, icon: ALL[k].icon }));
