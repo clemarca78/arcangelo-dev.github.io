@@ -979,6 +979,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     const sez = sezioniOn();
     $('board').classList.toggle('sezb', sez);
     $('sezOn').checked = !!state.sezioni; $('gestoreName').value = state.gestore || '';
+    $('gestoreName').hidden = $('sezNew').hidden = !state.sezioni;
     const vinteS = new Set();
     Object.values(state.won).forEach(w => { const m = String(w).match(new RegExp(gestoreName().replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ' · Sezione (\\d)', 'g')); (m || []).forEach(x => vinteS.add(+x.slice(-1) - 1)); });
     for (let n = 1; n <= state.max; n++) {
