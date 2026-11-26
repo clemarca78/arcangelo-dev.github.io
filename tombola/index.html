@@ -167,6 +167,17 @@ body.kids .kid-only { display: block; }
 .seg button small { font-weight: 400; color: var(--muted); font-size: .78rem; line-height: 1.25; }
 .seg button.active { background: rgba(56,189,248,.18); border-color: var(--accent); }
 .seg button.active small { color: var(--text); }
+.seg button small.ideal { margin-top: 4px; color: var(--accent); }
+.seg button.active small.ideal { color: var(--accent); }
+.guide { margin-bottom: 12px; font-size: .9rem; }
+.guide summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+.guide ul { margin: 8px 0 0 18px; display: grid; gap: 5px; color: var(--muted); }
+.guide li b { color: var(--text); }
+.detail { margin-top: 10px; border: 1px solid var(--border); border-radius: 12px; padding: 12px; display: grid; gap: 8px; font-size: .88rem; line-height: 1.4; }
+.detail .dr { display: grid; grid-template-columns: 112px 1fr; gap: 10px; }
+.detail .dr b { color: var(--accent); }
+.detail .dr span { color: var(--text); }
+@media (max-width: 560px) { .detail .dr { grid-template-columns: 1fr; gap: 2px; } }
 #joinPanel { display: none; max-width: 420px; margin: 0 auto; width: 100%; text-align: center; }
 body.nojoin #joinPanel { display: block; }
 #joinPanel input { width: 100%; margin: 10px 0; font-size: 1.2rem; text-align: center; }
@@ -259,20 +270,31 @@ details summary { cursor: pointer; font-weight: 600; }
 
   <section class="panel host-only" id="playPanel">
     <h2>Come giocate?</h2>
+    <details class="guide">
+      <summary>🤔 Non sai quale scegliere? Guarda qui</summary>
+      <ul>
+        <li><b>Gioco da solo, in famiglia o con gli amici davanti a uno schermo</b> → 💻 A schermo</li>
+        <li><b>I bambini non hanno dispositivi (scuola, feste)</b> → 📄 Carta</li>
+        <li><b>Ognuno ha un telefono o un tablet</b> → 📱 Dispositivi</li>
+        <li><b>Alcuni hanno il tablet, altri il foglio stampato</b> → 🔀 Mista</li>
+        <li><b>Voglio usare l'urna con i numeri veri</b> → scegli «Urna fisica» in «Estrazione dei numeri»: va bene con tutte le modalità</li>
+      </ul>
+    </details>
     <div class="seg" id="playSeg">
-      <button data-play="screen"><b>💻 A schermo</b><small>Giochi tu, con le cartelle sullo schermo</small></button>
-      <button data-play="paper"><b>📄 Carta</b><small>Cartelle stampate; controlli i premi con il codice</small></button>
-      <button data-play="devices"><b>📱 Dispositivi</b><small>I giocatori entrano da telefono o tablet</small></button>
-      <button data-play="mixed"><b>🔀 Mista</b><small>Alcuni su carta, altri su dispositivo</small></button>
+      <button data-play="screen"><b>💻 A schermo</b><small>Giochi tu, con le cartelle sullo schermo</small><small class="ideal">👥 Ideale per: una persona sola, la famiglia o gli amici davanti a uno schermo</small></button>
+      <button data-play="paper"><b>📄 Carta</b><small>Cartelle stampate; controlli i premi con il codice</small><small class="ideal">👥 Ideale per: la classe senza dispositivi, feste con tanti partecipanti</small></button>
+      <button data-play="devices"><b>📱 Dispositivi</b><small>I giocatori entrano da telefono o tablet</small><small class="ideal">👥 Ideale per: classi con tablet, serate tra amici, giochi a distanza</small></button>
+      <button data-play="mixed"><b>🔀 Mista</b><small>Alcuni su carta, altri su dispositivo</small><small class="ideal">👥 Ideale per: gruppi in cui non tutti hanno un dispositivo</small></button>
     </div>
-    <p class="hint" id="playHint" style="text-align:left;margin-top:10px"></p>
+    <div class="detail" id="playDetail"></div>
     <div class="row">
       <span class="hint">Estrazione dei numeri:</span>
-      <div class="seg" id="srcSeg" style="flex:0 1 460px;grid-template-columns:repeat(2,minmax(170px,1fr))">
-        <button data-src="app"><b>🎰 Con l'app</b><small>L'app estrae a caso</small></button>
-        <button data-src="urn"><b>🪣 Urna fisica</b><small>Estrai a mano e segna sul tabellone</small></button>
+      <div class="seg" id="srcSeg" style="flex:0 1 560px;grid-template-columns:repeat(2,minmax(200px,1fr))">
+        <button data-src="app"><b>🎰 Con l'app</b><small>L'app estrae a caso</small><small class="ideal">👥 Ideale per: fare in fretta, senza errori</small></button>
+        <button data-src="urn"><b>🪣 Urna fisica</b><small>Estrai a mano e segna sul tabellone</small><small class="ideal">👥 Ideale per: l'atmosfera tradizionale</small></button>
       </div>
     </div>
+    <div class="detail" id="srcDetail"></div>
     <div class="row">
       <label class="hint" style="display:flex;gap:6px;align-items:center">Immagini sulle cartelle
         <select id="themeSel"></select>
@@ -689,7 +711,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if (!isPlayer) {
       ['screen', 'paper', 'devices', 'mixed'].forEach(m => document.body.classList.toggle('play-' + m, state.play === m));
       document.querySelectorAll('#playSeg button').forEach(b => b.classList.toggle('active', b.dataset.play === state.play));
-      $('playHint').textContent = PLAY_HINTS[state.play];
+      renderPlayDetail();
     }
     $('modeClassic').classList.toggle('active', !kids());
     $('modeKids').classList.toggle('active', kids());
@@ -1166,12 +1188,50 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   $('chkId').onkeydown = e => { if (e.key === 'Enter') checkPaperCard(); };
 
   // ---------- come si gioca: schermo / carta / dispositivi / mista ----------
-  const PLAY_HINTS = {
-    screen: 'Giochi tu con le cartelle sullo schermo: i numeri si segnano da soli e i premi sono automatici.',
-    paper: 'I bambini hanno le cartelle stampate. Quando qualcuno alza la mano, digita il codice scritto sulla sua cartella e controlla il premio.',
-    devices: 'Ogni giocatore entra dal proprio telefono o tablet con il codice della stanza e chiama i premi dal suo schermo: li controllo io.',
-    mixed: 'Chi ha il dispositivo chiama i premi dal suo schermo (controllo automatico). Chi ha la carta alza la mano e controlli con il codice. Vince il primo premio valido, in qualunque modo sia chiamato.'
+  // Descrizioni dettagliate di «Come giocate?» e «Estrazione dei numeri»: [titolo, testo]
+  const PLAY_INFO = {
+    screen: [
+      ["Come funziona", "L'app estrae i numeri e segna da sola le tue cartelle. Ambo, terno, quaterna, cinquina e tombola sono assegnati in automatico, senza che tu debba controllare nulla."],
+      ["Cosa serve", "Un solo dispositivo (computer, tablet o telefono). Per mostrarlo a tutti puoi collegarlo a una TV o a una LIM e usare la vista 📺 LIM."],
+      ["I premi", "Automatici: compaiono nel riquadro Premi con il nome della cartella che li ha fatti."],
+      ["Da sapere", "Giochi con le tue cartelle (da 1 a 6). Se vuoi far giocare altre persone, ognuna con la propria cartella, scegli Carta, Dispositivi o Mista."] ],
+    paper: [
+      ["Come funziona", "Stampi le cartelle dal pulsante «Stampa cartelle»: ognuna ha un codice. I giocatori segnano i numeri a mano. Quando qualcuno chiama un premio, digiti il suo codice: l'app mostra la cartella con i numeri usciti e ti dice se il premio è valido."],
+      ["Cosa serve", "Una stampante e un dispositivo per chi estrae (meglio se collegato a una LIM o a un proiettore). I giocatori non hanno bisogno di alcun dispositivo."],
+      ["I premi", "Li assegni tu, dopo il controllo, con «Assegna». Oppure tocchi il premio nel riquadro Premi per segnarlo a mano."],
+      ["Da sapere", "Controlla con la stessa modalità e gli stessi numeri per riga con cui hai stampato: se non coincidono, l'app ti avvisa."] ],
+    devices: [
+      ["Come funziona", "Apri una stanza e mostri il codice o il QR. Ogni giocatore entra dal proprio telefono o tablet, sceglie quante cartelle prendere e tocca i numeri quando escono. Per chiamare un premio preme «📣» e l'app lo controlla."],
+      ["Cosa serve", "Un dispositivo per ogni giocatore, con internet. Sulla Wi-Fi di una scuola la connessione tra dispositivi può essere bloccata: provala prima."],
+      ["I premi", "Chiamati dai giocatori e controllati in automatico: il primo premio valido vince, chi sbaglia riceve «Falso allarme!»."],
+      ["Da sapere", "Puoi giocare anche tu con «Gioco anch'io» (nel pannello Multiplayer). Fino a 40 giocatori. Se chi estrae chiude la pagina, la stanza si riapre con lo stesso codice."] ],
+    mixed: [
+      ["Come funziona", "È «Dispositivi» più «Carta»: chi ha il tablet entra nella stanza e chiama i premi dal suo schermo, chi ha il foglio alza la mano e tu controlli il suo codice."],
+      ["Cosa serve", "Internet per i dispositivi e una stampante per le cartelle di carta."],
+      ["I premi", "Vince il primo premio valido, in qualunque modo sia chiamato: dal tablet, a voce con il codice o toccandolo a mano."],
+      ["Da sapere", "Un premio assegnato da un lato compare subito anche sull'altro, e sparisce dai pulsanti sulle cartelle dei giocatori."] ]
   };
+  const SRC_INFO = {
+    app: [
+      ["Come funziona", "Premi «Estrai» (o la barra spaziatrice) per un numero alla volta, oppure «Auto» per estrarre a ritmo regolare. Il numero esce con la voce e la frase del tema."],
+      ["Ideale per", "Quando non hai un'urna o vuoi andare veloce, senza possibilità di errore."] ],
+    urn: [
+      ["Come funziona", "Estrai i numeri dall'urna o dal sacchetto, poi tocca il numero sul tabellone o scrivilo nel campo. Esce con voce e frase del tema, come se l'avesse estratto l'app. «Annulla ultimo» corregge un errore."],
+      ["Ideale per", "Chi vuole l'atmosfera tradizionale, magari con un bambino che pesca il numero dal sacchetto. Va bene con tutte le modalità."] ]
+  };
+  function renderPlayDetail() {
+    const fill = (box, info) => {
+      box.innerHTML = '';
+      info.forEach(([k, v]) => {
+        const r = document.createElement('div'); r.className = 'dr';
+        const b = document.createElement('b'); b.textContent = k;
+        const t = document.createElement('span'); t.textContent = v;
+        r.append(b, t); box.appendChild(r);
+      });
+    };
+    fill($('playDetail'), PLAY_INFO[state.play] || PLAY_INFO.screen);
+    fill($('srcDetail'), SRC_INFO[state.source] || SRC_INFO.app);
+  }
   function setPlay(m) {
     if (m === state.play) return;
     const needRoom = m === 'devices' || m === 'mixed';
