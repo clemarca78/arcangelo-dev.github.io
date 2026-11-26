@@ -609,6 +609,45 @@
       ["🏛️", "Su Nuraxi di Barumini è patrimonio UNESCO"], ["🌊", "Cala Goloritzé è una delle spiagge più belle d'Italia"] ])
   };
 
+  // ---------- santi, Chiesa e parole di Gesù (da scegliere a mano: non entrano nel «Casuale» né in «Tutto un po'») ----------
+  const FEDE = {
+    'santi': { name: "I santi", icon: '😇', levels: TUTTI, optIn: true, items: [
+      ["🕊️", "San Francesco d'Assisi è il patrono d'Italia e si festeggia il 4 ottobre"], ["🌿", "San Francesco scrisse il Cantico delle creature"], ["⛪", "Santa Caterina da Siena è copatrona d'Italia"], ["⚓", "San Nicola è il patrono di Bari"],
+      ["🔎", "Sant'Antonio da Padova si invoca per ritrovare le cose smarrite"], ["🩸", "San Gennaro è il patrono di Napoli e si festeggia il 19 settembre"], ["🏙️", "Sant'Ambrogio è il patrono di Milano e si festeggia il 7 dicembre"], ["🦁", "San Marco è il patrono di Venezia"],
+      ["💧", "San Giovanni Battista è il patrono di Firenze e di Genova"], ["🌹", "Santa Rosalia è la patrona di Palermo"], ["🕯️", "Sant'Agata è la patrona di Catania e si festeggia il 5 febbraio"], ["🏛️", "San Pietro e San Paolo sono i patroni di Roma e si festeggiano il 29 giugno"],
+      ["🌊", "Sant'Efisio è il patrono della Sardegna"], ["🌰", "San Martino si festeggia l'11 novembre"], ["👁️", "Santa Lucia, il 13 dicembre, è la protettrice della vista"], ["💘", "San Valentino si festeggia il 14 febbraio"],
+      ["🔨", "San Giuseppe, il 19 marzo, è il patrono dei papà"], ["⚔️", "San Giorgio è il santo che, secondo la leggenda, sconfisse il drago"], ["🚶", "San Cristoforo è il protettore dei viaggiatori"], ["🍞", "San Biagio, il 3 febbraio, è il protettore della gola"],
+      ["🐷", "Sant'Antonio Abate è il protettore degli animali e si festeggia il 17 gennaio"], ["🕊️", "San Pio da Pietrelcina, Padre Pio, visse a San Giovanni Rotondo"], ["⚽", "San Giovanni Bosco, il 31 gennaio, è il patrono dei giovani"], ["🌸", "Santa Chiara fu la compagna di San Francesco"],
+      ["👵", "Sant'Anna e San Gioacchino sono i genitori di Maria e si festeggiano il 26 luglio"], ["🛡️", "San Michele Arcangelo si festeggia il 29 settembre"], ["📖", "Sant'Agostino scrisse le «Confessioni»"], ["🏔️", "San Benedetto è il patrono d'Europa"],
+      ["🤲", "Madre Teresa di Calcutta è stata proclamata santa nel 2016"], ["🌍", "San Giovanni Paolo II è stato proclamato santo nel 2014"], ["🌊", "San Cataldo è il patrono di Taranto"], ["⛪", "Sant'Oronzo è il patrono di Lecce"],
+      ["🕯️", "Il 1° novembre si festeggiano tutti i Santi"], ["🙏", "Il 2 novembre si ricordano i defunti"], ["✨", "Un santo è una persona che ha vissuto il Vangelo in modo esemplare"], ["⭕", "Nelle immagini sacre i santi hanno l'aureola"],
+      ["📜", "Proclamare santo qualcuno si dice «canonizzare»"], ["👼", "Il 2 ottobre si festeggiano gli angeli custodi"], ["🍅", "Ogni paese ha il suo santo patrono con una festa"] ] },
+    'chiesa': { name: "La Chiesa e le sue tradizioni", icon: '⛪', levels: TUTTI, optIn: true, items: [
+      ["🏛️", "Il Papa è il vescovo di Roma e vive in Vaticano"], ["⛪", "La Basilica di San Pietro sorge sulla tomba dell'apostolo Pietro"], ["🎨", "La Cappella Sistina è affrescata da Michelangelo"], ["📖", "I Vangeli sono quattro: Matteo, Marco, Luca e Giovanni"],
+      ["📚", "La Bibbia è divisa in Antico e Nuovo Testamento"], ["👥", "Gli apostoli di Gesù erano dodici"], ["7️⃣", "I sacramenti sono sette: Battesimo, Cresima, Eucaristia, Penitenza, Unzione degli infermi, Ordine e Matrimonio"], ["💧", "Il Battesimo è il primo dei sacramenti"],
+      ["🔔", "Le campane chiamano alla Messa"], ["☀️", "La domenica è il giorno del Signore"], ["🎄", "Il Natale celebra la nascita di Gesù"], ["🐣", "La Pasqua celebra la risurrezione di Gesù"],
+      ["4️⃣", "La Quaresima dura quaranta giorni"], ["⚫", "Il Mercoledì delle Ceneri apre la Quaresima"], ["🌿", "La domenica delle Palme apre la Settimana Santa"], ["🔥", "La Pentecoste ricorda la discesa dello Spirito Santo, cinquanta giorni dopo Pasqua"],
+      ["🕯️", "L'Avvento è il tempo delle quattro domeniche prima di Natale"], ["⭐", "L'Epifania è il 6 gennaio"], ["🎆", "Il 15 agosto si festeggia l'Assunzione di Maria, che chiamiamo Ferragosto"], ["🌸", "L'8 dicembre si festeggia l'Immacolata"],
+      ["📿", "Il Rosario è una preghiera con la corona di grani"], ["🙏", "Il Padre Nostro è la preghiera insegnata da Gesù"], ["✝️", "Il segno della croce si fa con la mano destra"], ["💦", "L'acqua benedetta si trova all'ingresso delle chiese"],
+      ["📜", "I dieci comandamenti furono consegnati a Mosè"], ["📅", "Il Concilio Vaticano II si svolse dal 1962 al 1965"], ["⛪", "La cattedrale è la chiesa del vescovo"], ["🧑‍🦱", "Il parroco guida la parrocchia"],
+      ["🐑", "Il primo presepe fu fatto da San Francesco a Greccio nel 1223"], ["🎹", "L'organo è lo strumento tipico delle chiese"], ["🚪", "Il Giubileo ordinario si celebra ogni 25 anni"], ["🌟", "La Porta Santa si apre durante il Giubileo"],
+      ["📅", "Gli anni si contano dalla nascita di Cristo"], ["✝️", "Molte chiese hanno la pianta a forma di croce"], ["💨", "L'incenso profuma le celebrazioni"], ["🕯️", "Il tabernacolo custodisce l'Eucaristia"],
+      ["🍞", "La Messa ha due parti: la Liturgia della Parola e la Liturgia eucaristica"], ["🕊️", "La colomba è il simbolo dello Spirito Santo"], ["🐑", "L'agnello è il simbolo di Gesù"], ["🌍", "Il Vangelo significa «buona notizia»"] ] },
+    'gesu': { name: "Le parole di Gesù", icon: '✝️', levels: TUTTI, optIn: true, items: [
+      ["❤️", "«Amerai il prossimo tuo come te stesso» (Mt 22,39)"], ["🕊️", "«Beati gli operatori di pace, perché saranno chiamati figli di Dio» (Mt 5,9)"], ["🌱", "«Beati i miti, perché avranno in eredità la terra» (Mt 5,5)"], ["🤝", "«Beati i misericordiosi, perché troveranno misericordia» (Mt 5,7)"],
+      ["💎", "«Beati i puri di cuore, perché vedranno Dio» (Mt 5,8)"], ["🧂", "«Voi siete il sale della terra» (Mt 5,13)"], ["💡", "«Voi siete la luce del mondo» (Mt 5,14)"], ["🚪", "«Chiedete e vi sarà dato, cercate e troverete, bussate e vi sarà aperto» (Mt 7,7)"],
+      ["⚖️", "«Non giudicate, per non essere giudicati» (Mt 7,1)"], ["🪙", "«Date a Cesare quello che è di Cesare e a Dio quello che è di Dio» (Mt 22,21)"], ["🧒", "«Lasciate che i bambini vengano a me» (Mc 10,14)"], ["🛣️", "«Io sono la via, la verità e la vita» (Gv 14,6)"],
+      ["🐑", "«Io sono il buon pastore» (Gv 10,11)"], ["🔦", "«Io sono la luce del mondo» (Gv 8,12)"], ["🍞", "«Io sono il pane della vita» (Gv 6,35)"], ["🛋️", "«Venite a me, voi tutti che siete stanchi e oppressi, e io vi darò ristoro» (Mt 11,28)"],
+      ["🙏", "«Padre nostro che sei nei cieli, sia santificato il tuo nome» (Mt 6,9)"], ["🍽️", "«Non di solo pane vivrà l'uomo» (Mt 4,4)"], ["👣", "«Seguimi» (Mt 9,9)"], ["🌊", "«Coraggio, sono io, non abbiate paura» (Mt 14,27)"],
+      ["🕊️", "«Pace a voi!» (Gv 20,19)"], ["🤲", "«Padre, perdonali, perché non sanno quello che fanno» (Lc 23,34)"], ["🪨", "«Chi di voi è senza peccato, getti per primo la pietra» (Gv 8,7)"], ["💞", "«Amate i vostri nemici e pregate per quelli che vi perseguitano» (Mt 5,44)"],
+      ["📅", "«Il sabato è stato fatto per l'uomo» (Mc 2,27)"], ["💰", "«Dov'è il tuo tesoro, là sarà anche il tuo cuore» (Mt 6,21)"], ["⚖️", "«Nessuno può servire due padroni» (Mt 6,24)"], ["🐦", "«Guardate gli uccelli del cielo: non seminano e non mietono» (Mt 6,26)"],
+      ["🌷", "«Osservate come crescono i gigli del campo» (Mt 6,28)"], ["🌅", "«Non preoccupatevi del domani» (Mt 6,34)"], ["🌾", "«La messe è molta, ma gli operai sono pochi» (Mt 9,37)"], ["🛡️", "«Va' e anche tu fa' lo stesso» (Lc 10,37)"],
+      ["🧎", "«Il Figlio dell'uomo non è venuto per essere servito, ma per servire» (Mt 20,28)"], ["🌍", "«Dio ha tanto amato il mondo da dare il suo Figlio unigenito» (Gv 3,16)"], ["🍞", "«Fate questo in memoria di me» (Lc 22,19)"], ["🌐", "«Io sono con voi tutti i giorni, fino alla fine del mondo» (Mt 28,20)"],
+      ["📣", "«Andate in tutto il mondo e proclamate il Vangelo» (Mc 16,15)"], ["🏠", "«Ero straniero e mi avete accolto» (Mt 25,35)"], ["🥣", "«Ho avuto fame e mi avete dato da mangiare» (Mt 25,35)"], ["✝️", "«Se qualcuno vuol venire dietro a me, rinunci a se stesso, prenda la sua croce e mi segua» (Mt 16,24)"],
+      ["☀️", "«Il Padre vostro fa sorgere il suo sole sui cattivi e sui buoni» (Mt 5,45)"], ["🗣️", "«Sia il vostro parlare: sì, sì; no, no» (Mt 5,37)"], ["🫂", "«Tutto quello che avete fatto a uno solo di questi miei fratelli più piccoli, l'avete fatto a me» (Mt 25,40)"], ["🎁", "«Date e vi sarà dato» (Lc 6,38)"],
+      ["💗", "«Siate misericordiosi, come è misericordioso il Padre vostro» (Lc 6,36)"], ["💞", "«Amatevi gli uni gli altri come io ho amato voi» (Gv 13,34)"] ] }
+  };
+
   // ---------- temi per adulti (tombola classica) ----------
   const ADULTI = {
     'verita': { name: "Verità universali", icon: '😂', levels: ['adulti'], items: [
@@ -714,18 +753,18 @@
   };
 
   // ---------- API ----------
-  const ALL = Object.assign({}, GEN, LISTE, CARTONI, CARTONI_OGGI, FESTE, GIOCHI, ANIME, MURPHY, SCUOLA_CARTONI, ANIMALI, REGIONI, ADULTI);
+  const ALL = Object.assign({}, GEN, LISTE, CARTONI, CARTONI_OGGI, FESTE, GIOCHI, ANIME, MURPHY, SCUOLA_CARTONI, ANIMALI, REGIONI, FEDE, ADULTI);
   Object.keys(ALL).forEach(k => { ALL[k].key = k; });
 
   // Categorie per ordinare i menu (un tema sta in una sola categoria).
   const C = { mix: '🎲 Mix di temi', scuola: '📚 Scuola', cartoni: '📺 Cartoni, giochi e supereroi', animali: '🐾 Animali', regioni: "🇮🇹 Regioni d'Italia",
-              feste: '🎉 Feste e tradizioni', divertente: '😂 Divertente', cultura: '🎵 Cultura e passioni', mio: '✏️ I miei temi' };
-  const CATEGORIES = [C.mix, C.scuola, C.cartoni, C.animali, C.regioni, C.feste, C.divertente, C.cultura, C.mio];
+              feste: '🎉 Feste e tradizioni', fede: '✝️ Santi, Chiesa e Vangelo', divertente: '😂 Divertente', cultura: '🎵 Cultura e passioni', mio: '✏️ I miei temi' };
+  const CATEGORIES = [C.mix, C.scuola, C.cartoni, C.animali, C.regioni, C.feste, C.fede, C.divertente, C.cultura, C.mio];
   const CAT_KEYS = {
     [C.animali]: ['animali-versi', 'animali-classi', 'animali-curiosita', 'cuccioli', 'animali-habitat', 'dinosauri-tema', 'animali-modi-di-dire'],
     [C.cartoni]: ['cartoni', 'disney', 'cartoni-oggi', 'cartoni-80-90', 'ghibli', 'anime-classici', 'anime-oggi', 'super-mario', 'roblox', 'one-piece', 'minecraft', 'supereroi',
                   'conta-cartoni', 'problemi-piccoli', 'problemi-grandi', 'alfabeto-cartoni', 'colori-cartoni', 'cartoni-nel-mondo', 'inglese-cartoni'],
-    [C.feste]: ['feste'], [C.divertente]: ['verita', 'mamma', 'proverbi', 'modi-di-dire', 'murphy'], [C.cultura]: ['musica', 'sport', 'cinema', 'sapori', 'capitali', 'cultura']
+    [C.feste]: ['feste'], [C.fede]: ['santi', 'chiesa', 'gesu'], [C.divertente]: ['verita', 'mamma', 'proverbi', 'modi-di-dire', 'murphy'], [C.cultura]: ['musica', 'sport', 'cinema', 'sapori', 'capitali', 'cultura']
   };
   function catOf(key) {
     if (key.startsWith('mix-')) return C.mix;
@@ -740,7 +779,8 @@
   function buildMixes() {
     Object.keys(ALL).filter(k => k.startsWith('mix-')).forEach(k => delete ALL[k]);
     ['asilo', '1', '2', '3', '4', '5', 'adulti'].forEach(level => {
-      const base = Object.keys(ALL).filter(k => !k.startsWith('mix-') && !k.startsWith('mio-') && ALL[k].items && ALL[k].levels.includes(level));
+      const all = Object.keys(ALL).filter(k => !k.startsWith('mix-') && !k.startsWith('mio-') && ALL[k].items && ALL[k].levels.includes(level));
+      const base = all.filter(k => !ALL[k].optIn);   // i temi «da scegliere a mano» (es. santi e Chiesa) restano fuori da «Tutto un po'"
       const make = (suffix, name, keys) => {
         if (keys.length < 2) return;
         const seen = new Set(), items = [];
@@ -750,12 +790,12 @@
         ALL[key] = { key, name, icon: '🎲', levels: [level], items };
       };
       make('tutto', "Tutto un po' (mix di tutti i temi)", base);
-      [['scuola', C.scuola], ['cartoni', C.cartoni], ['animali', C.animali], ['regioni', C.regioni], ['divertente', C.divertente], ['cultura', C.cultura]]
-        .forEach(([suffix, cat]) => make(suffix, 'Mix: ' + cat.replace(/^\S+\s/, ''), base.filter(k => catOf(k) === cat)));
+      [['scuola', C.scuola], ['cartoni', C.cartoni], ['animali', C.animali], ['regioni', C.regioni], ['fede', C.fede], ['divertente', C.divertente], ['cultura', C.cultura]]
+        .forEach(([suffix, cat]) => make(suffix, 'Mix: ' + cat.replace(/^\S+\s/, ''), all.filter(k => catOf(k) === cat)));
     });
   }
   buildMixes();
-  const themesFor = level => Object.keys(ALL).filter(k => ALL[k].levels.includes(level)).map(k => ({ key: k, name: ALL[k].name, icon: ALL[k].icon, cat: catOf(k) }));
+  const themesFor = level => Object.keys(ALL).filter(k => ALL[k].levels.includes(level)).map(k => ({ key: k, name: ALL[k].name, icon: ALL[k].icon, cat: catOf(k), optIn: !!ALL[k].optIn }));
 
   // Voce per il numero n del tema: { e: emoji, t: frase, sp?: testo da leggere, spk?: [[testo, lingua]] }
   // idx (facoltativo) sceglie la frase dell'elenco al posto di quella «di default» del numero.
@@ -771,7 +811,7 @@
 
   // Tema a caso per la classe, diverso dal precedente se possibile.
   function pick(level, avoid) {
-    let l = themesFor(level).map(t => t.key).filter(k => !k.startsWith('mix-'));   // a caso: solo temi singoli
+    let l = themesFor(level).map(t => t.key).filter(k => !k.startsWith('mix-') && !(ALL[k] && ALL[k].optIn));   // a caso: solo temi singoli e non «da scegliere a mano»
     if (l.length > 1) l = l.filter(k => k !== avoid);
     return l[Math.floor(Math.random() * l.length)];
   }
