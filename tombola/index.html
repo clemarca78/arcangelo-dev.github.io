@@ -141,7 +141,7 @@ body.src-urn .board div[data-n]:not(.out):hover { background: rgba(251,191,36,.3
 body.lim:not(.player) #limExit, body.lim #limAudio { display: block; }
 /* vista LIM: tutto grande, solo ciò che serve a chi guarda da lontano */
 body.lim main { max-width: none; gap: 10px; }
-body.lim .modes, body.lim #kidPanel, body.lim #adultPanel, body.lim #playPanel, body.lim #roomPanel, body.lim #paperPanel, body.lim .host-cards,
+body.lim .modes, body.lim #myThemesPanel, body.lim #kidPanel, body.lim #adultPanel, body.lim #playPanel, body.lim #roomPanel, body.lim #paperPanel, body.lim .host-cards,
 body.lim #smorfiaPanel, body.lim .opts, body.lim .draw h2, body.lim .draw .hint, body.lim #log, body.lim .panel > h2 { display: none !important; }
 @media (min-width: 800px) { body.lim .top { grid-template-columns: minmax(280px, 32vw) 1fr; } }
 body.lim .ball { width: clamp(170px, 32vh, 360px); height: clamp(170px, 32vh, 360px); font-size: clamp(4rem, 14vh, 9rem); }
@@ -161,12 +161,44 @@ body.lim .credit { display: none; }
 .adult-only { display: block; }
 body.kids .adult-only { display: none; }
 .kid-only { display: none; }
+/* animazione dell'estrazione */
+#drawAnim { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; background: rgba(11,17,32,.86); cursor: pointer; }
+#drawAnim[hidden] { display: none; }
+#drawAnim .stage { position: relative; width: min(94vw, 560px); height: min(84vh, 520px); overflow: hidden; }
+.da-who { position: absolute; left: 4%; bottom: 10%; font-size: clamp(4.5rem, 16vmin, 9rem); animation: da-bob .55s ease-in-out infinite alternate; }
+@keyframes da-bob { to { transform: translateY(-14px) rotate(3deg); } }
+.da-bubble { position: absolute; top: 3%; left: 50%; transform: translateX(-50%); background: #fff; color: #1e1b4b; font-weight: 800; padding: 10px 20px; border-radius: 22px; font-size: clamp(1rem, 3.6vmin, 1.7rem); white-space: nowrap; max-width: 96%; overflow: hidden; text-overflow: ellipsis; }
+.da-urn { position: absolute; right: 6%; bottom: 8%; width: clamp(7rem, 26vmin, 14rem); text-align: center; transform-origin: 50% 90%; }
+.da-urn .da-balls { font-size: clamp(1.4rem, 5vmin, 2.6rem); letter-spacing: .1em; }
+.da-urn .da-body { font-size: clamp(5rem, 20vmin, 11rem); line-height: 1; }
+.da-hand { position: absolute; right: 16%; top: 24%; font-size: clamp(3rem, 11vmin, 6rem); opacity: 0; }
+.da-ball { position: absolute !important; left: 50%; top: 50%; margin: 0 !important; width: clamp(130px, 34vmin, 230px) !important; height: clamp(130px, 34vmin, 230px) !important; font-size: clamp(3.4rem, 13vmin, 6.5rem) !important; opacity: 0; transform: translate(-50%, -50%) scale(.2); }
+.da-c { position: absolute; left: 50%; top: 50%; font-size: 1.7rem; pointer-events: none; }
+.da-skip { position: absolute; bottom: 2%; left: 50%; transform: translateX(-50%); color: var(--muted); font-size: .8rem; }
+/* i miei temi */
+.mt-item { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 6px 10px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 6px; }
+.mt-item .hint { flex: 1 1 100px; text-align: left; }
+#myEditor { margin-top: 10px; }
+#myEditor summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+#mtName, #mtText { width: 100%; margin-top: 8px; }
+#mtText { font: inherit; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 10px; }
 body.kids .kid-only { display: block; }
 .seg { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
 .seg button { text-align: left; display: grid; gap: 2px; padding: 10px 12px; }
 .seg button small { font-weight: 400; color: var(--muted); font-size: .78rem; line-height: 1.25; }
 .seg button.active { background: rgba(56,189,248,.18); border-color: var(--accent); }
 .seg button.active small { color: var(--text); }
+.seg button small.ideal { margin-top: 4px; color: var(--accent); }
+.seg button.active small.ideal { color: var(--accent); }
+.guide { margin-bottom: 12px; font-size: .9rem; }
+.guide summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+.guide ul { margin: 8px 0 0 18px; display: grid; gap: 5px; color: var(--muted); }
+.guide li b { color: var(--text); }
+.detail { margin-top: 10px; border: 1px solid var(--border); border-radius: 12px; padding: 12px; display: grid; gap: 8px; font-size: .88rem; line-height: 1.4; }
+.detail .dr { display: grid; grid-template-columns: 112px 1fr; gap: 10px; }
+.detail .dr b { color: var(--accent); }
+.detail .dr span { color: var(--text); }
+@media (max-width: 560px) { .detail .dr { grid-template-columns: 1fr; gap: 2px; } }
 #joinPanel { display: none; max-width: 420px; margin: 0 auto; width: 100%; text-align: center; }
 body.nojoin #joinPanel { display: block; }
 #joinPanel input { width: 100%; margin: 10px 0; font-size: 1.2rem; text-align: center; }
@@ -212,6 +244,17 @@ details summary { cursor: pointer; font-weight: 600; }
 </head>
 <body>
 <div id="toast"></div>
+<div id="drawAnim" hidden aria-hidden="true">
+  <div class="stage">
+    <div class="da-bubble" id="daBubble"></div>
+    <div class="da-who" id="daWho">👩‍🏫</div>
+    <div class="da-urn" id="daUrn"><div class="da-balls" id="daBalls">🔴🟡🔵🟢🟣</div><div class="da-body">🏺</div></div>
+    <div class="da-hand" id="daHand">🤚</div>
+    <div class="ball da-ball" id="daBall"></div>
+    <div id="daConf"></div>
+    <div class="da-skip">Tocca per saltare</div>
+  </div>
+</div>
 <button id="limExit" class="host-only">✕ Esci dalla vista LIM</button>
 <button id="limAudio">🔇 Attiva audio</button>
 <main>
@@ -257,22 +300,45 @@ details summary { cursor: pointer; font-weight: 600; }
     <p class="hint" id="adultHint" style="text-align:left;margin-top:8px"></p>
   </section>
 
+  <section class="panel host-only" id="myThemesPanel">
+    <h2>✏️ I miei temi</h2>
+    <p class="hint" style="text-align:left;margin-bottom:8px">Crea un tema tutto tuo: per esempio i modi di dire del tuo paese, le frasi della tua classe o i ricordi di famiglia. A ogni numero estratto la pallina racconta una frase del tuo elenco.</p>
+    <div id="myThemesList"></div>
+    <details id="myEditor">
+      <summary>➕ Crea o modifica un tema</summary>
+      <input type="text" id="mtName" maxlength="40" placeholder="Nome del tema (es. Modi di dire di Ginosa)" autocomplete="off">
+      <textarea id="mtText" rows="8" placeholder="Una frase per riga (almeno 3). Se vuoi, metti un'emoji all'inizio della riga.&#10;🍞 Pane e cipolla, mai un'illusione&#10;Una frase senza emoji va bene lo stesso"></textarea>
+      <div class="row"><button class="primary" id="mtSave" style="padding:10px 18px;font-size:1rem">Salva tema</button><button id="mtCancel">Annulla</button><span class="hint" id="mtMsg"></span></div>
+    </details>
+  </section>
+
   <section class="panel host-only" id="playPanel">
     <h2>Come giocate?</h2>
+    <details class="guide">
+      <summary>🤔 Non sai quale scegliere? Guarda qui</summary>
+      <ul>
+        <li><b>Gioco da solo, in famiglia o con gli amici davanti a uno schermo</b> → 💻 A schermo</li>
+        <li><b>I bambini non hanno dispositivi (scuola, feste)</b> → 📄 Carta</li>
+        <li><b>Ognuno ha un telefono o un tablet</b> → 📱 Dispositivi</li>
+        <li><b>Alcuni hanno il tablet, altri il foglio stampato</b> → 🔀 Mista</li>
+        <li><b>Voglio usare l'urna con i numeri veri</b> → scegli «Urna fisica» in «Estrazione dei numeri»: va bene con tutte le modalità</li>
+      </ul>
+    </details>
     <div class="seg" id="playSeg">
-      <button data-play="screen"><b>💻 A schermo</b><small>Giochi tu, con le cartelle sullo schermo</small></button>
-      <button data-play="paper"><b>📄 Carta</b><small>Cartelle stampate; controlli i premi con il codice</small></button>
-      <button data-play="devices"><b>📱 Dispositivi</b><small>I giocatori entrano da telefono o tablet</small></button>
-      <button data-play="mixed"><b>🔀 Mista</b><small>Alcuni su carta, altri su dispositivo</small></button>
+      <button data-play="screen"><b>💻 A schermo</b><small>Giochi tu, con le cartelle sullo schermo</small><small class="ideal">👥 Ideale per: una persona sola, la famiglia o gli amici davanti a uno schermo</small></button>
+      <button data-play="paper"><b>📄 Carta</b><small>Cartelle stampate; controlli i premi con il codice</small><small class="ideal">👥 Ideale per: la classe senza dispositivi, feste con tanti partecipanti</small></button>
+      <button data-play="devices"><b>📱 Dispositivi</b><small>I giocatori entrano da telefono o tablet</small><small class="ideal">👥 Ideale per: classi con tablet, serate tra amici, giochi a distanza</small></button>
+      <button data-play="mixed"><b>🔀 Mista</b><small>Alcuni su carta, altri su dispositivo</small><small class="ideal">👥 Ideale per: gruppi in cui non tutti hanno un dispositivo</small></button>
     </div>
-    <p class="hint" id="playHint" style="text-align:left;margin-top:10px"></p>
+    <div class="detail" id="playDetail"></div>
     <div class="row">
       <span class="hint">Estrazione dei numeri:</span>
-      <div class="seg" id="srcSeg" style="flex:0 1 460px;grid-template-columns:repeat(2,minmax(170px,1fr))">
-        <button data-src="app"><b>🎰 Con l'app</b><small>L'app estrae a caso</small></button>
-        <button data-src="urn"><b>🪣 Urna fisica</b><small>Estrai a mano e segna sul tabellone</small></button>
+      <div class="seg" id="srcSeg" style="flex:0 1 560px;grid-template-columns:repeat(2,minmax(200px,1fr))">
+        <button data-src="app"><b>🎰 Con l'app</b><small>L'app estrae a caso</small><small class="ideal">👥 Ideale per: fare in fretta, senza errori</small></button>
+        <button data-src="urn"><b>🪣 Urna fisica</b><small>Estrai a mano e segna sul tabellone</small><small class="ideal">👥 Ideale per: l'atmosfera tradizionale</small></button>
       </div>
     </div>
+    <div class="detail" id="srcDetail"></div>
     <div class="row">
       <label class="hint" style="display:flex;gap:6px;align-items:center">Immagini sulle cartelle
         <select id="themeSel"></select>
@@ -323,6 +389,13 @@ details summary { cursor: pointer; font-weight: 600; }
       <div class="opts">
         <label><input type="checkbox" id="speak" checked> Voce</label>
         <label><input type="checkbox" id="smorfia" checked> Smorfia</label>
+        <label class="host-only"><input type="checkbox" id="animOn"> 🎬 Animazione</label>
+        <label class="host-only">Estrae
+          <select id="drawerSel">
+            <option value="maestra">👩‍🏫 La maestra</option><option value="maestro">👨‍🏫 Il maestro</option><option value="bimba">👧 Una bambina</option>
+            <option value="bimbo">👦 Un bambino</option><option value="nonna">👵 La nonna</option><option value="nonno">👴 Il nonno</option><option value="random">🎲 A sorpresa</option>
+          </select>
+        </label>
         <label class="opt-auto"><input type="checkbox" id="autoMark"> Segna da solo</label>
         <label class="host-only">Ritmo
           <select id="speed">
@@ -506,8 +579,8 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   const LIM_VIEW = isPlayer && Q.get('lim') === '1';   // schermo LIM collegato alla stanza (solo spettatore)
   const KEY = LIM_VIEW ? 'tombola-lim-' + ROOM_CODE : isPlayer ? 'tombola-player-' + ROOM_CODE : 'tombola-proto-v2';
   const $ = id => document.getElementById(id);
-  let state = { mode: 'classic', max: 90, drawn: [], cards: [], marks: [], won: {}, autoMark: false, gen: 0, room: null, token: '', pname: '', play: 'screen', cols: 3, theme: 'auto', source: 'app', level: '1', themeMode: 'auto', sTheme: '', kidSmorfia: 'tema', adultMode: 'napoletana', aTheme: '', hostPlays: false, hostName: '' };
-  let timer = null, limOn = false;
+  let state = { mode: 'classic', max: 90, drawn: [], cards: [], marks: [], won: {}, autoMark: false, gen: 0, room: null, token: '', pname: '', play: 'screen', cols: 3, theme: 'auto', source: 'app', level: '1', themeMode: 'auto', sTheme: '', kidSmorfia: 'tema', adultMode: 'napoletana', aTheme: '', hostPlays: false, hostName: '', custom: [], drawAnim: false, drawer: 'maestra' };
+  let timer = null, limOn = false, drawing = false;
   const kids = () => state.mode === 'kids';
   const prizesFor = (m, cols) => TombolaCards.prizes(m, cols);
   const prizes = () => prizesFor(state.mode, state.cols);
@@ -568,11 +641,19 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
 
   // ---------- estrazione ----------
   function draw() {
-    if (isPlayer) return;
+    if (isPlayer || drawing) return;
     const out = new Set(state.drawn), r = [];
     for (let n = 1; n <= state.max; n++) if (!out.has(n)) r.push(n);
     if (!r.length) { stopAuto(); return; }
-    registerNumber(r[Math.floor(Math.random() * r.length)]);
+    startDraw(r[Math.floor(Math.random() * r.length)]);
+  }
+  // Estrazione dell'app: con l'animazione il numero compare solo alla fine della scenetta.
+  function startDraw(n) {
+    if (!state.drawAnim || state.source === 'urn') { registerNumber(n); return; }
+    const who = pickDrawer(), g = state.gen;
+    drawing = true;
+    if (state.room) broadcastMsg({ t: 'anim', who });
+    playDrawAnimation(n, who).then(() => { drawing = false; if (state.gen === g && !state.drawn.includes(n)) registerNumber(n); });
   }
   // Un numero è uscito (estratto dall'app o dall'urna fisica).
   function registerNumber(n) {
@@ -689,13 +770,14 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if (!isPlayer) {
       ['screen', 'paper', 'devices', 'mixed'].forEach(m => document.body.classList.toggle('play-' + m, state.play === m));
       document.querySelectorAll('#playSeg button').forEach(b => b.classList.toggle('active', b.dataset.play === state.play));
-      $('playHint').textContent = PLAY_HINTS[state.play];
+      renderPlayDetail();
     }
     $('modeClassic').classList.toggle('active', !kids());
     $('modeKids').classList.toggle('active', kids());
     $('maxSel').value = state.max;
     $('colsSel').value = state.cols;
     $('themeSel').value = state.theme;
+    $('animOn').checked = !!state.drawAnim; $('drawerSel').value = state.drawer;
     if (!isPlayer) {
       $('levelSel').value = state.level; $('kthemeSel').value = state.themeMode; $('ksmSel').value = state.kidSmorfia;
       $('amSel').value = state.adultMode;
@@ -823,7 +905,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if (timer) return stopAuto();
     if (state.drawn.length >= state.max) return;
     $('autoBtn').textContent = '⏸ Pausa';
-    draw(); timer = setInterval(draw, +$('speed').value);
+    draw(); timer = setInterval(draw, Math.max(+$('speed').value, state.drawAnim ? 5500 : 0));
   }
   function reset(msg) {
     stopAuto();
@@ -838,6 +920,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if (state.drawn.length && !confirm('Cambiando modalità inizia una nuova partita. Continuare?')) return;
     state.mode = m;
     state.max = m === 'kids' ? levelInfo(state.level).max : 90;
+    state.drawAnim = m === 'kids';   // con i bambini l'animazione parte attiva
     state.autoMark = false;
     $('nCards').value = 2;
     reset();
@@ -892,7 +975,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   function dealAll() { if (state.room) Object.values(state.room.players).forEach(p => p.cards = dealCards(p.cards.length || 1)); }
   function snapshot(token) {
     const p = state.room.players[token] || { cards: [] };
-    return { t: 'state', mode: state.mode, max: state.max, cols: state.cols, theme: state.theme, level: state.level, sTheme: state.sTheme, kidSmorfia: state.kidSmorfia, aTheme: state.adultMode !== 'napoletana' ? state.aTheme : '', drawn: state.drawn, won: state.won, gen: state.gen, cards: p.cards, maxCards: state.room.maxCards || 4, late: !!state.room.lateCards };
+    return { t: 'state', mode: state.mode, max: state.max, cols: state.cols, theme: state.theme, level: state.level, sTheme: state.sTheme, kidSmorfia: state.kidSmorfia, aTheme: state.adultMode !== 'napoletana' ? state.aTheme : '', ct: customOf(), drawn: state.drawn, won: state.won, gen: state.gen, cards: p.cards, maxCards: state.room.maxCards || 4, late: !!state.room.lateCards };
   }
   function sendTo(token, msg) { const c = conns[token]; if (c && c.open) { try { c.send(msg); } catch (e) {} } }
   function broadcast() { if (state.room) Object.keys(conns).forEach(t => sendTo(t, snapshot(t))); }
@@ -1092,6 +1175,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   function playerMsg(m) {
     if (!m) return;
     if (m.t === 'state') {
+      if (m.ct) TombolaTemi.register({ [m.ct.key]: m.ct });
       const prev = state.drawn.length;
       if (m.gen !== state.gen) state.marks = m.cards.map(() => []);
       else state.marks = m.cards.map((_, i) => state.marks[i] || []);
@@ -1102,7 +1186,8 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       const fresh = m.drawn.length === prev + 1;
       render(fresh);
       if (fresh) say(m.drawn[m.drawn.length - 1]);
-    } else if (m.t === 'toast') { toast(m.text); log(m.text, true); }
+    } else if (m.t === 'anim') { playDrawAnimation(null, m.who); }
+    else if (m.t === 'toast') { toast(m.text); log(m.text, true); }
     else if (m.t === 'closed') { setStatus('⚪ La stanza è stata chiusa'); clearTimeout(retryT); hostConn = null; }
     else if (m.t === 'full') { setStatus('La stanza è piena'); }
   }
@@ -1166,12 +1251,50 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   $('chkId').onkeydown = e => { if (e.key === 'Enter') checkPaperCard(); };
 
   // ---------- come si gioca: schermo / carta / dispositivi / mista ----------
-  const PLAY_HINTS = {
-    screen: 'Giochi tu con le cartelle sullo schermo: i numeri si segnano da soli e i premi sono automatici.',
-    paper: 'I bambini hanno le cartelle stampate. Quando qualcuno alza la mano, digita il codice scritto sulla sua cartella e controlla il premio.',
-    devices: 'Ogni giocatore entra dal proprio telefono o tablet con il codice della stanza e chiama i premi dal suo schermo: li controllo io.',
-    mixed: 'Chi ha il dispositivo chiama i premi dal suo schermo (controllo automatico). Chi ha la carta alza la mano e controlli con il codice. Vince il primo premio valido, in qualunque modo sia chiamato.'
+  // Descrizioni dettagliate di «Come giocate?» e «Estrazione dei numeri»: [titolo, testo]
+  const PLAY_INFO = {
+    screen: [
+      ["Come funziona", "L'app estrae i numeri e segna da sola le tue cartelle. Ambo, terno, quaterna, cinquina e tombola sono assegnati in automatico, senza che tu debba controllare nulla."],
+      ["Cosa serve", "Un solo dispositivo (computer, tablet o telefono). Per mostrarlo a tutti puoi collegarlo a una TV o a una LIM e usare la vista 📺 LIM."],
+      ["I premi", "Automatici: compaiono nel riquadro Premi con il nome della cartella che li ha fatti."],
+      ["Da sapere", "Giochi con le tue cartelle (da 1 a 6). Se vuoi far giocare altre persone, ognuna con la propria cartella, scegli Carta, Dispositivi o Mista."] ],
+    paper: [
+      ["Come funziona", "Stampi le cartelle dal pulsante «Stampa cartelle»: ognuna ha un codice. I giocatori segnano i numeri a mano. Quando qualcuno chiama un premio, digiti il suo codice: l'app mostra la cartella con i numeri usciti e ti dice se il premio è valido."],
+      ["Cosa serve", "Una stampante e un dispositivo per chi estrae (meglio se collegato a una LIM o a un proiettore). I giocatori non hanno bisogno di alcun dispositivo."],
+      ["I premi", "Li assegni tu, dopo il controllo, con «Assegna». Oppure tocchi il premio nel riquadro Premi per segnarlo a mano."],
+      ["Da sapere", "Controlla con la stessa modalità e gli stessi numeri per riga con cui hai stampato: se non coincidono, l'app ti avvisa."] ],
+    devices: [
+      ["Come funziona", "Apri una stanza e mostri il codice o il QR. Ogni giocatore entra dal proprio telefono o tablet, sceglie quante cartelle prendere e tocca i numeri quando escono. Per chiamare un premio preme «📣» e l'app lo controlla."],
+      ["Cosa serve", "Un dispositivo per ogni giocatore, con internet. Sulla Wi-Fi di una scuola la connessione tra dispositivi può essere bloccata: provala prima."],
+      ["I premi", "Chiamati dai giocatori e controllati in automatico: il primo premio valido vince, chi sbaglia riceve «Falso allarme!»."],
+      ["Da sapere", "Puoi giocare anche tu con «Gioco anch'io» (nel pannello Multiplayer). Fino a 40 giocatori. Se chi estrae chiude la pagina, la stanza si riapre con lo stesso codice."] ],
+    mixed: [
+      ["Come funziona", "È «Dispositivi» più «Carta»: chi ha il tablet entra nella stanza e chiama i premi dal suo schermo, chi ha il foglio alza la mano e tu controlli il suo codice."],
+      ["Cosa serve", "Internet per i dispositivi e una stampante per le cartelle di carta."],
+      ["I premi", "Vince il primo premio valido, in qualunque modo sia chiamato: dal tablet, a voce con il codice o toccandolo a mano."],
+      ["Da sapere", "Un premio assegnato da un lato compare subito anche sull'altro, e sparisce dai pulsanti sulle cartelle dei giocatori."] ]
   };
+  const SRC_INFO = {
+    app: [
+      ["Come funziona", "Premi «Estrai» (o la barra spaziatrice) per un numero alla volta, oppure «Auto» per estrarre a ritmo regolare. Il numero esce con la voce e la frase del tema."],
+      ["Ideale per", "Quando non hai un'urna o vuoi andare veloce, senza possibilità di errore."] ],
+    urn: [
+      ["Come funziona", "Estrai i numeri dall'urna o dal sacchetto, poi tocca il numero sul tabellone o scrivilo nel campo. Esce con voce e frase del tema, come se l'avesse estratto l'app. «Annulla ultimo» corregge un errore."],
+      ["Ideale per", "Chi vuole l'atmosfera tradizionale, magari con un bambino che pesca il numero dal sacchetto. Va bene con tutte le modalità."] ]
+  };
+  function renderPlayDetail() {
+    const fill = (box, info) => {
+      box.innerHTML = '';
+      info.forEach(([k, v]) => {
+        const r = document.createElement('div'); r.className = 'dr';
+        const b = document.createElement('b'); b.textContent = k;
+        const t = document.createElement('span'); t.textContent = v;
+        r.append(b, t); box.appendChild(r);
+      });
+    };
+    fill($('playDetail'), PLAY_INFO[state.play] || PLAY_INFO.screen);
+    fill($('srcDetail'), SRC_INFO[state.source] || SRC_INFO.app);
+  }
   function setPlay(m) {
     if (m === state.play) return;
     const needRoom = m === 'devices' || m === 'mixed';
@@ -1244,11 +1367,18 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     const ok = TombolaTemi.themesFor(state.level).map(t => t.key);
     state.sTheme = state.themeMode !== 'auto' && ok.includes(state.themeMode) ? state.themeMode : TombolaTemi.pick(state.level, state.sTheme);
   }
-  function fillThemeSel() {
-    const sel = $('kthemeSel'); sel.innerHTML = '';
-    [['auto', '🎲 Casuale a ogni partita'], ...TombolaTemi.themesFor(state.level).map(t => [t.key, t.icon + ' ' + t.name])]
-      .forEach(([v, t]) => { const o = document.createElement('option'); o.value = v; o.textContent = t; sel.appendChild(o); });
+  // Riempie un menu di temi: prima le voci fisse, poi i temi raggruppati per categoria.
+  function fillGrouped(sel, top, themes) {
+    sel.innerHTML = '';
+    top.forEach(([v, t]) => { const o = document.createElement('option'); o.value = v; o.textContent = t; sel.appendChild(o); });
+    TombolaTemi.CATEGORIES.forEach(cat => {
+      const list = themes.filter(t => t.cat === cat); if (!list.length) return;
+      const g = document.createElement('optgroup'); g.label = cat;
+      list.forEach(t => { const o = document.createElement('option'); o.value = t.key; o.textContent = t.icon + ' ' + t.name; g.appendChild(o); });
+      sel.appendChild(g);
+    });
   }
+  function fillThemeSel() { fillGrouped($('kthemeSel'), [['auto', '🎲 Casuale a ogni partita']], TombolaTemi.themesFor(state.level)); }
   TombolaTemi.LEVELS.forEach(l => { const o = document.createElement('option'); o.value = l.key; o.textContent = l.name; $('levelSel').appendChild(o); });
   $('levelSel').onchange = () => {
     const v = $('levelSel').value;
@@ -1263,13 +1393,131 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if (state.adultMode === 'napoletana') state.aTheme = '';
     else state.aTheme = state.adultMode !== 'auto' && ok.includes(state.adultMode) ? state.adultMode : TombolaTemi.pick('adulti', state.aTheme);
   }
-  [['napoletana', '🎭 Smorfia napoletana'], ['auto', '🎲 Un tema a sorpresa (cambia a ogni partita)'], ...TombolaTemi.themesFor('adulti').map(t => [t.key, t.icon + ' ' + t.name])]
-    .forEach(([v, t]) => { const o = document.createElement('option'); o.value = v; o.textContent = t; $('amSel').appendChild(o); });
+  function fillAdultSel() { fillGrouped($('amSel'), [['napoletana', '🎭 Smorfia napoletana'], ['auto', '🎲 Un tema a sorpresa (cambia a ogni partita)']], TombolaTemi.themesFor('adulti')); }
   $('amSel').onchange = () => { state.adultMode = $('amSel').value; newAdultTheme(); save(); render(); broadcast(); };
   $('ksmSel').onchange = () => { state.kidSmorfia = $('ksmSel').value; save(); render(); broadcast(); };
 
+
+  // ---------- animazione dell'estrazione ----------
+  const DRAWERS = { maestra: ['👩‍🏫', 'La maestra'], maestro: ['👨‍🏫', 'Il maestro'], bimba: ['👧', 'Una bambina'], bimbo: ['👦', 'Un bambino'], nonna: ['👵', 'La nonna'], nonno: ['👴', 'Il nonno'] };
+  const reducedMotion = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } };
+  function pickDrawer() {
+    const keys = Object.keys(DRAWERS);
+    return DRAWERS[state.drawer] ? state.drawer : keys[Math.floor(Math.random() * keys.length)];
+  }
+  // Scenetta: chi estrae mescola l'urna, la mano pesca e la pallina esce. n = null per chi guarda soltanto (nessun numero svelato).
+  function playDrawAnimation(n, who) {
+    return new Promise(resolve => {
+      const root = $('drawAnim');
+      if (!root || reducedMotion() || document.hidden) { resolve(); return; }
+      const d = DRAWERS[who] || DRAWERS.maestra, T = [], A = [];
+      let finished = false;
+      const finish = () => {
+        if (finished) return; finished = true;
+        T.forEach(clearTimeout); A.forEach(a => { try { a.cancel(); } catch (e) {} });
+        root.hidden = true; root.onclick = null; resolve();
+      };
+      const go = (fn, ms) => T.push(setTimeout(fn, ms));
+      const anim = (el, kf, opt) => { const a = el.animate(kf, opt); A.push(a); return a; };
+      const phrases = [`${d[1]} mescola i numeri!`, 'Che numero uscirà?', 'Tutti attenti!', 'Pronti? Si estrae!'];
+      $('daWho').textContent = d[0];
+      $('daBubble').textContent = phrases[Math.floor(Math.random() * phrases.length)];
+      const ball = $('daBall'); ball.textContent = n == null ? '?' : n; ball.style.opacity = 0;
+      $('daConf').innerHTML = ''; $('daHand').style.opacity = 0;
+      root.hidden = false; root.onclick = finish;
+      anim($('daUrn'), [{ transform: 'rotate(-7deg)' }, { transform: 'rotate(7deg)' }], { duration: 130, iterations: 10, direction: 'alternate', easing: 'ease-in-out' });
+      anim($('daBalls'), [{ transform: 'translateY(0)' }, { transform: 'translateY(-14px)' }], { duration: 160, iterations: 8, direction: 'alternate' });
+      go(() => {      // la mano pesca dall'urna
+        $('daHand').style.opacity = 1;
+        anim($('daHand'), [{ transform: 'translateY(-40px)' }, { transform: 'translateY(34px)' }, { transform: 'translateY(-40px)' }], { duration: 800, easing: 'ease-in-out' });
+      }, 1300);
+      go(() => {      // esce la pallina, con i coriandoli
+        $('daHand').style.opacity = 0; ball.style.opacity = 1;
+        anim(ball, [{ transform: 'translate(-50%,-50%) translate(150px,130px) scale(.2) rotate(-90deg)' }, { transform: 'translate(-50%,-50%) scale(1.15)' }, { transform: 'translate(-50%,-50%) scale(1)' }],
+          { duration: 700, easing: 'cubic-bezier(.2,1.3,.4,1)', fill: 'forwards' });
+        const em = ['🎉', '✨', '⭐', '🎈', '💫'];
+        for (let i = 0; i < 22; i++) {
+          const sp = document.createElement('span'); sp.className = 'da-c'; sp.textContent = em[i % em.length]; $('daConf').appendChild(sp);
+          const ang = Math.random() * Math.PI * 2, dist = 120 + Math.random() * 170;
+          anim(sp, [{ transform: 'translate(0,0) scale(.3)', opacity: 1 }, { transform: `translate(${Math.cos(ang) * dist}px,${Math.sin(ang) * dist}px) scale(1.2)`, opacity: 0 }],
+            { duration: 1100 + Math.random() * 500, easing: 'ease-out', fill: 'forwards' });
+        }
+      }, 2100);
+      go(finish, n == null ? 2900 : 3600);
+    });
+  }
+  $('animOn').onchange = () => { state.drawAnim = $('animOn').checked; save(); };
+  $('drawerSel').onchange = () => { state.drawer = $('drawerSel').value; save(); };
+
+  // ---------- i miei temi ----------
+  let editingKey = null;
+  const EMOJI_START = /^(\p{Extended_Pictographic}(?:️|‍\p{Extended_Pictographic})*)\s+(.+)$/u;
+  function parseMyItems(text) {
+    return text.split('\n').map(l => l.trim()).filter(Boolean).slice(0, 300).map(l => {
+      const m = l.match(EMOJI_START);
+      return m ? [m[1], m[2].slice(0, 160)] : ['💬', l.slice(0, 160)];
+    });
+  }
+  const registerCustom = () => { const o = {}; state.custom.forEach(c => { o[c.key] = c; }); TombolaTemi.register(o); };
+  function refillThemeMenus() { registerCustom(); fillThemeSel(); fillAdultSel(); render(); }
+  // il tema scelto, se è uno dei miei, viaggia insieme allo stato verso giocatori e LIM
+  function customOf() {
+    const k = kids() ? state.sTheme : (state.adultMode !== 'napoletana' ? state.aTheme : '');
+    const c = k && k.startsWith('mio-') ? state.custom.find(x => x.key === k) : null;
+    return c ? { key: c.key, name: c.name, icon: c.icon, items: c.items } : null;
+  }
+  function renderMyThemes() {
+    const box = $('myThemesList'); box.innerHTML = '';
+    if (!state.custom.length) box.append(el('p', 'hint', 'Nessun tema ancora: creane uno qui sotto.'));
+    state.custom.forEach(c => {
+      const row = el('div', 'mt-item');
+      const use = el('button', null, '▶ Usa'), ed = el('button', null, '✏️ Modifica'), del = el('button', null, '🗑️ Elimina');
+      use.onclick = () => useCustom(c.key); ed.onclick = () => editCustom(c.key); del.onclick = () => deleteCustom(c.key);
+      row.append(el('b', null, '✏️ ' + c.name), el('span', 'hint', `${c.items.length} frasi`), use, ed, del);
+      box.appendChild(row);
+    });
+  }
+  function useCustom(key) {
+    if (kids()) { state.themeMode = key; newKidTheme(); } else { state.adultMode = key; newAdultTheme(); }
+    save(); render(); broadcast();
+    toast('Tema attivo: ' + (TombolaTemi.name(key) || ''));
+  }
+  function editCustom(key) {
+    const c = state.custom.find(x => x.key === key); if (!c) return;
+    editingKey = key; $('mtName').value = c.name;
+    $('mtText').value = c.items.map(i => i[0] === '💬' ? i[1] : i[0] + ' ' + i[1]).join('\n');
+    $('myEditor').open = true; $('mtMsg').textContent = 'Stai modificando «' + c.name + '».'; $('mtName').focus();
+  }
+  function deleteCustom(key) {
+    const c = state.custom.find(x => x.key === key); if (!c) return;
+    if (!confirm(`Eliminare il tema «${c.name}»?`)) return;
+    state.custom = state.custom.filter(x => x.key !== key);
+    TombolaTemi.unregister(key);
+    if (state.themeMode === key) state.themeMode = 'auto';
+    if (state.sTheme === key) newKidTheme();
+    if (state.adultMode === key) { state.adultMode = 'napoletana'; state.aTheme = ''; }
+    save(); refillThemeMenus(); renderMyThemes(); broadcast();
+  }
+  $('mtSave').onclick = () => {
+    const name = $('mtName').value.trim(), items = parseMyItems($('mtText').value);
+    if (!name) { $('mtMsg').textContent = 'Scrivi un nome per il tema.'; return; }
+    if (items.length < 3) { $('mtMsg').textContent = 'Servono almeno 3 frasi (una per riga).'; return; }
+    if (!editingKey && state.custom.length >= 20) { $('mtMsg').textContent = 'Hai già 20 temi: eliminane uno prima.'; return; }
+    const key = editingKey || 'mio-' + Date.now().toString(36);
+    const t = { key, name: name.slice(0, 40), icon: '✏️', items };
+    const i = state.custom.findIndex(c => c.key === key);
+    if (i >= 0) state.custom[i] = t; else state.custom.push(t);
+    editingKey = null; $('mtName').value = ''; $('mtText').value = '';
+    $('mtMsg').textContent = `✔ Salvato «${t.name}» con ${items.length} frasi. Premi «Usa» per attivarlo.`;
+    save(); refillThemeMenus(); renderMyThemes(); broadcast();
+  };
+  $('mtCancel').onclick = () => { editingKey = null; $('mtName').value = ''; $('mtText').value = ''; $('mtMsg').textContent = ''; };
+
   load();
+  registerCustom();
   fillThemeSel();
+  fillAdultSel();
+  renderMyThemes();
   if (!isPlayer) { // compatibilità con partite salvate prima del selettore
     if (state.paper && state.play === 'screen') state.play = state.room ? 'mixed' : 'paper';
     else if (state.room && state.play === 'screen') state.play = 'devices';
