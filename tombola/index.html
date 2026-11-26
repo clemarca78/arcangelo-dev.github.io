@@ -121,6 +121,31 @@ body.play-paper .host-cards, body.play-devices .host-cards, body.play-mixed .hos
 body.play-devices #roomPanel, body.play-mixed #roomPanel, body.play-paper #paperPanel, body.play-mixed #paperPanel { display: block; }
 main > header { order: -3; }
 body.started:not(.player) .top { order: -2; }
+#urnBox { display: none; margin-bottom: 12px; }
+body.src-urn #urnBox { display: block; }
+body.src-urn #drawBtn, body.src-urn #autoBtn { display: none; }
+body.src-urn .board div[data-n] { cursor: pointer; }
+body.src-urn .board div[data-n]:not(.out):hover { background: rgba(251,191,36,.35); color: var(--text); }
+#urnNum { font-size: 1.4rem; text-align: center; width: 90px; }
+#limExit, #limAudio { position: fixed; z-index: 11; display: none; box-shadow: 0 4px 14px rgba(0,0,0,.45); background: var(--bg); }
+#limExit { top: 10px; right: 10px; }
+#limAudio { bottom: 12px; right: 12px; border-radius: 30px; }
+body.lim:not(.player) #limExit, body.lim #limAudio { display: block; }
+/* vista LIM: tutto grande, solo ciò che serve a chi guarda da lontano */
+body.lim main { max-width: none; gap: 10px; }
+body.lim .modes, body.lim #playPanel, body.lim #roomPanel, body.lim #paperPanel, body.lim .host-cards,
+body.lim #smorfiaPanel, body.lim .opts, body.lim .draw h2, body.lim .draw .hint, body.lim #log, body.lim .panel > h2 { display: none !important; }
+@media (min-width: 800px) { body.lim .top { grid-template-columns: minmax(280px, 32vw) 1fr; } }
+body.lim .ball { width: clamp(170px, 32vh, 360px); height: clamp(170px, 32vh, 360px); font-size: clamp(4rem, 14vh, 9rem); }
+body.lim .info .words { font-size: clamp(2rem, 6vh, 4rem); }
+body.lim .info .dec { font-size: clamp(1rem, 2.8vh, 1.8rem); }
+body.lim .info .smorf { font-size: clamp(1.2rem, 3.4vh, 2.4rem); }
+body.lim .info .smorf b { font-size: clamp(2.2rem, 6vh, 4rem); }
+body.lim .board { grid-template-rows: repeat(var(--rows, 9), 1fr); height: min(calc(100vh - 230px), calc(var(--rows, 9) * 16vh)); min-height: 300px; }
+body.lim .board div { aspect-ratio: auto; font-size: clamp(1.1rem, 3.6vh, 2.6rem); }
+body.lim .history span { width: 46px; height: 46px; font-size: 1.1rem; }
+body.lim .prize { padding: 6px; font-size: clamp(.9rem, 2.2vh, 1.4rem); }
+body.lim #toast { font-size: clamp(1.6rem, 5vh, 3.4rem); top: 3vh; padding: 18px 40px; }
 .seg { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
 .seg button { text-align: left; display: grid; gap: 2px; padding: 10px 12px; }
 .seg button small { font-weight: 400; color: var(--muted); font-size: .78rem; line-height: 1.25; }
@@ -171,12 +196,15 @@ details summary { cursor: pointer; font-weight: 600; }
 </head>
 <body>
 <div id="toast"></div>
+<button id="limExit" class="host-only">✕ Esci dalla vista LIM</button>
+<button id="limAudio">🔇 Attiva audio</button>
 <main>
   <header>
     <h1>🎱 <span>Tombola</span></h1>
     <div class="modes host-only">
       <button id="modeClassic">Classica</button>
       <button id="modeKids">🧒 Bambini</button>
+      <button id="limBtn" title="Schermo grande per la LIM">📺 LIM</button>
       <label class="only-kids" style="gap:6px;align-items:center;color:var(--muted);font-size:.9rem">Numeri fino a
         <select id="maxSel"><option value="30">30</option><option value="60">60</option><option value="90">90</option></select>
       </label>
@@ -202,6 +230,13 @@ details summary { cursor: pointer; font-weight: 600; }
       <button data-play="mixed"><b>🔀 Mista</b><small>Alcuni su carta, altri su dispositivo</small></button>
     </div>
     <p class="hint" id="playHint" style="text-align:left;margin-top:10px"></p>
+    <div class="row">
+      <span class="hint">Estrazione dei numeri:</span>
+      <div class="seg" id="srcSeg" style="flex:0 1 460px;grid-template-columns:repeat(2,minmax(170px,1fr))">
+        <button data-src="app"><b>🎰 Con l'app</b><small>L'app estrae a caso</small></button>
+        <button data-src="urn"><b>🪣 Urna fisica</b><small>Estrai a mano e segna sul tabellone</small></button>
+      </div>
+    </div>
     <div class="row">
       <label class="hint" style="display:flex;gap:6px;align-items:center">Immagini sulle cartelle
         <select id="themeSel"></select>
@@ -236,6 +271,14 @@ details summary { cursor: pointer; font-weight: 600; }
       <h2>Estrazione</h2>
       <div class="ball empty" id="ball">–</div>
       <div class="info" id="info"></div>
+      <div id="urnBox" class="host-only">
+        <div class="row" style="justify-content:center;margin-top:0">
+          <input type="text" inputmode="numeric" id="urnNum" placeholder="N°" maxlength="2" autocomplete="off">
+          <button class="primary" id="urnAdd" style="padding:10px 18px">✔ Segna</button>
+          <button id="urnUndo">↩ Annulla ultimo</button>
+        </div>
+        <p class="hint" style="margin-top:8px">Estrai dall'urna, poi tocca il numero sul tabellone o scrivilo qui.</p>
+      </div>
       <div class="btns">
         <button class="primary host-only" id="drawBtn">Estrai</button>
         <button class="host-only" id="autoBtn">▶ Auto</button>
@@ -286,7 +329,7 @@ details summary { cursor: pointer; font-weight: 600; }
     <div class="cards" id="cards"></div>
   </section>
 
-  <section class="panel needs-join">
+  <section class="panel needs-join" id="smorfiaPanel">
     <details>
       <summary>📖 Tutta la smorfia napoletana</summary>
       <div class="smgrid" id="smgrid"></div>
@@ -420,10 +463,11 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   const Q = new URLSearchParams(location.search);
   const ROOM_CODE = (Q.get('stanza') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
   const isPlayer = !!ROOM_CODE;
-  const KEY = isPlayer ? 'tombola-player-' + ROOM_CODE : 'tombola-proto-v2';
+  const LIM_VIEW = isPlayer && Q.get('lim') === '1';   // schermo LIM collegato alla stanza (solo spettatore)
+  const KEY = LIM_VIEW ? 'tombola-lim-' + ROOM_CODE : isPlayer ? 'tombola-player-' + ROOM_CODE : 'tombola-proto-v2';
   const $ = id => document.getElementById(id);
-  let state = { mode: 'classic', max: 90, drawn: [], cards: [], marks: [], won: {}, autoMark: false, gen: 0, room: null, token: '', pname: '', play: 'screen', cols: 3, theme: 'auto' };
-  let timer = null;
+  let state = { mode: 'classic', max: 90, drawn: [], cards: [], marks: [], won: {}, autoMark: false, gen: 0, room: null, token: '', pname: '', play: 'screen', cols: 3, theme: 'auto', source: 'app' };
+  let timer = null, limOn = false;
   const kids = () => state.mode === 'kids';
   const prizesFor = (m, cols) => TombolaCards.prizes(m, cols);
   const prizes = () => prizesFor(state.mode, state.cols);
@@ -486,12 +530,31 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     const out = new Set(state.drawn), r = [];
     for (let n = 1; n <= state.max; n++) if (!out.has(n)) r.push(n);
     if (!r.length) { stopAuto(); return; }
-    const n = r[Math.floor(Math.random() * r.length)];
+    registerNumber(r[Math.floor(Math.random() * r.length)]);
+  }
+  // Un numero è uscito (estratto dall'app o dall'urna fisica).
+  function registerNumber(n) {
+    if (isPlayer) return;
     state.drawn.push(n);
     say(n);
     checkPrizes();
     save(); render(true); broadcast();
     if (state.drawn.length >= state.max) stopAuto();
+  }
+  // Urna fisica: numero segnato a mano dalla maestra.
+  function urnAdd(n) {
+    if (!Number.isInteger(n) || n < 1 || n > state.max) { toast(`Numero non valido (da 1 a ${state.max})`); return; }
+    if (state.drawn.includes(n)) { toast(`Il ${n} è già uscito`); return; }
+    registerNumber(n);
+  }
+  function undoLast() {
+    if (isPlayer || !state.drawn.length) return;
+    if (Object.keys(state.won).length && !confirm('Alcuni premi sono già stati assegnati e restano tali. Annullare comunque l\'ultimo numero?')) return;
+    const n = state.drawn.pop();
+    state.marks = state.marks.map(a => a.filter(x => state.drawn.includes(x)));
+    log(`↩ Annullato il ${n}`);
+    try { speechSynthesis.cancel(); } catch (e) {}
+    save(); render(); broadcast();
   }
   function entry(n) {
     const s = SMORFIA[n];
@@ -557,6 +620,11 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   function render(animate) {
     document.body.classList.toggle('kids', kids());
     document.body.classList.toggle('started', state.drawn.length > 0);
+    document.body.classList.toggle('lim', LIM_VIEW || limOn);
+    document.body.classList.toggle('src-urn', !isPlayer && state.source === 'urn');
+    $('board').style.setProperty('--rows', Math.ceil(state.max / 10));
+    document.querySelectorAll('#srcSeg button').forEach(b => b.classList.toggle('active', b.dataset.src === state.source));
+    $('limAudio').textContent = $('speak').checked ? '🔊 Audio attivo' : '🔇 Attiva audio';
     if (!isPlayer) {
       ['screen', 'paper', 'devices', 'mixed'].forEach(m => document.body.classList.toggle('play-' + m, state.play === m));
       document.querySelectorAll('#playSeg button').forEach(b => b.classList.toggle('active', b.dataset.play === state.play));
@@ -594,7 +662,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     $('board').innerHTML = '';
     for (let n = 1; n <= state.max; n++) {
       const d = document.createElement('div');
-      d.textContent = n;
+      d.textContent = n; d.dataset.n = n;
       if (out.has(n)) d.className = 'out' + (n === last ? ' last' : '');
       $('board').appendChild(d);
     }
@@ -719,7 +787,8 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   $('autoMark').onchange = () => { state.autoMark = $('autoMark').checked; checkPrizes(); save(); render(); };
   $('autoMark').title = 'Segna da solo i numeri estratti';
   document.addEventListener('keydown', e => {
-    if (!isPlayer && e.code === 'Space' && !/SELECT|INPUT|BUTTON/.test(e.target.tagName)) { e.preventDefault(); draw(); }
+    if (!isPlayer && state.source === 'app' && e.code === 'Space' && !/SELECT|INPUT|BUTTON/.test(e.target.tagName)) { e.preventDefault(); draw(); }
+    if (e.key === 'Escape' && limOn) setLim(false);
   });
 
   for (let i = 1; i <= 6; i++) { const o = document.createElement('option'); o.value = i; o.textContent = i; $('nCards').appendChild(o); }
@@ -746,11 +815,11 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   }
   function dealAll() { if (state.room) Object.values(state.room.players).forEach(p => p.cards = dealCards(p.cards.length || 1)); }
   function snapshot(token) {
-    const p = state.room.players[token];
+    const p = state.room.players[token] || { cards: [] };
     return { t: 'state', mode: state.mode, max: state.max, cols: state.cols, theme: state.theme, drawn: state.drawn, won: state.won, gen: state.gen, cards: p.cards, maxCards: state.room.maxCards || 4, late: !!state.room.lateCards };
   }
   function sendTo(token, msg) { const c = conns[token]; if (c && c.open) { try { c.send(msg); } catch (e) {} } }
-  function broadcast() { if (state.room) Object.keys(conns).forEach(t => state.room.players[t] && sendTo(t, snapshot(t))); }
+  function broadcast() { if (state.room) Object.keys(conns).forEach(t => sendTo(t, snapshot(t))); }
   function broadcastMsg(msg) { Object.keys(conns).forEach(t => sendTo(t, msg)); }
 
   function createRoom() {
@@ -784,6 +853,11 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       const token = String(m.token || '').slice(0, 40);
       const name = String(m.name || '').trim().slice(0, 20) || 'Giocatore';
       if (!token) return;
+      if (m.viewer) {   // schermo LIM: guarda soltanto, niente cartelle
+        const vt = 'v:' + token;
+        if (conns[vt] && conns[vt] !== c) { try { conns[vt].close(); } catch (e) {} }
+        c.token = vt; conns[vt] = c; renderRoom(); sendTo(vt, snapshot(vt)); return;
+      }
       const P = state.room.players;
       if (!P[token]) {
         if (Object.keys(P).length >= 40) { try { c.send({ t: 'full' }); } catch (e) {} return; }
@@ -869,6 +943,13 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     const link = el('input'); link.type = 'text'; link.readOnly = true; link.value = roomLink(); link.style.width = '100%'; link.style.marginTop = '8px';
     link.onfocus = () => link.select();
     right.append(link);
+    const vcount = Object.keys(conns).filter(k => k.startsWith('v:')).length;
+    const lr = el('div', 'row');
+    const lb = el('button', null, '📺 Apri schermo LIM'); lb.onclick = () => window.open(roomLink() + '&lim=1', '_blank');
+    const lc = el('button', null, 'Copia link LIM');
+    lc.onclick = () => { try { navigator.clipboard.writeText(roomLink() + '&lim=1'); lc.textContent = '✓ Copiato'; } catch (e) {} };
+    lr.append(lb, lc, el('span', 'hint', vcount ? `${vcount} schermo LIM collegato` : 'Apri il link LIM sul computer collegato alla lavagna'));
+    right.append(lr);
     const row = el('div', 'row');
     const cp = el('button', null, '📋 Copia link');
     cp.onclick = () => { try { navigator.clipboard.writeText(roomLink()); cp.textContent = '✓ Copiato'; } catch (e) { link.select(); } };
@@ -901,7 +982,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     const pr = peer = new Peer(PEER_OPTS);
     pr.on('open', () => {
       const c = hostConn = pr.connect(PREFIX + ROOM_CODE, { reliable: true, serialization: 'json' });
-      c.on('open', () => c.send({ t: 'join', token: state.token, name: state.pname }));
+      c.on('open', () => c.send({ t: 'join', token: state.token, name: state.pname, viewer: LIM_VIEW }));
       c.on('data', playerMsg);
       c.on('close', () => { if (hostConn === c) playerRetry('Connessione persa, riprovo…'); });
     });
@@ -916,6 +997,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       if (m.gen !== state.gen) state.marks = m.cards.map(() => []);
       else state.marks = m.cards.map((_, i) => state.marks[i] || []);
       Object.assign(state, { mode: m.mode, max: m.max, cols: m.cols || 3, theme: m.theme || 'auto', maxCards: m.maxCards || 4, late: !!m.late, drawn: m.drawn, won: m.won, gen: m.gen, cards: m.cards });
+      state.marks = state.marks.map(a => a.filter(n => state.drawn.includes(n)));
       if (!state.drawn.length) { logLines.length = 0; log('Nuova partita. Buona fortuna!'); }
       save(); setStatus(`🟢 Stanza ${ROOM_CODE} · ${state.pname} ·`);
       const fresh = m.drawn.length === prev + 1;
@@ -930,6 +1012,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     $('speak').checked = false;                 // la voce la fa il dispositivo del maestro
     $('joinCode').textContent = ROOM_CODE;
     if (!state.token) { state.token = newToken(); save(); }
+    if (LIM_VIEW) state.pname = 'LIM';
     $('joinName').value = state.pname || '';
     const go = () => {
       const n = $('joinName').value.trim(); if (!n) return;
@@ -1005,6 +1088,33 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   const joinByCode = () => { const c = $('joinCodeIn').value.trim().toUpperCase(); if (c) location.search = '?stanza=' + encodeURIComponent(c); };
   $('joinGo').onclick = joinByCode;
   $('joinCodeIn').onkeydown = e => { if (e.key === 'Enter') joinByCode(); };
+
+  // ---------- urna fisica e vista LIM ----------
+  function setSource(v) { state.source = v; if (v === 'urn') stopAuto(); save(); render(); if (v === 'urn') $('urnNum').focus(); }
+  document.querySelectorAll('#srcSeg button').forEach(b => { b.onclick = () => setSource(b.dataset.src); });
+  const urnSubmit = () => { const v = $('urnNum').value.trim(); $('urnNum').value = ''; if (v) urnAdd(+v); $('urnNum').focus(); };
+  $('urnAdd').onclick = urnSubmit;
+  $('urnNum').onkeydown = e => { if (e.key === 'Enter') urnSubmit(); };
+  $('urnUndo').onclick = undoLast;
+  $('board').addEventListener('click', ev => {
+    const c = ev.target.closest('[data-n]');
+    if (c && !isPlayer && state.source === 'urn') urnAdd(+c.dataset.n);
+  });
+  function setLim(on) {
+    limOn = on;
+    try {
+      if (on && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => {});
+      else if (!on && document.fullscreenElement) document.exitFullscreen();
+    } catch (e) {}
+    render();
+  }
+  $('limBtn').onclick = () => setLim(true);
+  $('limExit').onclick = () => setLim(false);
+  $('limAudio').onclick = () => {
+    $('speak').checked = !$('speak').checked;
+    if ($('speak').checked) { try { speechSynthesis.cancel(); speechSynthesis.speak(Object.assign(new SpeechSynthesisUtterance('Audio attivo'), { lang: 'it-IT' })); } catch (e) {} }
+    render();
+  };
 
   load();
   if (!isPlayer) { // compatibilità con partite salvate prima del selettore
