@@ -91,6 +91,8 @@ select { font: inherit; background: var(--bg); color: var(--text); border: 1px s
 
 /* modalità bambini */
 .kids .grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.kids .grid.dense { gap: 5px; }
+.kids .grid.dense div { font-size: 1.45rem; border-radius: 10px; border-width: 2px; }
 .kids .grid div { font-size: 2rem; border-radius: 14px; background: #fff; border: 3px solid #fbbf24; cursor: pointer; user-select: none; }
 .kids .grid div.hit { background: var(--pink); border-color: #be185d; }
 .kids .card { background: linear-gradient(160deg, #fde68a, #fbcfe8); border-radius: 18px; }
@@ -172,6 +174,9 @@ details summary { cursor: pointer; font-weight: 600; }
       <button id="modeKids">🧒 Bambini</button>
       <label class="only-kids" style="gap:6px;align-items:center;color:var(--muted);font-size:.9rem">Numeri fino a
         <select id="maxSel"><option value="30">30</option><option value="60">60</option><option value="90">90</option></select>
+      </label>
+      <label class="only-kids" style="gap:6px;align-items:center;color:var(--muted);font-size:.9rem">Numeri per riga
+        <select id="colsSel"><option value="3">3 (ambo, terno)</option><option value="4">4 (fino a quaterna)</option><option value="5">5 (fino a cinquina)</option></select>
       </label>
     </div>
     <div class="counter"><span id="netStatus"></span> <span id="counter"></span></div>
@@ -402,13 +407,12 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   const isPlayer = !!ROOM_CODE;
   const KEY = isPlayer ? 'tombola-player-' + ROOM_CODE : 'tombola-proto-v2';
   const $ = id => document.getElementById(id);
-  let state = { mode: 'classic', max: 90, drawn: [], cards: [], marks: [], won: {}, autoMark: false, gen: 0, room: null, token: '', pname: '', play: 'screen' };
+  let state = { mode: 'classic', max: 90, drawn: [], cards: [], marks: [], won: {}, autoMark: false, gen: 0, room: null, token: '', pname: '', play: 'screen', cols: 3 };
   let timer = null;
   const kids = () => state.mode === 'kids';
-  const prizesFor = m => m === 'kids'
-    ? [{ n: 2, name: 'Ambo' }, { n: 3, name: 'Terno' }, { n: 9, name: 'Tombola!' }]
-    : [{ n: 2, name: 'Ambo' }, { n: 3, name: 'Terno' }, { n: 4, name: 'Quaterna' }, { n: 5, name: 'Cinquina' }, { n: 15, name: 'Tombola!' }];
-  const prizes = () => prizesFor(state.mode);
+  const prizesFor = (m, cols) => TombolaCards.prizes(m, cols);
+  const prizes = () => prizesFor(state.mode, state.cols);
+  const cardSize = () => kids() ? 3 * state.cols : 15;
 
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
   const load = () => {
@@ -439,15 +443,15 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     }
     return grid;
   }
-  // Bambini: 3x3, 9 numeri diversi presi da 1..max, ordinati per colonna.
-  function kidCard(max) {
+  // Bambini: 3 righe x cols colonne (3, 4 o 5 numeri per riga), numeri diversi presi da 1..max, ordinati per colonna.
+  function kidCard(max, cols) {
     const pool = []; for (let n = 1; n <= max; n++) pool.push(n);
-    const nums = shuffle(pool).slice(0, 9).sort((a, b) => a - b);
-    return [0, 1, 2].map(r => [0, 1, 2].map(c => nums[c * 3 + r]));
+    const nums = shuffle(pool).slice(0, 3 * cols).sort((a, b) => a - b);
+    return [0, 1, 2].map(r => Array.from({ length: cols }, (_, c) => nums[c * 3 + r]));
   }
   function makeCards() {
     const n = +$('nCards').value;
-    state.cards = Array.from({ length: n }, () => kids() ? kidCard(state.max) : classicCard());
+    state.cards = Array.from({ length: n }, () => kids() ? kidCard(state.max, state.cols) : classicCard());
     state.marks = state.cards.map(() => []);
     state.won = {};
     checkPrizes();
@@ -493,7 +497,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   // Ambo/terno/quaterna/cinquina valgono su una riga; tombola = tutta la cartella.
   function checkPrizes() {
     if (isPlayer || state.play !== 'screen') return; // fuori dalla modalità a schermo i premi si assegnano a chiamata
-    const size = kids() ? 9 : 15;
+    const size = cardSize();
     state.cards.forEach((g, i) => {
       const m = marked(i);
       const best = Math.max(...g.map(r => r.filter(n => n && m.has(n)).length));
@@ -546,6 +550,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     $('modeClassic').classList.toggle('active', !kids());
     $('modeKids').classList.toggle('active', kids());
     $('maxSel').value = state.max;
+    $('colsSel').value = state.cols;
     $('autoMark').checked = !!state.autoMark;
     $('cardsHint').textContent = isPlayer
       ? (state.autoMark ? 'I numeri estratti si segnano da soli. Chiama il premio quando lo hai!' : 'Tocca i numeri sulla cartella quando escono. Hai un premio? Chiamalo!')
@@ -583,14 +588,15 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       $('prizes').appendChild(d);
     });
 
-    const size = kids() ? 9 : 15;
+    const size = cardSize();
     $('cards').innerHTML = '';
     state.cards.forEach((g, i) => {
       const m = marked(i);
       const hits = g.flat().filter(n => n && m.has(n)).length;
       const c = document.createElement('div'); c.className = 'card';
       c.innerHTML = `<h3>Cartella ${i + 1}<em>${hits}/${size}</em></h3>`;
-      const gr = document.createElement('div'); gr.className = 'grid';
+      const gr = document.createElement('div'); gr.className = 'grid' + (kids() && state.cols > 3 ? ' dense' : '');
+      if (kids()) gr.style.gridTemplateColumns = `repeat(${state.cols}, 1fr)`;
       g.flat().forEach(n => {
         const d = document.createElement('div');
         if (!n) d.className = 'blank';
@@ -676,6 +682,10 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   $('smorfia').onchange = () => render();
   $('modeClassic').onclick = () => setMode('classic');
   $('modeKids').onclick = () => setMode('kids');
+  $('colsSel').onchange = () => {
+    if (state.drawn.length && !confirm('Cambiando i numeri per riga inizia una nuova partita. Continuare?')) { $('colsSel').value = state.cols; return; }
+    state.cols = +$('colsSel').value; reset();
+  };
   $('maxSel').onchange = () => {
     if (state.drawn.length && !confirm('Cambiando l\'intervallo inizia una nuova partita. Continuare?')) { $('maxSel').value = state.max; return; }
     state.max = +$('maxSel').value; reset();
@@ -706,12 +716,12 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
 
   // ----- host -----
   function dealCards() {
-    return Array.from({ length: state.room.perPlayer }, () => kids() ? kidCard(state.max) : classicCard());
+    return Array.from({ length: state.room.perPlayer }, () => kids() ? kidCard(state.max, state.cols) : classicCard());
   }
   function dealAll() { if (state.room) Object.values(state.room.players).forEach(p => p.cards = dealCards()); }
   function snapshot(token) {
     const p = state.room.players[token];
-    return { t: 'state', mode: state.mode, max: state.max, drawn: state.drawn, won: state.won, gen: state.gen, cards: p.cards };
+    return { t: 'state', mode: state.mode, max: state.max, cols: state.cols, drawn: state.drawn, won: state.won, gen: state.gen, cards: p.cards };
   }
   function sendTo(token, msg) { const c = conns[token]; if (c && c.open) { try { c.send(msg); } catch (e) {} } }
   function broadcast() { if (state.room) Object.keys(conns).forEach(t => state.room.players[t] && sendTo(t, snapshot(t))); }
@@ -766,7 +776,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     const p = state.room.players[token], pr = prizes().find(x => x.n === n), card = p && p.cards[i];
     if (!pr || !card) return;
     if (state.won[n]) { sendTo(token, { t: 'toast', text: `${pr.name} è già stato assegnato` }); return; }
-    const m = new Set(state.drawn), size = kids() ? 9 : 15;
+    const m = new Set(state.drawn), size = cardSize();
     const best = Math.max(...card.map(r => r.filter(x => x && m.has(x)).length));
     const total = card.flat().filter(x => x && m.has(x)).length;
     if (!(n === size ? total === size : best >= n)) {
@@ -859,7 +869,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if (m.t === 'state') {
       const prev = state.drawn.length;
       if (m.gen !== state.gen || state.marks.length !== m.cards.length) state.marks = m.cards.map(() => []);
-      Object.assign(state, { mode: m.mode, max: m.max, drawn: m.drawn, won: m.won, gen: m.gen, cards: m.cards });
+      Object.assign(state, { mode: m.mode, max: m.max, cols: m.cols || 3, drawn: m.drawn, won: m.won, gen: m.gen, cards: m.cards });
       if (!state.drawn.length) { logLines.length = 0; log('Nuova partita. Buona fortuna!'); }
       save(); setStatus(`🟢 Stanza ${ROOM_CODE} · ${state.pname} ·`);
       const fresh = m.drawn.length === prev + 1;
@@ -891,18 +901,19 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     const out = $('chkOut'); out.innerHTML = '';
     const c = TombolaCards.cardFromId($('chkId').value);
     if (!c) { out.append(el('div', 'err', 'Codice non valido. Esempio: C4821-3 (classica) oppure B30-4821-3 (bambini).')); return; }
-    const m = new Set(state.drawn), size = c.mode === 'kids' ? 9 : 15;
+    const m = new Set(state.drawn), size = c.size;
     const best = Math.max(...c.grid.map(r => r.filter(n => n && m.has(n)).length));
     const total = c.grid.flat().filter(n => n && m.has(n)).length;
     const box = el('div', 'chk-card');
-    if (c.mode !== state.mode || (c.mode === 'kids' && c.max !== state.max))
+    if (c.mode !== state.mode || (c.mode === 'kids' && (c.max !== state.max || c.cols !== state.cols)))
       box.append(el('div', 'err', 'Attenzione: questa cartella è di un\'altra modalità rispetto alla partita in corso.'));
     const card = el('div', 'card'), h = el('h3'); h.append(el('b', null, 'Cartella ' + c.id), el('em', null, `${total}/${size}`));
-    const gr = el('div', 'grid');
+    const gr = el('div', 'grid' + (c.mode === 'kids' && c.cols > 3 ? ' dense' : ''));
+    if (c.mode === 'kids') gr.style.gridTemplateColumns = `repeat(${c.cols}, 1fr)`;
     c.grid.flat().forEach(n => { const d = el('div', n && m.has(n) ? 'hit' : (n ? '' : 'blank'), n || ''); gr.append(d); });
     card.append(h, gr); box.append(card);
     const v = el('div', 'verdict');
-    prizesFor(c.mode).forEach(p => {
+    prizesFor(c.mode, c.cols).forEach(p => {
       const ok = p.n === size ? total === size : best >= p.n;
       const won = state.won[p.n];
       const tag = el('span', ok ? 'ok' : 'no', (ok ? '✔ ' : '✘ ') + p.name + (won ? ' (già assegnato)' : ''));
@@ -920,7 +931,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     });
     box.append(v); out.append(box);
   }
-  $('printBtn').onclick = () => window.open(`stampa.html?mode=${state.mode}&max=${state.max}&serie=${TombolaCards.randomSerie()}`, '_blank');
+  $('printBtn').onclick = () => window.open(`stampa.html?mode=${state.mode}&max=${state.max}&cols=${state.cols}&serie=${TombolaCards.randomSerie()}`, '_blank');
   $('chkBtn').onclick = checkPaperCard;
   $('chkId').onkeydown = e => { if (e.key === 'Enter') checkPaperCard(); };
 

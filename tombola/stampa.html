@@ -34,6 +34,7 @@ button.sec { background: #e2e8f0; color: #1e293b; }
 }
 .kids .grid { grid-template-columns: repeat(3, 1fr); }
 .kids .grid div { font-size: 30pt; border-width: 1px; }
+.kids .grid.dense div { font-size: 21pt; }
 .sheet footer { margin-top: 3mm; font-size: 8.5pt; color: #333; border-top: 1px solid #999; padding-top: 2mm; }
 
 .board { flex: 1; display: grid; grid-template-columns: repeat(10, 1fr); gap: 0; border: 1.5px solid #111; margin-top: 2mm; }
@@ -63,6 +64,9 @@ button.sec { background: #e2e8f0; color: #1e293b; }
     <label id="maxWrap">Numeri fino a
       <select id="max"><option>30</option><option>60</option><option>90</option></select>
     </label>
+    <label id="colsWrap">Numeri per riga
+      <select id="cols"><option value="3">3 (fino al terno)</option><option value="4">4 (fino alla quaterna)</option><option value="5">5 (fino alla cinquina)</option></select>
+    </label>
     <label>Pagine (serie)
       <input type="number" id="pages" min="1" max="20" value="2">
     </label>
@@ -87,6 +91,7 @@ button.sec { background: #e2e8f0; color: #1e293b; }
   const Q = new URLSearchParams(location.search);
   $('mode').value = Q.get('mode') === 'kids' ? 'kids' : 'classic';
   if (['30', '60', '90'].includes(Q.get('max'))) $('max').value = Q.get('max');
+  if (['3', '4', '5'].includes(Q.get('cols'))) $('cols').value = Q.get('cols');
   $('first').value = +Q.get('serie') || TombolaCards.randomSerie();
 
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
@@ -94,7 +99,8 @@ button.sec { background: #e2e8f0; color: #1e293b; }
   function cardEl(c) {
     const d = el('div', 'card');
     const h = el('h3'); h.append(el('b', null, 'Cartella'), el('span', null, c.id));
-    const gr = el('div', 'grid');
+    const gr = el('div', 'grid' + (c.mode === 'kids' && c.cols > 3 ? ' dense' : ''));
+    if (c.mode === 'kids') gr.style.gridTemplateColumns = `repeat(${c.cols}, 1fr)`;
     c.grid.flat().forEach(n => gr.append(n ? el('div', null, n) : el('div', 'blank')));
     d.append(h, gr);
     return d;
@@ -106,20 +112,21 @@ button.sec { background: #e2e8f0; color: #1e293b; }
     return s;
   }
   function render() {
-    const mode = $('mode').value, max = +$('max').value;
+    const mode = $('mode').value, max = +$('max').value, cols = +$('cols').value;
     $('maxWrap').classList.toggle('hidden', mode !== 'kids');
+    $('colsWrap').classList.toggle('hidden', mode !== 'kids');
     const pages = Math.max(1, Math.min(20, +$('pages').value || 1));
     const first = Math.max(1, Math.min(99999 - 20, +$('first').value || 1));
     const out = $('sheets'); out.innerHTML = '';
-    const kidsRules = 'Ambo = 2 numeri sulla stessa riga · Terno = 3 numeri sulla stessa riga · Tombola = tutta la cartella.';
-    const classicRules = 'Ambo = 2, Terno = 3, Quaterna = 4, Cinquina = 5 numeri sulla stessa riga · Tombola = tutta la cartella.';
+    const rules = TombolaCards.prizes(mode, cols).filter(p => p.name !== 'Tombola!').map(p => `${p.name} = ${p.n}`).join(', ')
+      + ' numeri sulla stessa riga · Tombola = tutta la cartella.';
     for (let p = 0; p < pages; p++) {
       const serie = first + p;
       const s = sheet(`Nome: ______________________  Classe: ________`, mode === 'kids' ? 'kids' : '');
       const grid = el('div', 'cards');
-      TombolaCards.series(mode, max, serie).forEach(c => grid.append(cardEl(c)));
+      TombolaCards.series(mode, max, serie, cols).forEach(c => grid.append(cardEl(c)));
       s.append(grid);
-      s.append(el('footer', null, (mode === 'kids' ? kidsRules : classicRules) + ' Quando hai un premio alza la mano e leggi il codice della cartella.'));
+      s.append(el('footer', null, rules + ' Quando hai un premio alza la mano e leggi il codice della cartella.'));
       out.append(s);
     }
     const top = mode === 'kids' ? max : 90;
@@ -138,7 +145,7 @@ button.sec { background: #e2e8f0; color: #1e293b; }
     }
     $('hint').textContent = `Serie n. ${first}${pages > 1 ? '–' + (first + pages - 1) : ''}. Per stamparle di nuovo uguali, ricorda il numero della prima serie.`;
   }
-  ['mode', 'max', 'pages', 'first', 'board', 'tokens'].forEach(id => $(id).addEventListener('input', render));
+  ['mode', 'max', 'cols', 'pages', 'first', 'board', 'tokens'].forEach(id => $(id).addEventListener('input', render));
   $('rnd').onclick = () => { $('first').value = TombolaCards.randomSerie(); render(); };
   $('print').onclick = () => window.print();
   render();
