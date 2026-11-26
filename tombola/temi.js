@@ -944,8 +944,9 @@
     Object.keys(themes).forEach(k => {
       const t = themes[k];
       if (!k.startsWith('mio-') || !t || !Array.isArray(t.items) || !t.items.length) return;
-      ALL[k] = { key: k, name: String(t.name || 'Il mio tema').slice(0, 40), icon: t.icon || '✏️', levels: TUTTI,
-                 items: t.items.slice(0, 300).map(i => [String(i[0]).slice(0, 12), String(i[1]).slice(0, 200)]) };
+      const noTag = x => String(x).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '');   // via i caratteri di controllo (i testi si mostrano sempre come testo, mai come HTML)
+      ALL[k] = { key: k, name: noTag(t.name || 'Il mio tema').slice(0, 40), icon: '✏️', levels: TUTTI,
+                 items: t.items.slice(0, 300).map(i => [noTag(i[0]).slice(0, 12), noTag(i[1]).slice(0, 200)]) };
     });
   }
   function unregister(key) { if (key.startsWith('mio-')) delete ALL[key]; }
