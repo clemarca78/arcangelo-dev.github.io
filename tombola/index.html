@@ -761,8 +761,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       const en = entry(n), q = [];
       let t = kids() ? words(n) : String(n);
       if ($('smorfia').checked) {
-        t += '. ' + String(en.sp || en.it).replace(/×/g, ' per ').replace(/÷/g, ' diviso ').replace(/\+/g, ' più ')
-          .replace(/−/g, ' meno ').replace(/=/g, ' fa ').replace(/%/g, ' per cento');
+        t += '. ' + TombolaTemi.speakable(en.sp || en.it);   // sigle e simboli letti come si pronunciano
       }
       q.push([t, 'it-IT']);
       if ($('smorfia').checked && en.spk) q.push(...en.spk);   // es. il numero detto in inglese

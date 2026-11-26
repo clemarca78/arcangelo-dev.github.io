@@ -98,7 +98,7 @@
     },
     romani: {
       name: 'Numeri romani', icon: '🏛️', levels: ['3', '4', '5'],
-      f(n) { return { e: '🏛️', t: `${n} in numeri romani si scrive ${romano(n)}` }; }
+      f(n) { return { e: '🏛️', t: `${n} in numeri romani si scrive ${romano(n)}`, sp: `${n} in numeri romani si scrive ${romano(n).split('').join(' ')}` }; }
     },
     inglese: {
       name: 'I numeri in inglese', icon: '🇬🇧', levels: ['3', '4', '5'],
@@ -827,5 +827,22 @@
   }
   function unregister(key) { if (key.startsWith('mio-')) delete ALL[key]; }
 
-  g.TombolaTemi = { LEVELS, CATEGORIES, register, unregister, size, themesFor, entry, pick, name: k => ALL[k] ? ALL[k].icon + ' ' + ALL[k].name : '' };
+  // Prepara un testo per la lettura ad alta voce: sigle, riferimenti del Vangelo, simboli e numeri romani
+  // si leggono come si pronunciano (a schermo il testo resta com'è). Es.: «753 a.C.» → «753 avanti Cristo».
+  const LIBRI = { Mt: 'Matteo', Mc: 'Marco', Lc: 'Luca', Gv: 'Giovanni' };
+  function speakable(text) {
+    return String(text)
+      .replace(/\b([ad])\.\s?C\./gi, (m, x) => x.toLowerCase() === 'a' ? 'avanti Cristo' : 'dopo Cristo')
+      .replace(/\((Mt|Mc|Lc|Gv)\s*(\d+),\s*(\d+)\)/g, (m, b, c, v) => `, ${LIBRI[b]}, capitolo ${c}, versetto ${v}`)
+      .replace(/\b1°/g, 'primo')
+      .replace(/\bT\. rex\b/gi, 'Tirex')
+      .replace(/\bDr\.\s/g, 'Dottor ')
+      .replace(/\b([A-Z])\.\s(?=[A-Z])/g, '$1 ')            // iniziali: «A. A. Milne», «Monkey D. Rufy»
+      .replace(/\bPaolo II\b/g, 'Paolo secondo').replace(/\bVaticano II\b/g, 'Vaticano secondo')
+      .replace(/&/g, ' e ').replace(/×/g, ' per ').replace(/÷/g, ' diviso ').replace(/\+/g, ' più ')
+      .replace(/−/g, ' meno ').replace(/=/g, ' fa ').replace(/%/g, ' per cento')
+      .replace(/\s{2,}/g, ' ').replace(/\s+,/g, ',');
+  }
+
+  g.TombolaTemi = { LEVELS, CATEGORIES, register, unregister, size, speakable, themesFor, entry, pick, name: k => ALL[k] ? ALL[k].icon + ' ' + ALL[k].name : '' };
 })(window);
