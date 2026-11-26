@@ -1235,7 +1235,32 @@
       ["🌧️", "QUANN CHIOV LA MATIN PIGGHIE LA ZAPP E CAMIN."],
       ["🙏", "CI VUÒ SPECCIÀ A PEZZENDARÌ MANN E NON GE SCÌ."],
       ["🏠", "SALVE EEGIN, LA CAMASTR APPES O 'NGIN, PESCKER E ZAVORR, MAMT FUSCE E ATTANT CORR, ARRIV AFFIN A SERRARÌ, VAFFANGUL A SEGNERÌ."],
-      ["🐟", "QUAND È BBELL U PESCE, IND ALL'ACQUE CRESCE, DA FOR ALL'ACQUE MOR, SPACC U PESCE E IACCHIE U COR."]
+      ["🐟", "QUAND È BBELL U PESCE, IND ALL'ACQUE CRESCE, DA FOR ALL'ACQUE MOR, SPACC U PESCE E IACCHIE U COR."],
+      // dalle immagini della pagina «ginosaproverbi»: dialetto e traduzione in italiano (per cinque proverbi la traduzione sotto l.immagine non era visibile: è una traduzione letterale scritta da Claude)
+      ["🐈", "Che n'uôcchie frisce u pèsce e che l'alde uàrde la iàtte", "Con un occhio friggi il pesce e con l'altro guardi la gatta"],
+      ["🍀", "Fertüne nge völe a sapè sckitte non giöve", "Fortuna ci vuole poiché il solo sapere non giova"],
+      ["🛞", "Jünge l'asse ca la röte camìne", "Ungi l'asse che la ruota cammina"],
+      ["⏳", "U tiémbe passe e la mörte s'avvecìne", "Il tempo passa e la morte si avvicina"],
+      ["👑", "Mégghie pezzénde a case de rrè ca no rrè a case de pezzénde", "Meglio pezzente a casa di Re che Re a casa di pezzente"],
+      ["⚖️", "Ci male fasce male aspétte", "Chi male fa male aspetta"],
+      ["🍷", "Quànte chiü u miére jé dòlge tante chiü sübbete fasce acìte", "Quanto più il vino è dolce tanto più presto diventa aceto"],
+      ["🌦️", "Maletiémbe e buônetiémbe non dürene troppe tiémbe", "Il brutto tempo e il bel tempo non durano troppo tempo"],
+      ["🌶️", "Che n'àscene de pèpe se pèrde la menéstre", "Per un acino di pepe si perde la minestra"],
+      ["🚪", "Pörte achiüse duère fatte", "Porta chiusa dovere fatto"],
+      ["🏋️", "Tante pèse nu quendàle de pàgghie e tante pèse nu quendàle de chiümme", "Tanto pesa un quintale di paglia e tanto pesa un quintale di piombo"],
+      ["🌽", "Ci se mange la pulénde prime s'abbòtte e pö s'allénde", "Chi si mangia la polenta, prima si gonfia e poi si allenta (scorreggia)"],
+      ["🧵", "Dö mestiére non puôte fa o a tèsse o a felà", "Due mestieri non puoi fare, o a tessere o a filare"],
+      ["🎲", "Jind'a vite du sciuquatòre non ge manche maje delòre, iösce vènge nu ducuàte e crè pèrde u duplecàte", "Nella vita del giocatore non manca mai dolore: oggi vince un ducato e domani ne perde il doppio"],
+      ["👥", "La mala cumbagnìe pörte a mala vìe", "La cattiva compagnia porta sulla cattiva strada"],
+      ["🏗️", "Ci fràbbeche e sfràbbeche non pèrde màje tiémbe", "Chi fabbrica e sfabbrica non perde mai tempo: chi fa e disfa non perde mai tempo"],
+      ["🌱", "L'àrvele s'addrìzze quànn'è repüdde", "L'albero si raddrizza quando è rampollo"],
+      ["🩹", "U tiémbe uarìsce le ferìte", "Il tempo guarisce le ferite"],
+      ["🏠", "Tant'è da case a cast e tant'è da cast a case", "Tanto è da casa mia a casa tua e tanto è da casa tua a casa mia"],
+      ["👂", "U parète non téne rècchie, ma sende", "Il muro non ha orecchie, ma sente"],
+      ["🩺", "U miédeche vè e véne, ma ci jàve le wàje se le téne", "Il medico va e viene, ma colui che ha i guai se li tiene"],
+      ["👀", "Ci s'assrummàvene le mane accòme s'assròmmene l'uôcchie, nesciüne jér'a fa chiü niénde", "Se si spaventassero le mani come si spaventano gli occhi, nessuno farebbe più niente"],
+      ["🫏", "U ciücce ca non völe sénde non sénde manghe le mazzàte", "L'asino che non vuole sentire non sente neanche le mazzate"],
+      ["🐕", "U cuàne scallàte dall'acqua frevüte s'assròmme de chèra frédde", "Il cane scottato dall'acqua bollente si spaventa dell'acqua fredda"]
     ] }
   };
   Object.keys(GINOSA).forEach(k => { GINOSA[k].key = k; ALL[k] = GINOSA[k]; });
@@ -1290,6 +1315,8 @@
     const S = th.items.length, dn = th.dyn || [], L = S + dn.length, i = idx != null ? idx : n - 1, j = ((i % L) + L) % L;
     if (j >= S) { const r = dn[j - S](n, ctx); if (r) return r; }   // frase viva; se non si può calcolare, una frase fissa
     const it = th.items[j % S];
+    // voce a tre elementi: [emoji, frase in dialetto, traduzione in italiano] → si mostra «dialetto — italiano» e la voce legge l'italiano
+    if (it[2]) return { e: it[0], d: it[1], t: it[2], sp: it[2] };
     return { e: it[0], t: it[1] };
   }
   // Quante frasi ha un tema a elenco (0 per i temi generati dal numero, che sono già tutti diversi).

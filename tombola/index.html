@@ -888,7 +888,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       const pm = state.pmap && state.pmap.key === k ? state.pmap : null;
       const idx = pm ? (pm.map[n] !== undefined ? pm.map[n] : n - 1 + (pm.off || 0)) : undefined;
       const t = TombolaTemi.entry(k, n, idx, { drawn: state.drawn, max: state.max });
-      if (t) return { it: t.t, e: t.e, d: '', sp: t.sp, spk: t.spk };
+      if (t) return { it: t.t, e: t.e, d: t.d || '', sp: t.sp, spk: t.spk };
     }
     const s = SMORFIA[n];
     return kids() ? { it: s.kit, e: s.ke, d: s.soft ? '' : s.d } : { it: s.it, e: s.e, d: s.d };
@@ -1243,7 +1243,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   // Il dispositivo del maestro (host) decide tutto: estrae, distribuisce le cartelle e verifica i premi.
   // I giocatori si collegano con il codice stanza; nessun server di gioco.
   // Versione dell'app (da aggiornare a ogni modifica): compare in alto e in fondo alla pagina, anche sui telefoni dei giocatori.
-  const VERSION = '26.11.2026-h';
+  const VERSION = '26.11.2026-i';
   $('verHead').textContent = 'versione ' + VERSION; $('ver').textContent = 'versione ' + VERSION;
   const PREFIX = 'tombola-clm-';
   const PEER_OPTS = {};
