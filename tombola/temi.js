@@ -327,7 +327,19 @@
       ["🔥", "Ace è il fratello di Rufy"], ["🏴‍☠️", "Barbabianca è uno dei pirati più potenti"], ["🎩", "Shanks il Rosso ha affidato il cappello a Rufy"], ["⚓", "La Marina cerca di fermare i pirati"],
       ["🇯🇵", "One Piece è un manga di Eiichiro Oda"], ["📖", "Il manga One Piece è iniziato nel 1997"], ["📺", "L'anime di One Piece va in onda dal 1999"], ["💰", "I pirati ricercati hanno una taglia sulla testa"],
       ["🧭", "Il Log Pose è la bussola della Grand Line"], ["🏜️", "Alabasta è un regno nel deserto"], ["☁️", "Skypiea è un'isola in mezzo alle nuvole"], ["🐋", "Laboon è una balena gigantesca"],
-      ["🎌", "Wano è un paese ispirato al Giappone antico"], ["🫧", "L'Isola degli Uomini-Pesce si trova sul fondo del mare"], ["🌴", "La ciurma di Cappello di Paglia viaggia di isola in isola"], ["🤝", "In One Piece l'amicizia è più forte di tutto"] ] }
+      ["🎌", "Wano è un paese ispirato al Giappone antico"], ["🫧", "L'Isola degli Uomini-Pesce si trova sul fondo del mare"], ["🌴", "La ciurma di Cappello di Paglia viaggia di isola in isola"], ["🤝", "In One Piece l'amicizia è più forte di tutto"] ] },
+    'minecraft': { name: "Minecraft", icon: '⛏️', levels: ['1', '2', '3', '4', '5', 'adulti'], items: [
+      ["⛏️", "In Minecraft si scava e si costruisce con i blocchi"], ["🧟", "Il Creeper è il mostro verde che esplode"], ["🧍", "Steve e Alex sono i personaggi di Minecraft"], ["💎", "I diamanti servono per fare gli attrezzi più resistenti"],
+      ["🪵", "Si comincia raccogliendo il legno degli alberi"], ["🛏️", "Dormendo nel letto si fa passare la notte"], ["🌙", "Di notte arrivano i mostri"], ["🧟", "Gli zombie compaiono quando è buio"],
+      ["💀", "Gli scheletri sparano con l'arco"], ["🕷️", "I ragni si arrampicano sui muri"], ["🐖", "Si possono allevare maiali, mucche, pecore e galline"], ["🐺", "I lupi si addomesticano con le ossa"],
+      ["🐱", "I gatti si addomesticano con il pesce"], ["🐴", "Il cavallo si doma e poi si cavalca"], ["🔨", "Con il banco da lavoro si costruiscono gli oggetti"], ["⚒️", "Il piccone serve per scavare la pietra"],
+      ["🌋", "La lava è pericolosissima"], ["🏠", "Con i blocchi si può costruire una casa"], ["🌲", "Un bioma è un ambiente: foresta, deserto, giungla..."], ["🔥", "Il Nether è un mondo pieno di fuoco"],
+      ["🐉", "L'Ender Dragon vive nell'End"], ["🟣", "L'Enderman è alto, nero e si teletrasporta"], ["🛡️", "L'armatura protegge il giocatore"], ["❤️", "I cuori sono la vita del giocatore"],
+      ["🍖", "Se hai fame devi mangiare"], ["🧪", "Le pozioni si preparano nel banco di pozioni"], ["🔴", "La redstone serve per costruire circuiti"], ["🚂", "Con le rotaie si costruiscono i binari per i carrelli"],
+      ["🏘️", "Gli abitanti dei villaggi si scambiano oggetti"], ["🟢", "Gli slime sono cubi verdi che saltano"], ["🗡️", "La spada serve a difendersi dai mostri"], ["🎮", "Minecraft è stato creato da Markus Persson, detto Notch"],
+      ["📅", "La versione completa di Minecraft è uscita nel 2011"], ["🏢", "Oggi Minecraft appartiene a Microsoft"], ["🎬", "Nel 2025 è uscito il film di Minecraft"], ["🏫", "Minecraft Education si usa anche a scuola"],
+      ["🧱", "Il mondo di Minecraft è fatto di blocchi cubici"], ["🌍", "Ogni mondo di Minecraft è enorme e creato a caso"], ["🛠️", "In modalità creativa hai blocchi infiniti e puoi volare"], ["⚔️", "In modalità sopravvivenza devi raccogliere risorse e difenderti"],
+      ["👥", "Si può giocare insieme agli amici"] ] }
   };
 
   // ---------- temi per adulti (tombola classica) ----------
