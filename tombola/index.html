@@ -21,7 +21,7 @@ body {
                     radial-gradient(at 100% 0%, rgba(168,85,247,.15), transparent 50%);
   background-attachment: fixed; min-height: 100vh; padding: 16px;
 }
-main { max-width: 1100px; margin: 0 auto; display: grid; gap: 16px; }
+main { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
 h1 { font-size: 1.6rem; letter-spacing: .5px; }
 h1 span { color: var(--gold); }
 h2 { font-size: .8rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 10px; }
@@ -31,7 +31,7 @@ header { display: flex; justify-content: space-between; align-items: center; fle
 .modes { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .modes button.active { background: var(--accent); color: #0b1120; border-color: var(--accent); }
 
-.top { display: grid; gap: 16px; grid-template-columns: 1fr; }
+.top { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 800px) { .top { grid-template-columns: 360px 1fr; } }
 
 .draw { text-align: center; }
@@ -402,7 +402,7 @@ details summary { cursor: pointer; font-weight: 600; }
     <div class="detail" id="playDetail"></div>
     <div class="row">
       <span class="hint">Estrazione dei numeri:</span>
-      <div class="seg" id="srcSeg" style="flex:0 1 560px;grid-template-columns:repeat(2,minmax(200px,1fr))">
+      <div class="seg" id="srcSeg" style="flex:0 1 560px;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr))">
         <button data-src="app"><b>🎰 Con l'app</b><small>L'app estrae a caso</small><small class="ideal">👥 Ideale per: fare in fretta, senza errori</small></button>
         <button data-src="urn"><b>🪣 Urna fisica</b><small>Estrai a mano e segna sul tabellone</small><small class="ideal">👥 Ideale per: l'atmosfera tradizionale</small></button>
       </div>
@@ -414,7 +414,7 @@ details summary { cursor: pointer; font-weight: 600; }
       </label>
     </div>
     <div class="row">
-      <input type="text" id="joinCodeIn" placeholder="Sei un giocatore? Scrivi il codice" maxlength="8" size="28" autocomplete="off">
+      <input type="text" id="joinCodeIn" placeholder="Sei un giocatore? Scrivi il codice" maxlength="8" size="28" style="max-width:100%;box-sizing:border-box" autocomplete="off">
       <button id="joinGo">Entra nella stanza</button>
     </div>
   </section>
@@ -450,6 +450,7 @@ details summary { cursor: pointer; font-weight: 600; }
           <button id="urnUndo">↩ Annulla ultimo</button>
         </div>
         <p class="hint" style="margin-top:8px">Estrai dall'urna, poi tocca il numero sul tabellone o scrivilo qui.</p>
+        <p class="hint" style="margin-top:6px">Stai usando l'<b>urna fisica</b>: i pulsanti Estrai e Auto sono nascosti. <button id="urnBack" style="padding:4px 10px">🎱 Estrai con l'app</button></p>
       </div>
       <div class="btns">
         <button class="primary host-only" id="drawBtn">Estrai</button>
@@ -478,7 +479,7 @@ details summary { cursor: pointer; font-weight: 600; }
 
     <div class="panel">
       <h2>Tabellone</h2>
-      <div class="row host-only adult-only" id="sezRow" style="margin-bottom:10px">
+      <div class="row host-only adult-only" id="sezRow" style="margin-bottom:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
         <label class="hint" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="sezOn"> 🧩 Tabellone a sezioni: le 6 sezioni da 15 numeri (blocchi 3×5) sono le cartelle del gestore, che può vincere anche lui</label>
         <input type="text" id="gestoreName" maxlength="20" size="14" placeholder="Nome del gestore">
         <button id="sezNew" title="Passa il tabellone a un altro gestore">🔄 Cambia gestore</button>
@@ -1536,6 +1537,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   $('urnAdd').onclick = urnSubmit;
   $('urnNum').onkeydown = e => { if (e.key === 'Enter') urnSubmit(); };
   $('urnUndo').onclick = undoLast;
+  $('urnBack').onclick = () => setSource('app');
   $('board').addEventListener('click', ev => {
     const c = ev.target.closest('[data-n]');
     if (c && !isPlayer && state.source === 'urn') urnAdd(+c.dataset.n);
