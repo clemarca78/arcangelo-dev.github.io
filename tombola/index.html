@@ -161,6 +161,11 @@ body.lim .credit { display: none; }
 .adult-only { display: block; }
 body.kids .adult-only { display: none; }
 .kid-only { display: none; }
+/* lettura QR con la fotocamera */
+#scanDlg { border: 1px solid var(--border); border-radius: 16px; background: var(--bg); color: var(--text); padding: 14px; width: min(92vw, 520px); }
+#scanDlg::backdrop { background: rgba(0,0,0,.75); }
+#scanDlg video { width: 100%; max-height: 60vh; border-radius: 10px; background: #000; display: block; }
+#scanDlg .row { justify-content: space-between; }
 /* animazione dell'estrazione */
 #drawAnim { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; background: rgba(11,17,32,.86); cursor: pointer; }
 #drawAnim[hidden] { display: none; }
@@ -244,6 +249,11 @@ details summary { cursor: pointer; font-weight: 600; }
 </head>
 <body>
 <div id="toast"></div>
+<dialog id="scanDlg">
+  <video id="scanVideo" playsinline muted></video>
+  <p class="hint" id="scanMsg" style="margin:10px 0 0">Inquadra il QR code stampato sulla cartella.</p>
+  <div class="row"><button id="scanStop">Chiudi</button></div>
+</dialog>
 <div id="drawAnim" hidden aria-hidden="true">
   <div class="stage">
     <div class="da-bubble" id="daBubble"></div>
@@ -378,6 +388,7 @@ details summary { cursor: pointer; font-weight: 600; }
     <div class="row">
       <input type="text" id="chkId" placeholder="Codice cartella (es. C4821-3)" maxlength="14" size="26" autocomplete="off">
       <button id="chkBtn">Controlla</button>
+      <button id="scanBtn">📷 Scansiona QR</button>
     </div>
     <div id="chkOut"></div>
   </section>
@@ -1297,6 +1308,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
         v.append(b);
       }
     });
+    if (!state.drawn.length) box.append(el('div', 'hint', 'Nessun numero è ancora uscito in questa partita (oppure la partita è su un altro dispositivo).'));
     box.append(v); out.append(box);
   }
   $('printBtn').onclick = () => window.open(`stampa.html?mode=${state.mode}&max=${state.max}&cols=${state.cols}&theme=${state.theme}&serie=${TombolaCards.randomSerie()}`, '_blank');
@@ -1312,8 +1324,8 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       ["I premi", "Automatici: compaiono nel riquadro Premi con il nome della cartella che li ha fatti."],
       ["Da sapere", "Giochi con le tue cartelle (da 1 a 6). Se vuoi far giocare altre persone, ognuna con la propria cartella, scegli Carta, Dispositivi o Mista."] ],
     paper: [
-      ["Come funziona", "Stampi le cartelle dal pulsante «Stampa cartelle»: ognuna ha un codice. I giocatori segnano i numeri a mano. Quando qualcuno chiama un premio, digiti il suo codice: l'app mostra la cartella con i numeri usciti e ti dice se il premio è valido."],
-      ["Cosa serve", "Una stampante e un dispositivo per chi estrae (meglio se collegato a una LIM o a un proiettore). I giocatori non hanno bisogno di alcun dispositivo."],
+      ["Come funziona", "Stampi le cartelle dal pulsante «Stampa cartelle»: ognuna ha un codice e un QR code. I giocatori segnano i numeri a mano. Quando qualcuno chiama un premio, premi «📷 Scansiona QR» e inquadra il QR sulla sua cartella (oppure digita il codice): l'app mostra la cartella con i numeri usciti e ti dice se il premio è valido."],
+      ["Cosa serve", "Una stampante e un dispositivo per chi estrae (meglio se collegato a una LIM o a un proiettore). Per scansionare i QR serve la fotocamera di quel dispositivo e il gioco aperto da internet. I giocatori non hanno bisogno di alcun dispositivo."],
       ["I premi", "Li assegni tu, dopo il controllo, con «Assegna». Oppure tocchi il premio nel riquadro Premi per segnarlo a mano."],
       ["Da sapere", "Controlla con la stessa modalità e gli stessi numeri per riga con cui hai stampato: se non coincidono, l'app ti avvisa."] ],
     devices: [
@@ -1322,7 +1334,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       ["I premi", "Chiamati dai giocatori e controllati in automatico: il primo premio valido vince, chi sbaglia riceve «Falso allarme!»."],
       ["Da sapere", "Puoi giocare anche tu con «Gioco anch'io» (nel pannello Multiplayer). Fino a 40 giocatori. Se chi estrae chiude la pagina, la stanza si riapre con lo stesso codice."] ],
     mixed: [
-      ["Come funziona", "È «Dispositivi» più «Carta»: chi ha il tablet entra nella stanza e chiama i premi dal suo schermo, chi ha il foglio alza la mano e tu controlli il suo codice."],
+      ["Come funziona", "È «Dispositivi» più «Carta»: chi ha il tablet entra nella stanza e chiama i premi dal suo schermo, chi ha il foglio alza la mano e tu inquadri il QR sulla sua cartella con «📷 Scansiona QR» (o digiti il codice)."],
       ["Cosa serve", "Internet per i dispositivi e una stampante per le cartelle di carta."],
       ["I premi", "Vince il primo premio valido, in qualunque modo sia chiamato: dal tablet, a voce con il codice o toccandolo a mano."],
       ["Da sapere", "Un premio assegnato da un lato compare subito anche sull'altro, e sparisce dai pulsanti sulle cartelle dei giocatori."] ]
@@ -1566,6 +1578,63 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   };
   $('mtCancel').onclick = () => { editingKey = null; $('mtName').value = ''; $('mtText').value = ''; $('mtMsg').textContent = ''; };
 
+  // ---------- lettura del QR sulle cartelle di carta ----------
+  // Il QR contiene un link con il codice (…/tombola/?v=C4821-3): lo si legge con la fotocamera e si controllano i premi.
+  let camStream = null, scanning = false, zxP = null;
+  const loadZX = () => zxP || (zxP = new Promise((res, rej) => {
+    const sc = document.createElement('script'); sc.src = 'lib/zxing.min.js'; sc.onload = () => res(window.ZXing); sc.onerror = rej; document.head.append(sc);
+  }));
+  function codeFromScan(text) {
+    const t = String(text || '').trim(), m = t.match(/[?&]v=([A-Za-z0-9-]+)/), raw = (m ? m[1] : t).toUpperCase();
+    return TombolaCards.cardFromId(raw) ? raw : null;
+  }
+  function stopScan() {
+    scanning = false;
+    if (camStream) { camStream.getTracks().forEach(t => t.stop()); camStream = null; }
+    if ($('scanDlg').open) $('scanDlg').close();
+  }
+  function scanned(code) {
+    stopScan();
+    try { navigator.vibrate && navigator.vibrate(60); } catch (e) {}
+    TombolaStats.track('controllo/qr');
+    $('chkId').value = code; checkPaperCard();
+    $('chkOut').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  async function startScan() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      alert('La fotocamera funziona solo quando il gioco è aperto da internet (https). In alternativa digita il codice scritto sulla cartella.'); return;
+    }
+    try { camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false }); }
+    catch (e) { alert('Non riesco ad accedere alla fotocamera. Controlla i permessi del browser oppure digita il codice a mano.'); return; }
+    const video = $('scanVideo'); video.srcObject = camStream; await video.play().catch(() => {});
+    $('scanMsg').textContent = 'Inquadra il QR code stampato sulla cartella.'; $('scanDlg').showModal(); scanning = true;
+    const det = 'BarcodeDetector' in window ? new BarcodeDetector({ formats: ['qr_code'] }) : null;
+    let Z = null, reader = null; const canvas = document.createElement('canvas');
+    if (!det) { Z = await loadZX(); reader = new Z.MultiFormatReader(); reader.setHints(new Map([[Z.DecodeHintType.TRY_HARDER, true], [Z.DecodeHintType.POSSIBLE_FORMATS, [Z.BarcodeFormat.QR_CODE]]])); }
+    const tick = async () => {
+      if (!scanning) return;
+      let text = null;
+      try {
+        if (det) { const r = await det.detect(video); if (r.length) text = r[0].rawValue; }
+        else if (video.videoWidth) {
+          const k = Math.min(1, 800 / video.videoWidth); canvas.width = Math.round(video.videoWidth * k); canvas.height = Math.round(video.videoHeight * k);
+          canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+          text = reader.decode(new Z.BinaryBitmap(new Z.HybridBinarizer(new Z.HTMLCanvasElementLuminanceSource(canvas)))).getText();
+        }
+      } catch (e) {}   // nessun QR in questo fotogramma
+      if (text) {
+        const code = codeFromScan(text);
+        if (code) { scanned(code); return; }
+        $('scanMsg').textContent = 'Questo QR non è una cartella della Tombola. Riprova.';
+      }
+      setTimeout(tick, 200);
+    };
+    tick();
+  }
+  $('scanBtn').onclick = startScan;
+  $('scanStop').onclick = stopScan;
+  $('scanDlg').addEventListener('cancel', stopScan);
+
   load();
   registerCustom();
   fillThemeSel();
@@ -1589,6 +1658,16 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     render();
     renderRoom();
     if (state.room) openRoom(state.room.code, 0);
+  }
+  // Link dal QR di una cartella (?v=CODICE) aperto sul dispositivo di chi estrae: controlla subito i premi
+  if (!isPlayer && Q.get('v')) {
+    const code = codeFromScan(Q.get('v'));
+    try { history.replaceState(null, '', location.pathname); } catch (e) {}
+    if (code) {
+      $('chkId').value = code;
+      if (state.play === 'paper' || state.play === 'mixed') { checkPaperCard(); $('chkOut').scrollIntoView({ block: 'center' }); }
+      else toast('Cartella ' + code + ': per controllarla scegli la modalità Carta o Mista in «Come giocate?»');
+    }
   }
 })();
 </script>
