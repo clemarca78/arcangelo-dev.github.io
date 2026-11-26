@@ -106,6 +106,26 @@ select { font: inherit; background: var(--bg); color: var(--text); border: 1px s
 @keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
 .only-kids { display: none; }
 .kids .only-kids { display: flex; }
+.opt-auto { display: none; }
+.kids .opt-auto, .player .opt-auto { display: flex; }
+body.player .host-only, body.inroom .host-cards, body.nojoin .needs-join { display: none !important; }
+#joinPanel { display: none; max-width: 420px; margin: 0 auto; width: 100%; text-align: center; }
+body.nojoin #joinPanel { display: block; }
+#joinPanel input { width: 100%; margin: 10px 0; font-size: 1.2rem; text-align: center; }
+input[type=text] { font: inherit; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 10px; }
+.claims { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
+.claims button { padding: 5px 9px; font-size: .78rem; background: #1e1b4b; color: #fef3c7; border-color: #1e1b4b; }
+.room { display: grid; gap: 18px; grid-template-columns: 1fr; }
+@media (min-width: 700px) { .room { grid-template-columns: 220px 1fr; } }
+.room-code { font-size: 2.6rem; font-weight: 800; letter-spacing: 6px; color: var(--gold); line-height: 1.1; }
+.qr { background: #fff; padding: 8px; border-radius: 12px; width: 200px; height: 200px; }
+.qr svg { width: 100%; height: 100%; display: block; }
+.plist { display: grid; gap: 6px; margin-top: 10px; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+.plist div { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 10px; font-size: .9rem; }
+.dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); flex: none; }
+.dot.on { background: var(--green); }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+.err { color: var(--pink); font-size: .9rem; margin-top: 8px; }
 
 #toast {
   position: fixed; left: 50%; top: 24px; transform: translate(-50%, -150%); z-index: 10;
@@ -132,31 +152,42 @@ details summary { cursor: pointer; font-weight: 600; }
 <main>
   <header>
     <h1>🎱 <span>Tombola</span></h1>
-    <div class="modes">
+    <div class="modes host-only">
       <button id="modeClassic">Classica</button>
       <button id="modeKids">🧒 Bambini</button>
       <label class="only-kids" style="gap:6px;align-items:center;color:var(--muted);font-size:.9rem">Numeri fino a
         <select id="maxSel"><option value="30">30</option><option value="60">60</option><option value="90">90</option></select>
       </label>
     </div>
-    <div class="counter" id="counter"></div>
+    <div class="counter"><span id="netStatus"></span> <span id="counter"></span></div>
   </header>
 
-  <section class="top">
+  <section class="panel" id="joinPanel">
+    <h2>Entra nella stanza <span id="joinCode"></span></h2>
+    <input type="text" id="joinName" maxlength="20" placeholder="Il tuo nome" autocomplete="off">
+    <button class="primary" id="joinBtn">Entra</button>
+  </section>
+
+  <section class="panel host-only" id="roomPanel">
+    <h2>Multiplayer</h2>
+    <div id="roomBody"></div>
+  </section>
+
+  <section class="top needs-join">
     <div class="panel draw">
       <h2>Estrazione</h2>
       <div class="ball empty" id="ball">–</div>
       <div class="info" id="info"></div>
       <div class="btns">
-        <button class="primary" id="drawBtn">Estrai</button>
-        <button id="autoBtn">▶ Auto</button>
-        <button id="resetBtn">Nuova partita</button>
+        <button class="primary host-only" id="drawBtn">Estrai</button>
+        <button class="host-only" id="autoBtn">▶ Auto</button>
+        <button class="host-only" id="resetBtn">Nuova partita</button>
       </div>
       <div class="opts">
         <label><input type="checkbox" id="speak" checked> Voce</label>
         <label><input type="checkbox" id="smorfia" checked> Smorfia</label>
-        <label class="only-kids"><input type="checkbox" id="autoMark"> Segna da solo</label>
-        <label>Ritmo
+        <label class="opt-auto"><input type="checkbox" id="autoMark"> Segna da solo</label>
+        <label class="host-only">Ritmo
           <select id="speed">
             <option value="2500">Veloce</option>
             <option value="5000" selected>Normale</option>
@@ -165,7 +196,7 @@ details summary { cursor: pointer; font-weight: 600; }
         </label>
       </div>
       <div class="history" id="history"></div>
-      <p class="hint" style="margin-top:8px">Barra spaziatrice = estrai</p>
+      <p class="hint host-only" style="margin-top:8px">Barra spaziatrice = estrai</p>
     </div>
 
     <div class="panel">
@@ -174,25 +205,25 @@ details summary { cursor: pointer; font-weight: 600; }
     </div>
   </section>
 
-  <section class="panel">
+  <section class="panel needs-join">
     <h2>Premi</h2>
     <div class="prizes" id="prizes"></div>
     <div id="log" style="margin-top:12px"></div>
   </section>
 
-  <section class="panel">
+  <section class="panel needs-join host-cards">
     <h2>Le tue cartelle</h2>
-    <div class="cards-bar">
+    <div class="cards-bar host-only">
       <label>Quante cartelle:
         <select id="nCards"></select>
       </label>
       <button id="newCards">Cambia cartelle</button>
-      <span class="hint" id="cardsHint"></span>
-    </div>
+      </div>
+    <p class="hint" id="cardsHint" style="margin-bottom:10px"></p>
     <div class="cards" id="cards"></div>
   </section>
 
-  <section class="panel">
+  <section class="panel needs-join">
     <details>
       <summary>📖 Tutta la smorfia napoletana</summary>
       <div class="smgrid" id="smgrid"></div>
@@ -200,6 +231,8 @@ details summary { cursor: pointer; font-weight: 600; }
   </section>
 </main>
 
+<script src="lib/peerjs.min.js"></script>
+<script src="lib/qrcode.js"></script>
 <script>
 (() => {
   // ---------- La smorfia napoletana ----------
@@ -320,9 +353,12 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   }
 
   // ---------- stato ----------
-  const KEY = 'tombola-proto-v2';
+  const Q = new URLSearchParams(location.search);
+  const ROOM_CODE = (Q.get('stanza') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+  const isPlayer = !!ROOM_CODE;
+  const KEY = isPlayer ? 'tombola-player-' + ROOM_CODE : 'tombola-proto-v2';
   const $ = id => document.getElementById(id);
-  let state = { mode: 'classic', max: 90, drawn: [], cards: [], marks: [], won: {}, autoMark: false };
+  let state = { mode: 'classic', max: 90, drawn: [], cards: [], marks: [], won: {}, autoMark: false, gen: 0, room: null, token: '', pname: '' };
   let timer = null;
   const kids = () => state.mode === 'kids';
   const prizes = () => kids()
@@ -333,7 +369,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   const load = () => {
     try {
       const s = JSON.parse(localStorage.getItem(KEY));
-      if (s && Array.isArray(s.drawn) && Array.isArray(s.cards) && s.cards.length) state = Object.assign(state, s);
+      if (s && Array.isArray(s.drawn) && Array.isArray(s.cards) && (s.cards.length || isPlayer)) state = Object.assign(state, s);
     } catch (e) {}
   };
 
@@ -375,12 +411,14 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   // numeri considerati "segnati" su una cartella
   function marked(i) {
     const out = new Set(state.drawn);
+    if (isPlayer) return state.autoMark ? out : new Set(state.marks[i] || []);
     if (!kids() || state.autoMark) return out;
-    return new Set(state.marks[i]);
+    return new Set(state.marks[i] || []);
   }
 
   // ---------- estrazione ----------
   function draw() {
+    if (isPlayer) return;
     const out = new Set(state.drawn), r = [];
     for (let n = 1; n <= state.max; n++) if (!out.has(n)) r.push(n);
     if (!r.length) { stopAuto(); return; }
@@ -388,7 +426,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     state.drawn.push(n);
     say(n);
     checkPrizes();
-    save(); render(true);
+    save(); render(true); broadcast();
     if (state.drawn.length >= state.max) stopAuto();
   }
   function entry(n) {
@@ -409,6 +447,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   // ---------- premi ----------
   // Ambo/terno/quaterna/cinquina valgono su una riga; tombola = tutta la cartella.
   function checkPrizes() {
+    if (isPlayer || state.room) return; // in stanza i premi si assegnano a chiamata
     const size = kids() ? 9 : 15;
     state.cards.forEach((g, i) => {
       const m = marked(i);
@@ -457,9 +496,11 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     $('modeKids').classList.toggle('active', kids());
     $('maxSel').value = state.max;
     $('autoMark').checked = !!state.autoMark;
-    $('cardsHint').textContent = kids() && !state.autoMark
-      ? 'Tocca i numeri sulla cartella quando escono!'
-      : 'I numeri estratti si segnano da soli.';
+    $('cardsHint').textContent = isPlayer
+      ? (state.autoMark ? 'I numeri estratti si segnano da soli. Chiama il premio quando lo hai!' : 'Tocca i numeri sulla cartella quando escono. Hai un premio? Chiamalo!')
+      : kids() && !state.autoMark
+        ? 'Tocca i numeri sulla cartella quando escono!'
+        : 'I numeri estratti si segnano da soli.';
 
     const out = new Set(state.drawn), last = state.drawn[state.drawn.length - 1];
     const ball = $('ball');
@@ -486,7 +527,8 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       const d = document.createElement('div');
       const w = state.won[p.n];
       d.className = 'prize' + (w ? ' won' : '');
-      d.innerHTML = `<b>${p.name}</b>${w || 'in palio'}`;
+      const b = document.createElement('b'); b.textContent = p.name;
+      d.append(b, w || 'in palio');
       $('prizes').appendChild(d);
     });
 
@@ -507,7 +549,17 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
         }
         gr.appendChild(d);
       });
-      c.appendChild(gr); $('cards').appendChild(c);
+      c.appendChild(gr);
+      if (isPlayer) {
+        const cl = document.createElement('div'); cl.className = 'claims';
+        prizes().filter(p => !state.won[p.n]).forEach(p => {
+          const bt = document.createElement('button');
+          bt.dataset.claim = p.n; bt.dataset.card = i; bt.textContent = '📣 ' + p.name;
+          cl.appendChild(bt);
+        });
+        c.appendChild(cl);
+      }
+      $('cards').appendChild(c);
     });
 
     renderSmorfia();
@@ -524,14 +576,17 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
 
   // ---------- tocco sulla cartella (modalità bambini) ----------
   $('cards').addEventListener('click', ev => {
+    const cb = ev.target.closest('[data-claim]');
+    if (cb && isPlayer) { send({ t: 'claim', prize: +cb.dataset.claim, card: +cb.dataset.card }); return; }
     const t = ev.target.closest('[data-n]');
-    if (!t || !kids() || state.autoMark) return;
+    if (!t || !(kids() || isPlayer) || state.autoMark) return;
     const n = +t.dataset.n, i = +t.dataset.card;
     if (!state.drawn.includes(n)) {
       t.classList.remove('shake'); void t.offsetWidth; t.classList.add('shake');
       toast(`Il ${n} non è ancora uscito! 🔍`);
       return;
     }
+    if (!state.marks[i]) state.marks[i] = [];
     if (!state.marks[i].includes(n)) state.marks[i].push(n);
     checkPrizes(); save(); render();
   });
@@ -547,9 +602,9 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   function reset(msg) {
     stopAuto();
     try { speechSynthesis.cancel(); } catch (e) {}
-    state.drawn = []; state.won = {}; logLines.length = 0;
+    state.drawn = []; state.won = {}; state.gen = (state.gen || 0) + 1; logLines.length = 0;
     log(msg || 'Nuova partita. Buona fortuna!');
-    makeCards(); save(); render();
+    makeCards(); dealAll(); save(); render(); broadcast();
   }
   function setMode(m) {
     if (state.mode === m) return;
@@ -575,17 +630,225 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     state.max = +$('maxSel').value; reset();
   };
   $('autoMark').onchange = () => { state.autoMark = $('autoMark').checked; checkPrizes(); save(); render(); };
+  $('autoMark').title = 'Segna da solo i numeri estratti';
   document.addEventListener('keydown', e => {
-    if (e.code === 'Space' && !/SELECT|INPUT|BUTTON/.test(e.target.tagName)) { e.preventDefault(); draw(); }
+    if (!isPlayer && e.code === 'Space' && !/SELECT|INPUT|BUTTON/.test(e.target.tagName)) { e.preventDefault(); draw(); }
   });
 
   for (let i = 1; i <= 6; i++) { const o = document.createElement('option'); o.value = i; o.textContent = i; $('nCards').appendChild(o); }
   $('nCards').value = 2;
 
+  // ---------- multiplayer peer-to-peer (PeerJS) ----------
+  // Il dispositivo del maestro (host) decide tutto: estrae, distribuisce le cartelle e verifica i premi.
+  // I giocatori si collegano con il codice stanza; nessun server di gioco.
+  const PREFIX = 'tombola-clm-';
+  const PEER_OPTS = {};
+  if (Q.get('peerhost')) Object.assign(PEER_OPTS, { host: Q.get('peerhost'), port: +Q.get('peerport') || 9000, secure: Q.get('peersecure') === '1', path: '/' });
+  const CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const newCode = () => Array.from({ length: 4 }, () => CHARS[Math.floor(Math.random() * CHARS.length)]).join('');
+  const newToken = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
+  let peer = null, hostConn = null, retryT = null, roomError = '';
+  const conns = {};   // host: token -> connessione
+
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const setStatus = t => { $('netStatus').textContent = t; };
+
+  // ----- host -----
+  function dealCards() {
+    return Array.from({ length: state.room.perPlayer }, () => kids() ? kidCard(state.max) : classicCard());
+  }
+  function dealAll() { if (state.room) Object.values(state.room.players).forEach(p => p.cards = dealCards()); }
+  function snapshot(token) {
+    const p = state.room.players[token];
+    return { t: 'state', mode: state.mode, max: state.max, drawn: state.drawn, won: state.won, gen: state.gen, cards: p.cards };
+  }
+  function sendTo(token, msg) { const c = conns[token]; if (c && c.open) { try { c.send(msg); } catch (e) {} } }
+  function broadcast() { if (state.room) Object.keys(conns).forEach(t => state.room.players[t] && sendTo(t, snapshot(t))); }
+  function broadcastMsg(msg) { Object.keys(conns).forEach(t => sendTo(t, msg)); }
+
+  function createRoom() {
+    state.room = { code: newCode(), perPlayer: 2, players: {} };
+    openRoom(state.room.code, 0); save();
+  }
+  function openRoom(code, tries) {
+    if (typeof Peer === 'undefined') { roomError = 'Libreria di rete non caricata.'; renderRoom(); return; }
+    if (peer) { try { peer.destroy(); } catch (e) {} }
+    const pr = peer = new Peer(PREFIX + code, PEER_OPTS);
+    pr.on('open', () => { state.room.code = code; roomError = ''; save(); renderRoom(); });
+    pr.on('connection', onConn);
+    pr.on('disconnected', () => { try { pr.reconnect(); } catch (e) {} });
+    pr.on('error', e => {
+      if (e.type === 'unavailable-id') {
+        if (tries < 5 && Object.keys(state.room.players).length) setTimeout(() => state.room && openRoom(code, tries + 1), 3000);
+        else { state.room.code = newCode(); openRoom(state.room.code, 0); }
+        return;
+      }
+      roomError = 'Problema di rete (' + (e.type || e.message) + '). Controlla la connessione.'; renderRoom();
+    });
+    renderRoom();
+  }
+  function onConn(c) {
+    c.on('data', m => { try { hostMsg(c, m); } catch (e) {} });
+    c.on('close', () => { if (c.token && conns[c.token] === c) { delete conns[c.token]; renderRoom(); } });
+  }
+  function hostMsg(c, m) {
+    if (!m || !state.room) return;
+    if (m.t === 'join') {
+      const token = String(m.token || '').slice(0, 40);
+      const name = String(m.name || '').trim().slice(0, 20) || 'Giocatore';
+      if (!token) return;
+      const P = state.room.players;
+      if (!P[token]) {
+        if (Object.keys(P).length >= 40) { try { c.send({ t: 'full' }); } catch (e) {} return; }
+        P[token] = { name, cards: dealCards() };
+        log(`👋 ${name} è entrato`);
+      }
+      P[token].name = name; c.token = token;
+      if (conns[token] && conns[token] !== c) { try { conns[token].close(); } catch (e) {} }
+      conns[token] = c; save(); renderRoom(); sendTo(token, snapshot(token));
+    } else if (m.t === 'claim' && c.token) {
+      claim(c.token, +m.prize, +m.card);
+    }
+  }
+  // Verifica di un premio chiamato da un giocatore (conta solo ciò che è davvero uscito).
+  function claim(token, n, i) {
+    const p = state.room.players[token], pr = prizes().find(x => x.n === n), card = p && p.cards[i];
+    if (!pr || !card) return;
+    if (state.won[n]) { sendTo(token, { t: 'toast', text: `${pr.name} è già stato assegnato` }); return; }
+    const m = new Set(state.drawn), size = kids() ? 9 : 15;
+    const best = Math.max(...card.map(r => r.filter(x => x && m.has(x)).length));
+    const total = card.flat().filter(x => x && m.has(x)).length;
+    if (!(n === size ? total === size : best >= n)) {
+      sendTo(token, { t: 'toast', text: 'Falso allarme! Controlla bene i numeri 🧐' });
+      log(`❌ ${p.name}: falso allarme (${pr.name})`);
+      return;
+    }
+    state.won[n] = `${p.name} · Cartella ${i + 1}`;
+    const text = `🎉 ${pr.name} a ${p.name}!`;
+    log(text, true); toast(text); broadcastMsg({ t: 'toast', text });
+    save(); render(); broadcast();
+  }
+  function closeRoom() {
+    if (!confirm('Chiudere la stanza? I giocatori verranno scollegati.')) return;
+    broadcastMsg({ t: 'closed' });
+    Object.values(conns).forEach(c => { try { c.close(); } catch (e) {} });
+    Object.keys(conns).forEach(k => delete conns[k]);
+    try { peer.destroy(); } catch (e) {}
+    peer = null; state.room = null; roomError = ''; save(); renderRoom(); render();
+  }
+  function roomLink() {
+    let u = location.origin + location.pathname + '?stanza=' + state.room.code;
+    ['peerhost', 'peerport', 'peersecure'].forEach(k => { if (Q.get(k)) u += `&${k}=${encodeURIComponent(Q.get(k))}`; });
+    return u;
+  }
+  function renderRoom() {
+    document.body.classList.toggle('inroom', !!state.room && !isPlayer);
+    if (isPlayer) return;
+    const box = $('roomBody'); box.innerHTML = '';
+    if (!state.room) {
+      setStatus('');
+      box.append(el('p', 'hint', 'Crea una stanza: i giocatori entrano dal loro telefono o tablet con un codice e ricevono le cartelle. Tu estrai i numeri e controlli i premi.'));
+      const row = el('div', 'row');
+      const b = el('button', 'primary', '👥 Crea stanza'); b.onclick = createRoom;
+      const inp = el('input'); inp.type = 'text'; inp.placeholder = 'Hai un codice?'; inp.maxLength = 8; inp.size = 10;
+      const go = el('button', null, 'Entra come giocatore');
+      go.onclick = () => { const c = inp.value.trim().toUpperCase(); if (c) location.search = '?stanza=' + encodeURIComponent(c); };
+      row.append(b, inp, go); box.append(row);
+      if (roomError) box.append(el('div', 'err', roomError));
+      return;
+    }
+    const R = state.room, players = Object.entries(R.players);
+    const online = players.filter(([t]) => conns[t] && conns[t].open).length;
+    setStatus(`Stanza ${R.code} · ${online}/${players.length} giocatori online ·`);
+    const wrap = el('div', 'room');
+    const left = el('div'); const qr = el('div', 'qr');
+    try { const q = qrcode(0, 'M'); q.addData(roomLink()); q.make(); qr.innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); } catch (e) {}
+    left.append(qr);
+    const right = el('div');
+    right.append(el('div', 'hint', 'Codice stanza'), el('div', 'room-code', R.code));
+    const link = el('input'); link.type = 'text'; link.readOnly = true; link.value = roomLink(); link.style.width = '100%'; link.style.marginTop = '8px';
+    link.onfocus = () => link.select();
+    right.append(link);
+    const row = el('div', 'row');
+    const cp = el('button', null, '📋 Copia link');
+    cp.onclick = () => { try { navigator.clipboard.writeText(roomLink()); cp.textContent = '✓ Copiato'; } catch (e) { link.select(); } };
+    const sel = el('select'); for (let i = 1; i <= 4; i++) { const o = el('option', null, i); o.value = i; sel.appendChild(o); }
+    sel.value = R.perPlayer; sel.onchange = () => { R.perPlayer = +sel.value; save(); };
+    const lab = el('label', 'hint'); lab.append('Cartelle a giocatore (dalla prossima partita): ', sel);
+    const cl = el('button', null, 'Chiudi stanza'); cl.onclick = closeRoom;
+    row.append(cp, lab, cl); right.append(row);
+    if (roomError) right.append(el('div', 'err', roomError));
+    const list = el('div', 'plist');
+    if (!players.length) list.append(el('p', 'hint', 'In attesa dei giocatori… fai scansionare il QR o condividi il codice.'));
+    players.forEach(([t, p]) => { const d = el('div'); d.append(el('span', 'dot' + (conns[t] && conns[t].open ? ' on' : '')), p.name); list.appendChild(d); });
+    right.append(list);
+    wrap.append(left, right); box.append(wrap);
+  }
+
+  // ----- giocatore -----
+  function send(m) { if (hostConn && hostConn.open) { try { hostConn.send(m); } catch (e) {} } }
+  function playerRetry(msg) {
+    setStatus('🔴 ' + msg); clearTimeout(retryT); retryT = setTimeout(playerConnect, 4000);
+  }
+  function playerConnect() {
+    clearTimeout(retryT);
+    if (typeof Peer === 'undefined') { setStatus('🔴 Libreria di rete non caricata'); return; }
+    setStatus('Connessione…');
+    if (peer) { try { peer.destroy(); } catch (e) {} }
+    const pr = peer = new Peer(PEER_OPTS);
+    pr.on('open', () => {
+      const c = hostConn = pr.connect(PREFIX + ROOM_CODE, { reliable: true, serialization: 'json' });
+      c.on('open', () => c.send({ t: 'join', token: state.token, name: state.pname }));
+      c.on('data', playerMsg);
+      c.on('close', () => { if (hostConn === c) playerRetry('Connessione persa, riprovo…'); });
+    });
+    pr.on('error', e => {
+      playerRetry(e.type === 'peer-unavailable' ? 'Stanza non trovata: il maestro l\'ha aperta?' : 'Problema di rete, riprovo…');
+    });
+  }
+  function playerMsg(m) {
+    if (!m) return;
+    if (m.t === 'state') {
+      const prev = state.drawn.length;
+      if (m.gen !== state.gen || state.marks.length !== m.cards.length) state.marks = m.cards.map(() => []);
+      Object.assign(state, { mode: m.mode, max: m.max, drawn: m.drawn, won: m.won, gen: m.gen, cards: m.cards });
+      if (!state.drawn.length) { logLines.length = 0; log('Nuova partita. Buona fortuna!'); }
+      save(); setStatus(`🟢 Stanza ${ROOM_CODE} · ${state.pname} ·`);
+      const fresh = m.drawn.length === prev + 1;
+      render(fresh);
+      if (fresh) say(m.drawn[m.drawn.length - 1]);
+    } else if (m.t === 'toast') { toast(m.text); log(m.text, true); }
+    else if (m.t === 'closed') { setStatus('⚪ La stanza è stata chiusa'); clearTimeout(retryT); hostConn = null; }
+    else if (m.t === 'full') { setStatus('La stanza è piena'); }
+  }
+  function startPlayer() {
+    document.body.classList.add('player');
+    $('speak').checked = false;                 // la voce la fa il dispositivo del maestro
+    $('joinCode').textContent = ROOM_CODE;
+    if (!state.token) { state.token = newToken(); save(); }
+    $('joinName').value = state.pname || '';
+    const go = () => {
+      const n = $('joinName').value.trim(); if (!n) return;
+      state.pname = n.slice(0, 20); save();
+      document.body.classList.remove('nojoin'); playerConnect();
+    };
+    $('joinBtn').onclick = go;
+    $('joinName').onkeydown = e => { if (e.key === 'Enter') go(); };
+    if (state.pname) playerConnect(); else document.body.classList.add('nojoin');
+    render();
+  }
+
   load();
-  if (!state.cards.length) makeCards(); else $('nCards').value = state.cards.length;
-  log(state.drawn.length ? 'Partita ripresa.' : 'Premi "Estrai" per iniziare.');
-  render();
+  if (isPlayer) {
+    log('In attesa dei numeri…');
+    startPlayer();
+  } else {
+    if (!state.cards.length) makeCards(); else $('nCards').value = state.cards.length;
+    log(state.drawn.length ? 'Partita ripresa.' : 'Premi "Estrai" per iniziare.');
+    render();
+    renderRoom();
+    if (state.room) openRoom(state.room.code, 0);
+  }
 })();
 </script>
 </body>
