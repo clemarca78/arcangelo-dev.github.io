@@ -375,6 +375,23 @@
       ["🗻", "Il Monte Fuji è il simbolo del Giappone"], ["🎋", "Il Tanabata è la festa delle stelle del Giappone"], ["🏆", "Il Giappone ha dato al mondo manga e videogiochi"], ["✏️", "Un mangaka è chi disegna i manga"] ] }
   };
 
+  // ---------- la legge di Murphy ----------
+  const MURPHY = {
+    'murphy': { name: "La legge di Murphy", icon: '🍞', levels: ['4', '5', 'adulti'], items: [
+      ["😬", "Se qualcosa può andare storto, lo farà"], ["🔧", "Se c'è un modo di fare una cosa sbagliata, qualcuno lo troverà"], ["🍞", "Il pane col burro cade sempre dalla parte del burro"], ["🛒", "La fila accanto alla tua avanza sempre più in fretta"],
+      ["🚿", "Il telefono squilla proprio quando sei sotto la doccia"], ["🚗", "Appena lavi la macchina, comincia a piovere"], ["🔑", "Le chiavi sono sempre nell'ultimo posto in cui guardi"], ["🖊️", "La penna smette di scrivere proprio quando devi firmare"],
+      ["🪙", "Un oggetto che cade rotola sempre dove non puoi raggiungerlo"], ["🚦", "Il semaforo diventa rosso proprio quando arrivi"], ["☂️", "L'ombrello lo dimentichi sempre nel giorno in cui piove"], ["📦", "Quello che cerchi è sempre sotto l'ultima cosa che sposti"],
+      ["⏳", "Tutto richiede più tempo del previsto, anche tenendo conto di questa legge (legge di Hofstadter)"], ["📅", "Il lavoro si espande fino a riempire il tempo disponibile (legge di Parkinson)"], ["🪜", "Ognuno viene promosso fino al proprio livello di incompetenza (principio di Peter)"], ["🇬🇧", "In Inghilterra la legge di Murphy si chiama «Sod's law»"],
+      ["💣", "Un guasto si presenta sempre nel momento peggiore (corollario di Finagle)"], ["🔍", "Se tutto sembra andare bene, hai trascurato qualcosa"], ["💻", "Il computer si blocca proprio quando non hai salvato"], ["📶", "Il Wi-Fi cade a metà della videochiamata"],
+      ["📱", "Il telefono cade sempre a faccia in giù"], ["🚆", "Il treno parte proprio quando arrivi in stazione"], ["🚌", "L'autobus arriva appena hai smesso di aspettare"], ["🍝", "La macchia di sugo cerca sempre la camicia bianca"],
+      ["👕", "Le macchie cadono sempre sul vestito più bello"], ["🛞", "Si buca una gomma proprio il giorno della riunione importante"], ["📵", "Il cellulare non ha mai segnale nei posti dove serve"], ["🅿️", "Quando cerchi parcheggio, restano liberi solo i posti lontanissimi"],
+      ["🔩", "Dopo aver montato il mobile, ti avanza sempre una vite"], ["🗝️", "L'ultima chiave che provi è sempre quella giusta"], ["🍲", "Pentola guardata non bolle mai"], ["🧰", "Il problema sparisce appena arriva il tecnico"],
+      ["📝", "Dopo aver preparato tutto, scopri di aver dimenticato qualcosa"], ["🧾", "Lo scontrino sparisce proprio quando devi fare il reso"], ["🌦️", "Se prendi l'ombrello non piove: se lo lasci a casa si scatena il temporale"], ["📞", "La telefonata più importante arriva quando hai le mani occupate"],
+      ["🍀", "Ogni tanto va tutto liscio: è la legge di Murphy al contrario"], ["🗺️", "La miglior difesa contro Murphy è avere un piano B"], ["🛰️", "La legge di Murphy nasce nel 1949 alla base aerea di Edwards, in California"], ["👨‍🔬", "Il nome viene dall'ingegnere Edward A. Murphy"],
+      ["🎙️", "A diffondere la frase fu il dottor John Paul Stapp in una conferenza stampa"], ["📖", "Murphy non voleva dare la colpa a nessuno: voleva evitare gli errori prevedendoli"], ["🧠", "Prevedere cosa può andare storto è il primo passo per evitarlo"], ["🥪", "Il panino cade sempre quando hai più fame"],
+      ["🧦", "Il calzino spaiato è sempre quello che ti serve"], ["🍳", "La cosa più semplice da cucinare si brucia quando ti distrai"], ["🪟", "Il vetro appena pulito si sporca subito"], ["🛋️", "Il telecomando è sempre nel posto più scomodo"] ] }
+  };
+
   // ---------- temi per adulti (tombola classica) ----------
   const ADULTI = {
     'verita': { name: "Verità universali", icon: '😂', levels: ['adulti'], items: [
@@ -480,7 +497,7 @@
   };
 
   // ---------- API ----------
-  const ALL = Object.assign({}, GEN, LISTE, CARTONI, CARTONI_OGGI, FESTE, GIOCHI, ANIME, ADULTI);
+  const ALL = Object.assign({}, GEN, LISTE, CARTONI, CARTONI_OGGI, FESTE, GIOCHI, ANIME, MURPHY, ADULTI);
   Object.keys(ALL).forEach(k => { ALL[k].key = k; });
 
   const themesFor = level => Object.keys(ALL).filter(k => ALL[k].levels.includes(level)).map(k => ({ key: k, name: ALL[k].name, icon: ALL[k].icon }));
