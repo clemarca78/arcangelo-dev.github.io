@@ -169,8 +169,8 @@ body.kids .adult-only { display: none; }
 @keyframes da-bob { to { transform: translateY(-14px) rotate(3deg); } }
 .da-bubble { position: absolute; top: 3%; left: 50%; transform: translateX(-50%); background: #fff; color: #1e1b4b; font-weight: 800; padding: 10px 20px; border-radius: 22px; font-size: clamp(1rem, 3.6vmin, 1.7rem); white-space: nowrap; max-width: 96%; overflow: hidden; text-overflow: ellipsis; }
 .da-urn { position: absolute; right: 6%; bottom: 8%; width: clamp(7rem, 26vmin, 14rem); text-align: center; transform-origin: 50% 90%; }
-.da-urn .da-balls { font-size: clamp(1.4rem, 5vmin, 2.6rem); letter-spacing: .1em; }
-.da-urn .da-body { font-size: clamp(5rem, 20vmin, 11rem); line-height: 1; }
+.da-urn .da-balls { font-size: clamp(1.1rem, 3.6vmin, 1.9rem); letter-spacing: 0; white-space: nowrap; line-height: 1; margin-bottom: -.2em; position: relative; }
+.da-urn .da-sack { position: relative; z-index: 1; display: block; width: clamp(6rem, 24vmin, 12rem); height: auto; margin: -.55em auto 0; overflow: visible; }
 .da-hand { position: absolute; right: 16%; top: 24%; font-size: clamp(3rem, 11vmin, 6rem); opacity: 0; }
 .da-ball { position: absolute !important; left: 50%; top: 50%; margin: 0 !important; width: clamp(130px, 34vmin, 230px) !important; height: clamp(130px, 34vmin, 230px) !important; font-size: clamp(3.4rem, 13vmin, 6.5rem) !important; opacity: 0; transform: translate(-50%, -50%) scale(.2); }
 .da-c { position: absolute; left: 50%; top: 50%; font-size: 1.7rem; pointer-events: none; }
@@ -248,7 +248,20 @@ details summary { cursor: pointer; font-weight: 600; }
   <div class="stage">
     <div class="da-bubble" id="daBubble"></div>
     <div class="da-who" id="daWho">👩‍🏫</div>
-    <div class="da-urn" id="daUrn"><div class="da-balls" id="daBalls">🔴🟡🔵🟢🟣</div><div class="da-body">🏺</div></div>
+    <div class="da-urn" id="daUrn"><div class="da-balls" id="daBalls">🔴🟡🔵🟢🟣</div><svg class="da-sack" viewBox="0 24 120 116" role="img" aria-label="Sacchetto dei numeri">
+        <defs>
+          <linearGradient id="sackG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d9a066"/><stop offset="1" stop-color="#9a6330"/></linearGradient>
+        </defs>
+        <path d="M44 44 C18 64 8 102 20 126 C28 138 92 138 100 126 C112 102 102 64 76 44 Z" fill="url(#sackG)" stroke="#6b431c" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M30 76 C24 92 24 108 32 122" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="5" stroke-linecap="round"/>
+        <path d="M40 42 Q60 30 80 42 Q60 52 40 42 Z" fill="#b57a3a" stroke="#6b431c" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M41 49 Q60 58 79 49" fill="none" stroke="#f6d365" stroke-width="5.5" stroke-linecap="round"/>
+        <path d="M60 54 C50 44 42 52 50 58 C54 60 58 58 60 54 Z" fill="#f6d365" stroke="#b8902b" stroke-width="1.5"/>
+        <path d="M60 54 C70 44 78 52 70 58 C66 60 62 58 60 54 Z" fill="#f6d365" stroke="#b8902b" stroke-width="1.5"/>
+        <path d="M58 57 L52 74 M62 57 L68 74" stroke="#f6d365" stroke-width="4" stroke-linecap="round"/>
+        <rect x="34" y="84" width="52" height="30" rx="8" fill="#fff6dc" stroke="#6b431c" stroke-width="2.5"/>
+        <text x="60" y="105" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="800" font-size="17" fill="#7a4a1e">1-90</text>
+      </svg></div>
     <div class="da-hand" id="daHand">🤚</div>
     <div class="ball da-ball" id="daBall"></div>
     <div id="daConf"></div>
