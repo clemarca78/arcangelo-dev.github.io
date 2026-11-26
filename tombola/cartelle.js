@@ -111,7 +111,7 @@
     const t = String(text || '').toUpperCase().replace(/\s+/g, '');
     let m = t.match(/^C(\d{1,5})-([1-6])$/);
     if (m) return series('classic', 90, +m[1])[+m[2] - 1];
-    m = t.match(/^B(30|60|90)(?:X([345]))?-(\d{1,5})-([1-6])$/);
+    m = t.match(/^B(20|30|60|90)(?:X([345]))?-(\d{1,5})-([1-6])$/);
     if (m) return series('kids', +m[1], +m[3], +(m[2] || 3))[+m[4] - 1];
     return null;
   }

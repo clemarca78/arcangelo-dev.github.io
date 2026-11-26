@@ -62,7 +62,7 @@ button.sec { background: #e2e8f0; color: #1e293b; }
       <select id="mode"><option value="classic">Classica (1–90)</option><option value="kids">Bambini (3×3)</option></select>
     </label>
     <label id="maxWrap">Numeri fino a
-      <select id="max"><option>30</option><option>60</option><option>90</option></select>
+      <select id="max"><option>20</option><option>30</option><option>60</option><option>90</option></select>
     </label>
     <label id="colsWrap">Numeri per riga
       <select id="cols"><option value="3">3 (fino al terno)</option><option value="4">4 (fino alla quaterna)</option><option value="5">5 (fino alla cinquina)</option></select>
@@ -93,7 +93,7 @@ button.sec { background: #e2e8f0; color: #1e293b; }
   const $ = id => document.getElementById(id);
   const Q = new URLSearchParams(location.search);
   $('mode').value = Q.get('mode') === 'kids' ? 'kids' : 'classic';
-  if (['30', '60', '90'].includes(Q.get('max'))) $('max').value = Q.get('max');
+  if (['20', '30', '60', '90'].includes(Q.get('max'))) $('max').value = Q.get('max');
   if (['3', '4', '5'].includes(Q.get('cols'))) $('cols').value = Q.get('cols');
   [['auto', '🎨 Varie (una per cartella)'], ['none', 'Nessuna'], ...TombolaCards.themes.map(t => [t.key, t.emoji[0] + ' ' + t.name])]
     .forEach(([v, t]) => { const o = document.createElement('option'); o.value = v; o.textContent = t; $('theme').appendChild(o); });

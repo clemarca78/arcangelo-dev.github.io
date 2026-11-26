@@ -137,7 +137,7 @@ body.src-urn .board div[data-n]:not(.out):hover { background: rgba(251,191,36,.3
 body.lim:not(.player) #limExit, body.lim #limAudio { display: block; }
 /* vista LIM: tutto grande, solo ciò che serve a chi guarda da lontano */
 body.lim main { max-width: none; gap: 10px; }
-body.lim .modes, body.lim #playPanel, body.lim #roomPanel, body.lim #paperPanel, body.lim .host-cards,
+body.lim .modes, body.lim #kidPanel, body.lim #playPanel, body.lim #roomPanel, body.lim #paperPanel, body.lim .host-cards,
 body.lim #smorfiaPanel, body.lim .opts, body.lim .draw h2, body.lim .draw .hint, body.lim #log, body.lim .panel > h2 { display: none !important; }
 @media (min-width: 800px) { body.lim .top { grid-template-columns: minmax(280px, 32vw) 1fr; } }
 body.lim .ball { width: clamp(170px, 32vh, 360px); height: clamp(170px, 32vh, 360px); font-size: clamp(4rem, 14vh, 9rem); }
@@ -150,6 +150,8 @@ body.lim .board div { aspect-ratio: auto; font-size: clamp(1.1rem, 3.6vh, 2.6rem
 body.lim .history span { width: 46px; height: 46px; font-size: 1.1rem; }
 body.lim .prize { padding: 6px; font-size: clamp(.9rem, 2.2vh, 1.4rem); }
 body.lim #toast { font-size: clamp(1.6rem, 5vh, 3.4rem); top: 3vh; padding: 18px 40px; }
+.kid-only { display: none; }
+body.kids .kid-only { display: block; }
 .seg { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
 .seg button { text-align: left; display: grid; gap: 2px; padding: 10px 12px; }
 .seg button small { font-weight: 400; color: var(--muted); font-size: .78rem; line-height: 1.25; }
@@ -210,7 +212,7 @@ details summary { cursor: pointer; font-weight: 600; }
       <button id="modeKids">🧒 Bambini</button>
       <button id="limBtn" title="Schermo grande per la LIM">📺 LIM</button>
       <label class="only-kids" style="gap:6px;align-items:center;color:var(--muted);font-size:.9rem">Numeri fino a
-        <select id="maxSel"><option value="30">30</option><option value="60">60</option><option value="90">90</option></select>
+        <select id="maxSel"><option value="20">20</option><option value="30">30</option><option value="60">60</option><option value="90">90</option></select>
       </label>
       <label class="only-kids" style="gap:6px;align-items:center;color:var(--muted);font-size:.9rem">Numeri per riga
         <select id="colsSel"><option value="3">3 (ambo, terno)</option><option value="4">4 (fino a quaterna)</option><option value="5">5 (fino a cinquina)</option></select>
@@ -223,6 +225,18 @@ details summary { cursor: pointer; font-weight: 600; }
     <h2>Entra nella stanza <span id="joinCode"></span></h2>
     <input type="text" id="joinName" maxlength="20" placeholder="Il tuo nome" autocomplete="off">
     <button class="primary" id="joinBtn">Entra</button>
+  </section>
+
+  <section class="panel host-only kid-only" id="kidPanel">
+    <h2>Per i bambini</h2>
+    <div class="row" style="margin-top:0">
+      <label class="hint">Classe <select id="levelSel"></select></label>
+      <label class="hint">Tema <select id="kthemeSel"></select></label>
+      <label class="hint">La pallina racconta
+        <select id="ksmSel"><option value="tema">📚 Un tema di scuola</option><option value="napoletana">🎭 La smorfia napoletana</option></select>
+      </label>
+    </div>
+    <p class="hint" id="kidHint" style="text-align:left;margin-top:8px"></p>
   </section>
 
   <section class="panel host-only" id="playPanel">
@@ -252,7 +266,7 @@ details summary { cursor: pointer; font-weight: 600; }
     </div>
   </section>
 
-  <section class="panel host-only" id="roomPanel">
+    <section class="panel host-only" id="roomPanel">
     <h2>Multiplayer</h2>
     <div id="roomBody"></div>
   </section>
@@ -342,6 +356,7 @@ details summary { cursor: pointer; font-weight: 600; }
   </section>
 </main>
 
+<script src="temi.js"></script>
 <script src="cartelle.js"></script>
 <script src="lib/peerjs.min.js"></script>
 <script src="lib/qrcode.js"></script>
@@ -471,7 +486,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   const LIM_VIEW = isPlayer && Q.get('lim') === '1';   // schermo LIM collegato alla stanza (solo spettatore)
   const KEY = LIM_VIEW ? 'tombola-lim-' + ROOM_CODE : isPlayer ? 'tombola-player-' + ROOM_CODE : 'tombola-proto-v2';
   const $ = id => document.getElementById(id);
-  let state = { mode: 'classic', max: 90, drawn: [], cards: [], marks: [], won: {}, autoMark: false, gen: 0, room: null, token: '', pname: '', play: 'screen', cols: 3, theme: 'auto', source: 'app' };
+  let state = { mode: 'classic', max: 90, drawn: [], cards: [], marks: [], won: {}, autoMark: false, gen: 0, room: null, token: '', pname: '', play: 'screen', cols: 3, theme: 'auto', source: 'app', level: '1', themeMode: 'auto', sTheme: '', kidSmorfia: 'tema' };
   let timer = null, limOn = false;
   const kids = () => state.mode === 'kids';
   const prizesFor = (m, cols) => TombolaCards.prizes(m, cols);
@@ -562,17 +577,29 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     save(); render(); broadcast();
   }
   function entry(n) {
+    if (kids() && state.kidSmorfia === 'tema' && state.sTheme) {   // smorfia per la scuola
+      const t = TombolaTemi.entry(state.sTheme, n);
+      if (t) return { it: t.t, e: t.e, d: '', sp: t.sp, spk: t.spk };
+    }
     const s = SMORFIA[n];
     return kids() ? { it: s.kit, e: s.ke, d: s.soft ? '' : s.d } : { it: s.it, e: s.e, d: s.d };
   }
   function say(n) {
     if (!$('speak').checked || !('speechSynthesis' in window)) return;
     try {
+      const en = entry(n), q = [];
       let t = kids() ? words(n) : String(n);
-      if ($('smorfia').checked) t += '. ' + entry(n).it;
-      const u = new SpeechSynthesisUtterance(t);
-      u.lang = 'it-IT'; u.rate = kids() ? .85 : .95;
-      speechSynthesis.cancel(); speechSynthesis.speak(u);
+      if ($('smorfia').checked) {
+        t += '. ' + String(en.sp || en.it).replace(/×/g, ' per ').replace(/÷/g, ' diviso ').replace(/\+/g, ' più ')
+          .replace(/−/g, ' meno ').replace(/=/g, ' fa ').replace(/%/g, ' per cento');
+      }
+      q.push([t, 'it-IT']);
+      if ($('smorfia').checked && en.spk) q.push(...en.spk);   // es. il numero detto in inglese
+      speechSynthesis.cancel();
+      q.forEach(([txt, lang]) => {
+        const u = new SpeechSynthesisUtterance(txt);
+        u.lang = lang; u.rate = kids() ? .85 : .95; speechSynthesis.speak(u);
+      });
     } catch (e) {}
   }
 
@@ -640,6 +667,12 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     $('maxSel').value = state.max;
     $('colsSel').value = state.cols;
     $('themeSel').value = state.theme;
+    if (!isPlayer) {
+      $('levelSel').value = state.level; $('kthemeSel').value = state.themeMode; $('ksmSel').value = state.kidSmorfia;
+      $('kidHint').textContent = state.kidSmorfia === 'tema'
+        ? 'Tema di questa partita: ' + TombolaTemi.name(state.sTheme) + (state.themeMode === 'auto' ? ' (cambia a ogni nuova partita)' : '')
+        : 'La pallina racconta la smorfia napoletana, in versione per bambini.';
+    }
     $('autoMark').checked = !!state.autoMark;
     if (isPlayer) {
       const n = state.cards.length, mx = Math.max(state.maxCards || 4, n), locked = state.drawn.length > 0 && !state.late;
@@ -761,6 +794,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     stopAuto();
     try { speechSynthesis.cancel(); } catch (e) {}
     state.drawn = []; state.won = {}; state.gen = (state.gen || 0) + 1; logLines.length = 0;
+    if (kids()) newKidTheme();
     log(msg || 'Nuova partita. Buona fortuna!');
     makeCards(); dealAll(); save(); render(); broadcast();
   }
@@ -768,7 +802,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if (state.mode === m) return;
     if (state.drawn.length && !confirm('Cambiando modalità inizia una nuova partita. Continuare?')) return;
     state.mode = m;
-    state.max = m === 'kids' ? 30 : 90;
+    state.max = m === 'kids' ? levelInfo(state.level).max : 90;
     state.autoMark = false;
     $('nCards').value = 2;
     reset();
@@ -823,7 +857,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   function dealAll() { if (state.room) Object.values(state.room.players).forEach(p => p.cards = dealCards(p.cards.length || 1)); }
   function snapshot(token) {
     const p = state.room.players[token] || { cards: [] };
-    return { t: 'state', mode: state.mode, max: state.max, cols: state.cols, theme: state.theme, drawn: state.drawn, won: state.won, gen: state.gen, cards: p.cards, maxCards: state.room.maxCards || 4, late: !!state.room.lateCards };
+    return { t: 'state', mode: state.mode, max: state.max, cols: state.cols, theme: state.theme, level: state.level, sTheme: state.sTheme, kidSmorfia: state.kidSmorfia, drawn: state.drawn, won: state.won, gen: state.gen, cards: p.cards, maxCards: state.room.maxCards || 4, late: !!state.room.lateCards };
   }
   function sendTo(token, msg) { const c = conns[token]; if (c && c.open) { try { c.send(msg); } catch (e) {} } }
   function broadcast() { if (state.room) Object.keys(conns).forEach(t => sendTo(t, snapshot(t))); }
@@ -1003,7 +1037,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       const prev = state.drawn.length;
       if (m.gen !== state.gen) state.marks = m.cards.map(() => []);
       else state.marks = m.cards.map((_, i) => state.marks[i] || []);
-      Object.assign(state, { mode: m.mode, max: m.max, cols: m.cols || 3, theme: m.theme || 'auto', maxCards: m.maxCards || 4, late: !!m.late, drawn: m.drawn, won: m.won, gen: m.gen, cards: m.cards });
+      Object.assign(state, { mode: m.mode, max: m.max, cols: m.cols || 3, theme: m.theme || 'auto', level: m.level || '1', sTheme: m.sTheme || '', kidSmorfia: m.kidSmorfia || 'tema', maxCards: m.maxCards || 4, late: !!m.late, drawn: m.drawn, won: m.won, gen: m.gen, cards: m.cards });
       state.marks = state.marks.map(a => a.filter(n => state.drawn.includes(n)));
       if (!state.drawn.length) { logLines.length = 0; log('Nuova partita. Buona fortuna!'); }
       save(); setStatus(`🟢 Stanza ${ROOM_CODE} · ${state.pname} ·`);
@@ -1145,10 +1179,34 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     save(); render(); broadcast();
   });
 
+  // ---------- smorfia per la scuola: classe e tema ----------
+  function levelInfo(k) { return TombolaTemi.LEVELS.find(l => l.key === k) || TombolaTemi.LEVELS[1]; }
+  // Tema della partita: scelto dalla maestra oppure a caso (diverso dal precedente).
+  function newKidTheme() {
+    const ok = TombolaTemi.themesFor(state.level).map(t => t.key);
+    state.sTheme = state.themeMode !== 'auto' && ok.includes(state.themeMode) ? state.themeMode : TombolaTemi.pick(state.level, state.sTheme);
+  }
+  function fillThemeSel() {
+    const sel = $('kthemeSel'); sel.innerHTML = '';
+    [['auto', '🎲 Casuale a ogni partita'], ...TombolaTemi.themesFor(state.level).map(t => [t.key, t.icon + ' ' + t.name])]
+      .forEach(([v, t]) => { const o = document.createElement('option'); o.value = v; o.textContent = t; sel.appendChild(o); });
+  }
+  TombolaTemi.LEVELS.forEach(l => { const o = document.createElement('option'); o.value = l.key; o.textContent = l.name; $('levelSel').appendChild(o); });
+  $('levelSel').onchange = () => {
+    const v = $('levelSel').value;
+    if (state.drawn.length && !confirm('Cambiando classe inizia una nuova partita. Continuare?')) { $('levelSel').value = state.level; return; }
+    state.level = v; state.themeMode = 'auto'; state.max = levelInfo(v).max;
+    fillThemeSel(); reset();
+  };
+  $('kthemeSel').onchange = () => { state.themeMode = $('kthemeSel').value; newKidTheme(); save(); render(); broadcast(); };
+  $('ksmSel').onchange = () => { state.kidSmorfia = $('ksmSel').value; save(); render(); broadcast(); };
+
   load();
+  fillThemeSel();
   if (!isPlayer) { // compatibilità con partite salvate prima del selettore
     if (state.paper && state.play === 'screen') state.play = state.room ? 'mixed' : 'paper';
     else if (state.room && state.play === 'screen') state.play = 'devices';
+    if (kids() && !state.sTheme) newKidTheme();
     delete state.paper;
   }
   if (isPlayer) {
