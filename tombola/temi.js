@@ -266,6 +266,36 @@
       ["🏐", "Mila e Shiro giocano a pallavolo"], ["🐕", "Remi viaggia con il cane Capi"], ["🐢", "Tom e Jerry si rincorrono da una vita"] ] }
   };
 
+  // ---------- feste, tradizioni e supereroi (per tutte le età) ----------
+  const TUTTI = ['asilo', '1', '2', '3', '4', '5', 'adulti'];
+  const FESTE = {
+    'feste': { name: "Feste e tradizioni", icon: '🎉', levels: TUTTI, items: [
+      ["🎄", "A Natale si fa l'albero e si scartano i regali"], ["🌙", "La sera del 24 dicembre è la Vigilia di Natale"], ["🐑", "Il presepe racconta la nascita di Gesù"], ["🍰", "Panettone e pandoro sono i dolci tipici del Natale"],
+      ["🎅", "Babbo Natale arriva con la slitta e le renne"], ["⭐", "L'Epifania è il 6 gennaio: arriva la Befana"], ["🧹", "La Befana viaggia su una scopa e porta dolci (o carbone)"], ["🥳", "La notte di San Silvestro, il 31 dicembre, si aspetta l'anno nuovo"],
+      ["🥣", "A Capodanno si mangiano le lenticchie per portare fortuna"], ["💘", "San Valentino è il 14 febbraio, la festa degli innamorati"], ["🎭", "A Carnevale ci si veste in maschera"], ["🥟", "A Carnevale si mangiano chiacchiere e frappe"],
+      ["🎭", "Il Carnevale di Venezia è famoso per le sue maschere"], ["🍊", "A Ivrea c'è la battaglia delle arance"], ["🌼", "L'8 marzo è la Festa della donna, con le mimose"], ["👨", "Il 19 marzo è la Festa del papà, San Giuseppe"],
+      ["🍩", "Il 19 marzo si mangiano le zeppole di San Giuseppe"], ["🐣", "A Pasqua si regalano le uova di cioccolato"], ["🕊️", "La colomba è il dolce tipico della Pasqua"], ["🧺", "Il lunedì dopo Pasqua è la Pasquetta, la gita fuori porta"],
+      ["🇮🇹", "Il 25 aprile è la Festa della Liberazione"], ["⚒️", "Il 1° maggio è la Festa dei lavoratori"], ["💐", "La Festa della mamma è la seconda domenica di maggio"], ["🗳️", "Il 2 giugno è la Festa della Repubblica"],
+      ["🔥", "Nella notte di San Giovanni, il 24 giugno, si accendono i falò"], ["🏇", "Il Palio di Siena si corre il 2 luglio e il 16 agosto"], ["🎆", "Il 15 agosto è Ferragosto"], ["🏖️", "A Ferragosto si fa il picnic o la grigliata con gli amici"],
+      ["🎃", "Il 31 ottobre è Halloween"], ["🕯️", "Il 2 novembre si ricordano i defunti"], ["🌰", "L'11 novembre è San Martino: castagne e vino nuovo"], ["🕯️", "Il 13 dicembre è Santa Lucia, che in alcune regioni porta i doni ai bambini"],
+      ["💡", "In Puglia le feste patronali si illuminano con le luminarie"], ["🔥", "A Novoli, a gennaio, si accende la grande Focara per Sant'Antonio Abate"], ["🎶", "La Notte della Taranta si tiene ad agosto nel Salento"], ["⛪", "San Nicola è il patrono di Bari"],
+      ["🌸", "A Noto e a Genzano si fanno le Infiorate"], ["🕊️", "San Gennaro è il patrono di Napoli"], ["🧸", "A Napoli via San Gregorio Armeno è la via dei presepi"], ["⛵", "La Regata storica si svolge a Venezia in settembre"],
+      ["⚔️", "Il Calcio storico si gioca a Firenze in giugno"], ["🎂", "Per il compleanno si soffiano le candeline e si esprime un desiderio"], ["🍽️", "La domenica in Italia si pranza in famiglia"], ["🥂", "Per fare il brindisi ci si guarda negli occhi"],
+      ["🍬", "Ai matrimoni si regalano i confetti"], ["🎁", "La sera dell'Epifania si dice: «l'Epifania tutte le feste porta via»"] ] },
+    'supereroi': { name: "Supereroi", icon: '🦸', levels: TUTTI, items: [
+      ["⭐", "Superman viene dal pianeta Krypton"], ["🟢", "La kryptonite è il punto debole di Superman"], ["📰", "Clark Kent lavora al Daily Planet"], ["🦇", "Batman è Bruce Wayne e vive a Gotham City"],
+      ["🧠", "Batman non ha superpoteri: usa intelligenza e tecnologia"], ["🚗", "Il Batmobile è l'auto di Batman"], ["🃏", "Il Joker è il nemico più famoso di Batman"], ["🕷️", "Peter Parker diventa Spider-Man dopo il morso di un ragno"],
+      ["🕸️", "Spider-Man lancia ragnatele per muoversi in città"], ["💬", "«Da un grande potere derivano grandi responsabilità» dice Spider-Man"], ["🛡️", "Capitan America ha uno scudo rotondo"], ["⚡", "Thor è il dio del tuono e ha il martello Mjolnir"],
+      ["🤖", "Iron Man è Tony Stark, con la sua armatura"], ["💚", "Hulk diventa verde e fortissimo quando si arrabbia"], ["👑", "Black Panther viene dal regno di Wakanda"], ["🏹", "Occhio di Falco è un arciere"],
+      ["🐜", "Ant-Man può rimpicciolirsi"], ["🔮", "Doctor Strange usa la magia"], ["🦸", "Gli Avengers sono la squadra dei Vendicatori"], ["🌟", "La Justice League riunisce Superman, Batman, Wonder Woman e altri"],
+      ["💫", "Wonder Woman è Diana, principessa delle Amazzoni"], ["🪢", "Wonder Woman ha il Lazo della Verità"], ["⚡", "Flash è l'uomo più veloce del mondo"], ["🔱", "Aquaman parla con i pesci e comanda il mare"],
+      ["💍", "Lanterna Verde ha un anello speciale"], ["🌩️", "Shazam si trasforma pronunciando una parola magica"], ["🦸", "Gli Incredibili sono una famiglia di supereroi"], ["🪨", "La Cosa dei Fantastici Quattro è fatta di roccia"],
+      ["🐆", "Miles Morales è un altro Spider-Man"], ["💎", "Thanos cerca le Gemme dell'Infinito"], ["🦆", "Paperinik è l'alter ego di Paperino"], ["🐶", "Super Pippo è il supereroe più goffo del mondo"],
+      ["🕶️", "Diabolik è un ladro italiano creato dalle sorelle Giussani nel 1962"], ["🔍", "Dylan Dog è l'indagatore dell'incubo"], ["📅", "Superman debuttò nel 1938"], ["📅", "Batman debuttò nel 1939"],
+      ["📅", "Capitan America debuttò nel 1941"], ["📅", "Spider-Man debuttò nel 1962"], ["🐺", "Wolverine ha gli artigli di adamantio"], ["🎭", "I supereroi hanno spesso un costume e un'identità segreta"],
+      ["🤝", "Anche tu puoi essere un eroe aiutando gli altri"] ] }
+  };
+
   // ---------- temi per adulti (tombola classica) ----------
   const ADULTI = {
     'verita': { name: "Verità universali", icon: '😂', levels: ['adulti'], items: [
@@ -371,7 +401,7 @@
   };
 
   // ---------- API ----------
-  const ALL = Object.assign({}, GEN, LISTE, CARTONI, CARTONI_OGGI, ADULTI);
+  const ALL = Object.assign({}, GEN, LISTE, CARTONI, CARTONI_OGGI, FESTE, ADULTI);
   Object.keys(ALL).forEach(k => { ALL[k].key = k; });
 
   const themesFor = level => Object.keys(ALL).filter(k => ALL[k].levels.includes(level)).map(k => ({ key: k, name: ALL[k].name, icon: ALL[k].icon }));
