@@ -8,7 +8,7 @@
 // stampa, tema pronto usato). Non viene MAI inviato: nomi dei giocatori, codici delle stanze, frasi dei temi personali.
 // Non parte se il browser ha «Do Not Track» o «Global Privacy Control», né in locale.
 (function (g) {
-  const GOATCOUNTER_CODE = '';
+  const GOATCOUNTER_CODE = 'arcangelo-tombola';
 
   const q = new URLSearchParams(location.search);
   const doNotTrack = navigator.doNotTrack === '1' || g.doNotTrack === '1' || navigator.globalPrivacyControl === true;
