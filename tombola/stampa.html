@@ -25,8 +25,8 @@ button.sec { background: #e2e8f0; color: #1e293b; }
 .sheet header b { font-size: 15pt; letter-spacing: 1px; }
 .cards { flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 1fr); gap: 5mm 6mm; }
 .card { border: 1.6px solid #111; border-radius: 2mm; padding: 2mm; display: flex; flex-direction: column; break-inside: avoid; }
-.card h3 { display: flex; justify-content: space-between; font-size: 9pt; margin-bottom: 1.5mm; }
-.card h3 span { font-family: ui-monospace, Menlo, Consolas, monospace; font-weight: 700; }
+.card h3 { display: flex; justify-content: flex-start; align-items: center; gap: 2mm; font-size: 9pt; margin-bottom: 1.5mm; }
+.card h3 span { font-family: ui-monospace, Menlo, Consolas, monospace; font-weight: 700; margin-left: auto; }
 .grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 0; border: 1.2px solid #111; flex: 1; }
 .grid div { display: grid; place-items: center; border: .6px solid #555; font-weight: 800; font-size: 15pt; }
 .grid div.blank {
@@ -104,14 +104,15 @@ button.sec { background: #e2e8f0; color: #1e293b; }
 
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 
-  function cardEl(c, themeKey) {
+  function cardEl(c, themeKey, idx) {
     const d = el('div', 'card');
     const h = el('h3'); h.append(el('b', null, 'Cartella'), el('span', null, c.id));
     const gr = el('div', 'grid' + (c.mode === 'kids' && c.cols > 3 ? ' dense' : ''));
     if (c.mode === 'kids') gr.style.gridTemplateColumns = `repeat(${c.cols}, 1fr)`;
     c.grid.flat().forEach(n => gr.append(n ? el('div', null, n) : el('div', 'blank')));
-    const art = TombolaCards.artEl(c.id, themeKey, c.mode === 'kids' ? '21pt' : '17pt');
-    if (art) d.append(h, art, gr); else d.append(h, gr);
+    const art = TombolaCards.artEl(c.id, themeKey, c.mode === 'kids' ? '16pt' : '14pt', idx);
+    if (art) h.prepend(art);
+    d.append(h, gr);
     return d;
   }
   function sheet(titleRight, cls) {
@@ -135,7 +136,7 @@ button.sec { background: #e2e8f0; color: #1e293b; }
       const grid = el('div', 'cards');
       const T = TombolaCards.themes, choice = $('theme').value;
       TombolaCards.series(mode, max, serie, cols).forEach((c, i) =>
-        grid.append(cardEl(c, choice === 'auto' ? T[(serie * 5 + i) % T.length].key : choice)));
+        grid.append(cardEl(c, choice === 'auto' ? T[(serie * 5 + i) % T.length].key : choice, choice === 'auto' ? p : p * 6 + i)));
       s.append(grid);
       s.append(el('footer', null, rules + ' Quando hai un premio alza la mano e leggi il codice della cartella. · Tombola di Arcangelo Clemente'));
       out.append(s);

@@ -88,8 +88,8 @@ body.lim .prize::after { display: none !important; }
 .cards-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
 .cards { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
 .card { background: #fef3c7; color: #1e1b4b; border-radius: 12px; padding: 10px; box-shadow: 0 6px 18px rgba(0,0,0,.35); }
-.card h3 { font-size: .8rem; margin-bottom: 6px; display: flex; justify-content: space-between; }
-.card h3 em { font-style: normal; color: #b45309; }
+.card h3 { font-size: .8rem; margin-bottom: 6px; display: flex; justify-content: flex-start; align-items: center; gap: 8px; }
+.card h3 em { font-style: normal; color: #b45309; margin-left: auto; }
 .grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 3px; }
 .grid div { aspect-ratio: 1; display: grid; place-items: center; border-radius: 6px; font-weight: 700; font-size: .95rem; background: rgba(0,0,0,.05); }
 .grid div.blank { background: rgba(30,27,75,.18); }
@@ -139,7 +139,7 @@ body.src-urn .board div[data-n]:not(.out):hover { background: rgba(251,191,36,.3
 body.lim:not(.player) #limExit, body.lim #limAudio { display: block; }
 /* vista LIM: tutto grande, solo ciò che serve a chi guarda da lontano */
 body.lim main { max-width: none; gap: 10px; }
-body.lim .modes, body.lim #kidPanel, body.lim #playPanel, body.lim #roomPanel, body.lim #paperPanel, body.lim .host-cards,
+body.lim .modes, body.lim #kidPanel, body.lim #adultPanel, body.lim #playPanel, body.lim #roomPanel, body.lim #paperPanel, body.lim .host-cards,
 body.lim #smorfiaPanel, body.lim .opts, body.lim .draw h2, body.lim .draw .hint, body.lim #log, body.lim .panel > h2 { display: none !important; }
 @media (min-width: 800px) { body.lim .top { grid-template-columns: minmax(280px, 32vw) 1fr; } }
 body.lim .ball { width: clamp(170px, 32vh, 360px); height: clamp(170px, 32vh, 360px); font-size: clamp(4rem, 14vh, 9rem); }
@@ -156,6 +156,8 @@ body.lim #toast { font-size: clamp(1.6rem, 5vh, 3.4rem); top: 3vh; padding: 18px
 .credit a { color: var(--accent); text-decoration: none; }
 .credit a:hover { text-decoration: underline; }
 body.lim .credit { display: none; }
+.adult-only { display: block; }
+body.kids .adult-only { display: none; }
 .kid-only { display: none; }
 body.kids .kid-only { display: block; }
 .seg { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
@@ -243,6 +245,14 @@ details summary { cursor: pointer; font-weight: 600; }
       </label>
     </div>
     <p class="hint" id="kidHint" style="text-align:left;margin-top:8px"></p>
+  </section>
+
+  <section class="panel host-only adult-only" id="adultPanel">
+    <h2>Temi per adulti</h2>
+    <div class="row" style="margin-top:0">
+      <label class="hint">La pallina racconta <select id="amSel"></select></label>
+    </div>
+    <p class="hint" id="adultHint" style="text-align:left;margin-top:8px"></p>
   </section>
 
   <section class="panel host-only" id="playPanel">
@@ -494,7 +504,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   const LIM_VIEW = isPlayer && Q.get('lim') === '1';   // schermo LIM collegato alla stanza (solo spettatore)
   const KEY = LIM_VIEW ? 'tombola-lim-' + ROOM_CODE : isPlayer ? 'tombola-player-' + ROOM_CODE : 'tombola-proto-v2';
   const $ = id => document.getElementById(id);
-  let state = { mode: 'classic', max: 90, drawn: [], cards: [], marks: [], won: {}, autoMark: false, gen: 0, room: null, token: '', pname: '', play: 'screen', cols: 3, theme: 'auto', source: 'app', level: '1', themeMode: 'auto', sTheme: '', kidSmorfia: 'tema' };
+  let state = { mode: 'classic', max: 90, drawn: [], cards: [], marks: [], won: {}, autoMark: false, gen: 0, room: null, token: '', pname: '', play: 'screen', cols: 3, theme: 'auto', source: 'app', level: '1', themeMode: 'auto', sTheme: '', kidSmorfia: 'tema', adultMode: 'napoletana', aTheme: '' };
   let timer = null, limOn = false;
   const kids = () => state.mode === 'kids';
   const prizesFor = (m, cols) => TombolaCards.prizes(m, cols);
@@ -585,6 +595,12 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     save(); render(); broadcast();
   }
   function entry(n) {
+    // tombola classica con un tema per adulti al posto della smorfia napoletana
+    const aT = isPlayer ? state.aTheme : (state.adultMode !== 'napoletana' ? state.aTheme : '');
+    if (!kids() && aT) {
+      const t = TombolaTemi.entry(aT, n);
+      if (t) return { it: t.t, e: t.e, d: '', sp: t.sp, spk: t.spk };
+    }
     if (kids() && state.kidSmorfia === 'tema' && state.sTheme) {   // smorfia per la scuola
       const t = TombolaTemi.entry(state.sTheme, n);
       if (t) return { it: t.t, e: t.e, d: '', sp: t.sp, spk: t.spk };
@@ -677,6 +693,9 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     $('themeSel').value = state.theme;
     if (!isPlayer) {
       $('levelSel').value = state.level; $('kthemeSel').value = state.themeMode; $('ksmSel').value = state.kidSmorfia;
+      $('amSel').value = state.adultMode;
+      $('adultHint').textContent = state.adultMode === 'napoletana' ? 'La pallina racconta la smorfia napoletana. Scegli un tema per cambiare.'
+        : 'Tema di questa partita: ' + TombolaTemi.name(state.aTheme) + (state.adultMode === 'auto' ? ' (cambia a ogni nuova partita)' : '');
       $('kidHint').textContent = state.kidSmorfia === 'tema'
         ? 'Tema di questa partita: ' + TombolaTemi.name(state.sTheme) + (state.themeMode === 'auto' ? ' (cambia a ogni nuova partita)' : '')
         : 'La pallina racconta la smorfia napoletana, in versione per bambini.';
@@ -735,8 +754,8 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       const hits = g.flat().filter(n => n && m.has(n)).length;
       const c = document.createElement('div'); c.className = 'card';
       c.innerHTML = `<h3>Cartella ${i + 1}<em>${hits}/${size}</em></h3>`;
-      const art = TombolaCards.artEl(g.flat().join(','), state.theme, kids() ? '1.7rem' : '1.2rem');
-      if (art) c.appendChild(art);
+      const art = TombolaCards.artEl(g.flat().join(','), state.theme, kids() ? '1.5rem' : '1.2rem', i);
+      if (art) { const h3 = c.querySelector('h3'); h3.insertBefore(art, h3.firstChild); }
       const gr = document.createElement('div'); gr.className = 'grid' + (kids() && state.cols > 3 ? ' dense' : '');
       if (kids()) gr.style.gridTemplateColumns = `repeat(${state.cols}, 1fr)`;
       g.flat().forEach(n => {
@@ -765,6 +784,8 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   }
   function renderSmorfia() {
     const el = $('smgrid'); el.innerHTML = '';
+    const themed = kids() ? state.kidSmorfia === 'tema' && !!state.sTheme : (isPlayer ? !!state.aTheme : state.adultMode !== 'napoletana' && !!state.aTheme);
+    document.querySelector('#smorfiaPanel summary').textContent = themed ? '📖 Elenco completo del tema' : '📖 Tutta la smorfia napoletana';
     for (let n = 1; n <= 90; n++) {
       const e = entry(n);
       const d = document.createElement('div');
@@ -802,7 +823,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     stopAuto();
     try { speechSynthesis.cancel(); } catch (e) {}
     state.drawn = []; state.won = {}; state.gen = (state.gen || 0) + 1; logLines.length = 0;
-    if (kids()) newKidTheme();
+    if (kids()) newKidTheme(); else newAdultTheme();
     log(msg || 'Nuova partita. Buona fortuna!');
     makeCards(); dealAll(); save(); render(); broadcast();
   }
@@ -865,7 +886,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   function dealAll() { if (state.room) Object.values(state.room.players).forEach(p => p.cards = dealCards(p.cards.length || 1)); }
   function snapshot(token) {
     const p = state.room.players[token] || { cards: [] };
-    return { t: 'state', mode: state.mode, max: state.max, cols: state.cols, theme: state.theme, level: state.level, sTheme: state.sTheme, kidSmorfia: state.kidSmorfia, drawn: state.drawn, won: state.won, gen: state.gen, cards: p.cards, maxCards: state.room.maxCards || 4, late: !!state.room.lateCards };
+    return { t: 'state', mode: state.mode, max: state.max, cols: state.cols, theme: state.theme, level: state.level, sTheme: state.sTheme, kidSmorfia: state.kidSmorfia, aTheme: state.adultMode !== 'napoletana' ? state.aTheme : '', drawn: state.drawn, won: state.won, gen: state.gen, cards: p.cards, maxCards: state.room.maxCards || 4, late: !!state.room.lateCards };
   }
   function sendTo(token, msg) { const c = conns[token]; if (c && c.open) { try { c.send(msg); } catch (e) {} } }
   function broadcast() { if (state.room) Object.keys(conns).forEach(t => sendTo(t, snapshot(t))); }
@@ -1045,7 +1066,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       const prev = state.drawn.length;
       if (m.gen !== state.gen) state.marks = m.cards.map(() => []);
       else state.marks = m.cards.map((_, i) => state.marks[i] || []);
-      Object.assign(state, { mode: m.mode, max: m.max, cols: m.cols || 3, theme: m.theme || 'auto', level: m.level || '1', sTheme: m.sTheme || '', kidSmorfia: m.kidSmorfia || 'tema', maxCards: m.maxCards || 4, late: !!m.late, drawn: m.drawn, won: m.won, gen: m.gen, cards: m.cards });
+      Object.assign(state, { mode: m.mode, max: m.max, cols: m.cols || 3, theme: m.theme || 'auto', level: m.level || '1', sTheme: m.sTheme || '', kidSmorfia: m.kidSmorfia || 'tema', aTheme: m.aTheme || '', maxCards: m.maxCards || 4, late: !!m.late, drawn: m.drawn, won: m.won, gen: m.gen, cards: m.cards });
       state.marks = state.marks.map(a => a.filter(n => state.drawn.includes(n)));
       if (!state.drawn.length) { logLines.length = 0; log('Nuova partita. Buona fortuna!'); }
       save(); setStatus(`🟢 Stanza ${ROOM_CODE} · ${state.pname} ·`);
@@ -1207,6 +1228,15 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     fillThemeSel(); reset();
   };
   $('kthemeSel').onchange = () => { state.themeMode = $('kthemeSel').value; newKidTheme(); save(); render(); broadcast(); };
+  // Tombola classica: la pallina può raccontare un tema per adulti invece della smorfia napoletana.
+  function newAdultTheme() {
+    const ok = TombolaTemi.themesFor('adulti').map(t => t.key);
+    if (state.adultMode === 'napoletana') state.aTheme = '';
+    else state.aTheme = state.adultMode !== 'auto' && ok.includes(state.adultMode) ? state.adultMode : TombolaTemi.pick('adulti', state.aTheme);
+  }
+  [['napoletana', '🎭 Smorfia napoletana'], ['auto', '🎲 Un tema a sorpresa (cambia a ogni partita)'], ...TombolaTemi.themesFor('adulti').map(t => [t.key, t.icon + ' ' + t.name])]
+    .forEach(([v, t]) => { const o = document.createElement('option'); o.value = v; o.textContent = t; $('amSel').appendChild(o); });
+  $('amSel').onchange = () => { state.adultMode = $('amSel').value; newAdultTheme(); save(); render(); broadcast(); };
   $('ksmSel').onchange = () => { state.kidSmorfia = $('ksmSel').value; save(); render(); broadcast(); };
 
   load();
@@ -1215,6 +1245,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if (state.paper && state.play === 'screen') state.play = state.room ? 'mixed' : 'paper';
     else if (state.room && state.play === 'screen') state.play = 'devices';
     if (kids() && !state.sTheme) newKidTheme();
+    if (!kids() && state.adultMode !== 'napoletana' && !state.aTheme) newAdultTheme();
     delete state.paper;
   }
   if (isPlayer) {

@@ -1,6 +1,6 @@
 // Tombola di Arcangelo Clemente.
 // Smorfia per la scuola: a ogni numero estratto corrisponde un'immagine e una frase a tema.
-// Classi: asilo (scuola dell'infanzia) e 1ª-5ª elementare.
+// Classi: asilo (scuola dell'infanzia) e 1ª-5ª elementare. Più i temi per adulti (livello 'adulti').
 // Alcuni temi sono generati dal numero (calcoli sempre giusti), gli altri sono elenchi di curiosità:
 // il numero estratto pesca una voce dell'elenco (un'associazione arbitraria, come nella smorfia vera).
 (function (g) {
@@ -214,8 +214,112 @@
       ['🌍', 'La Terra è la casa di tutti'], ['📚', 'Studiare è un diritto di tutti i bambini'] ] }
   };
 
+  // ---------- temi per adulti (tombola classica) ----------
+  const ADULTI = {
+    'verita': { name: "Verità universali", icon: '😂', levels: ['adulti'], items: [
+      ["🛒", "Vai a comprare il latte, esci con 12 cose e senza il latte"], ["📱", "Hai 5.000 foto sul telefono e non trovi mai quella che cerchi"], ["🍕", "La dieta inizia sempre lunedì"],
+      ["⏰", "Cinque minuti di sonno in più valgono più di un'ora di notte"], ["🔌", "Il caricabatterie giusto non c'è mai quando serve"], ["🧦", "In lavatrice entrano due calzini e ne esce uno solo"],
+      ["🚦", "Il semaforo diventa rosso solo quando hai fretta"], ["📶", "Il Wi-Fi funziona in tutta la casa tranne dove sei tu"], ["🍝", "La pasta della nonna è sempre più buona"],
+      ["☕", "Il primo caffè della giornata è un diritto"], ["📺", "Cerchi un film per due ore e poi riguardi sempre lo stesso"], ["🛒", "Il carrello del supermercato ha sempre la ruota storta"],
+      ["💤", "Hai sonno tutto il giorno e, appena sei a letto, ti svegli del tutto"], ["🔑", "Le chiavi sono sempre nell'ultimo posto in cui guardi"], ["📦", "Il pacco arriva sempre quando non sei a casa"],
+      ["🌧️", "Piove sempre il giorno in cui lavi la macchina"], ["🎂", "Il compleanno è bello, finché non fai il conto degli anni"], ["🏖️", "Le ferie volano, il lunedì dopo dura una settimana"],
+      ["🐱", "Il gatto vuole entrare, poi uscire, poi entrare, poi uscire"], ["🛋️", "Il divano ti chiama nel momento sbagliato"], ["🧠", "La risposta perfetta ti viene tre ore dopo la discussione"],
+      ["🍫", "Un quadretto di cioccolato e la tavoletta è finita"], ["📞", "La telefonata importante arriva dove non c'è segnale"], ["🧹", "La casa è in ordine solo quando arrivano gli ospiti"],
+      ["🖨️", "La stampante si inceppa solo quando hai fretta"], ["🪑", "Dopo aver montato il mobile, avanza sempre una vite"], ["🥶", "Il condizionatore: sempre troppo caldo o troppo freddo"],
+      ["🚿", "La doccia perfetta finisce con l'acqua calda"], ["🧾", "Entri in negozio per guardare e esci con un sacchetto"], ["🔋", "Il telefono si scarica al momento più importante"] ] },
+    'mamma': { name: "Frasi da mamma italiana", icon: '👩', levels: ['adulti'], items: [
+      ["🧥", "Mettiti la maglia della salute!"], ["🍽️", "Hai mangiato? Allora mangia qualcosa!"], ["💇", "Non uscire con i capelli bagnati: ti viene il torcicollo"], ["🚗", "Vai piano, mi raccomando!"],
+      ["📞", "Chiamami quando arrivi"], ["💨", "Stai attento al colpo d'aria"], ["🥪", "Ti ho fatto un panino, non si sa mai"], ["🧣", "Con questo freddo? Copriti!"],
+      ["📵", "Ai miei tempi non c'erano i telefonini"], ["💡", "Spegni la luce, non siamo mica ricchi!"], ["🏊", "Dopo mangiato non fare il bagno per tre ore"], ["🍝", "Ci sono le lasagne, ne ho fatte troppe"],
+      ["🪑", "Stai dritto con la schiena!"], ["👵", "Fatti vedere più spesso!"], ["🍞", "Mangia, che sei magro!"], ["🍰", "Non toccare, è per domenica!"],
+      ["☕", "Il caffè? Te lo faccio io"], ["🥫", "Ti ho messo da parte un po' di sugo"], ["👟", "Metti le scarpe, non andare in giro scalzo!"], ["🧦", "Hai messo i calzini puliti?"],
+      ["🏠", "Questa è casa tua, quando vuoi puoi tornare"], ["🚪", "Chiudi la porta, non siamo nati in una stalla!"] ] },
+    'proverbi': { name: "Proverbi", icon: '📜', levels: ['adulti'], items: [
+      ["🐟", "Chi dorme non piglia pesci"], ["🐢", "Chi va piano va sano e va lontano"], ["🥚", "Meglio un uovo oggi che una gallina domani"], ["🍝", "L'appetito vien mangiando"],
+      ["🐕", "Can che abbaia non morde"], ["💍", "Tra moglie e marito non mettere il dito"], ["🤝", "Chi trova un amico trova un tesoro"], ["🏁", "Chi ben comincia è a metà dell'opera"],
+      ["🐴", "A caval donato non si guarda in bocca"], ["🎨", "Non è bello ciò che è bello, ma è bello ciò che piace"], ["🐺", "Il lupo perde il pelo ma non il vizio"], ["🐦", "Una rondine non fa primavera"],
+      ["🌅", "Rosso di sera, bel tempo si spera"], ["💪", "Chi la dura la vince"], ["😄", "Ride bene chi ride ultimo"], ["🌍", "Paese che vai, usanza che trovi"],
+      ["🛣️", "Tutte le strade portano a Roma"], ["🎄", "Natale con i tuoi, Pasqua con chi vuoi"], ["🐔", "Gallina vecchia fa buon brodo"], ["🛠️", "Chi fa da sé fa per tre"],
+      ["🌱", "L'erba del vicino è sempre più verde"], ["🌪️", "Chi semina vento raccoglie tempesta"], ["🌅", "Il mattino ha l'oro in bocca"], ["🍎", "Una mela al giorno toglie il medico di torno"],
+      ["⏳", "Chi tardi arriva male alloggia"], ["🌊", "Dal dire al fare c'è di mezzo il mare"], ["🕊️", "Chi si somiglia si piglia"], ["🗣️", "A buon intenditor poche parole"],
+      ["☀️", "Il buongiorno si vede dal mattino"], ["💰", "Il tempo è denaro"] ] },
+    'modi-di-dire': { name: "Modi di dire", icon: '💬', levels: ['adulti'], items: [
+      ["🕊️", "Prendere due piccioni con una fava: ottenere due risultati con una sola azione"], ["🌧️", "Piove sul bagnato: capita ancora a chi ne ha già tanto"], ["🐺", "In bocca al lupo! Buona fortuna (e si risponde «crepi»)"],
+      ["💰", "Costare un occhio della testa: costare moltissimo"], ["💸", "Essere al verde: non avere più soldi"], ["🥣", "Avere le mani in pasta: essere dentro a una faccenda"],
+      ["🐕", "Menare il can per l'aia: girarci intorno senza decidere"], ["🗣️", "Non avere peli sulla lingua: dire sempre ciò che si pensa"], ["💧", "Una goccia nel mare: una cosa piccolissima rispetto al tutto"],
+      ["🏳️", "Gettare la spugna: arrendersi"], ["🧊", "Rompere il ghiaccio: iniziare a conversare"], ["🦵", "Fare il passo più lungo della gamba: osare più del possibile"],
+      ["🐐", "Salvare capra e cavoli: risolvere senza perdere nulla"], ["🛏️", "Dormire tra due guanciali: stare tranquilli"], ["☁️", "Cadere dalle nuvole: stupirsi"],
+      ["🌊", "Essere in alto mare: essere lontano dalla soluzione"], ["🙉", "Fare orecchie da mercante: far finta di non sentire"], ["🐂", "Mettere il carro davanti ai buoi: fare le cose nell'ordine sbagliato"],
+      ["🐮", "Prendere il toro per le corna: affrontare un problema"], ["🔩", "Chiodo scaccia chiodo: un nuovo amore fa dimenticare il vecchio"], ["⚔️", "Essere sul piede di guerra: pronto allo scontro"],
+      ["🌾", "Avere la coda di paglia: sentirsi in colpa"], ["🪓", "Tagliare la testa al toro: decidere in fretta"] ] },
+    'musica': { name: "Musica", icon: '🎵', levels: ['adulti'], items: [
+      ["🎹", "Il pianoforte ha 88 tasti"], ["🎻", "Il violino ha 4 corde"], ["🎸", "La chitarra classica ha 6 corde"], ["🎼", "Il pentagramma ha 5 righe"],
+      ["🎵", "Le note sono sette: do, re, mi, fa, sol, la, si"], ["⏱️", "Il metronomo serve a battere il tempo"], ["🎭", "Giuseppe Verdi compose La traviata"], ["🎭", "Giacomo Puccini compose Tosca"],
+      ["🎭", "Gioachino Rossini compose Il barbiere di Siviglia"], ["🎻", "Antonio Vivaldi compose Le quattro stagioni"], ["🎹", "Mozart nacque a Salisburgo"], ["🎼", "Beethoven compose la Nona sinfonia quando era già sordo"],
+      ["🎤", "Luciano Pavarotti era un tenore di Modena"], ["🎤", "Domenico Modugno cantò «Nel blu dipinto di blu»"], ["🎙️", "Il Festival di Sanremo nasce nel 1951"], ["🇮🇹", "I Måneskin hanno vinto l'Eurovision nel 2021"],
+      ["🎤", "Gigliola Cinquetti vinse l'Eurovision nel 1964 con «Non ho l'età»"], ["🎤", "Toto Cutugno vinse l'Eurovision nel 1990 con «Insieme: 1992»"], ["🎙️", "Mina è soprannominata «la Tigre di Cremona»"], ["🎤", "Adriano Celentano canta «Azzurro»"],
+      ["🎤", "Lucio Battisti cantò «Emozioni»"], ["🎸", "Vasco Rossi cantò «Vita spericolata»"], ["🎤", "Lucio Dalla cantò «Caruso»"], ["🎤", "Fabrizio De André cantò «La canzone di Marinella»"],
+      ["🎤", "Laura Pausini vinse Sanremo Giovani nel 1993 con «La solitudine»"], ["🎸", "I Beatles erano di Liverpool"], ["🎤", "Freddie Mercury era la voce dei Queen"], ["🕺", "Michael Jackson pubblicò l'album Thriller nel 1982"],
+      ["👑", "Elvis Presley è chiamato «il Re del rock and roll»"], ["🎶", "Gli ABBA cantavano «Dancing Queen»"], ["🌈", "«The Dark Side of the Moon» dei Pink Floyd è tra gli album più venduti"], ["🎷", "Il sassofono è uno strumento a fiato"],
+      ["🥁", "La batteria si suona con le bacchette"], ["🪕", "Il mandolino è uno strumento tipico napoletano"], ["💃", "La pizzica è la danza tradizionale del Salento"], ["☀️", "«O sole mio» è una canzone napoletana"],
+      ["🎤", "Eros Ramazzotti cantò «Terra promessa»"], ["🎙️", "Zucchero cantò «Senza una donna»"] ] },
+    'sport': { name: "Sport", icon: '⚽', levels: ['adulti'], items: [
+      ["⚽", "L'Italia ha vinto 4 Mondiali di calcio: 1934, 1938, 1982 e 2006"], ["🏆", "Nel 2006 l'Italia vinse il Mondiale ai rigori contro la Francia"], ["🇮🇹", "Nel 2021 l'Italia vinse gli Europei a Wembley, ai rigori"], ["⚽", "In campo una squadra di calcio ha 11 giocatori"],
+      ["🏀", "In campo una squadra di basket ha 5 giocatori"], ["🏐", "Nella pallavolo si gioca in 6 per squadra"], ["🏉", "Nel rugby ogni squadra ha 15 giocatori"], ["🏃", "La maratona è lunga 42,195 chilometri"],
+      ["🥇", "Le Olimpiadi si svolgono ogni 4 anni"], ["🏔️", "Milano e Cortina hanno ospitato le Olimpiadi invernali del 2026"], ["🚴", "Al Giro d'Italia il leader indossa la maglia rosa"], ["🚴", "Al Tour de France il leader indossa la maglia gialla"],
+      ["🚴", "Marco Pantani nel 1998 vinse Giro d'Italia e Tour de France"], ["🚴", "Fausto Coppi era detto «il Campionissimo»"], ["🏍️", "Valentino Rossi ha vinto 9 titoli mondiali"], ["🏎️", "La Ferrari è l'unica scuderia presente in tutte le stagioni di Formula 1"],
+      ["🏎️", "Michael Schumacher ha vinto 7 titoli mondiali di Formula 1"], ["🎾", "Jannik Sinner ha vinto l'Australian Open"], ["🎾", "Il torneo di Wimbledon si gioca sull'erba"], ["🎾", "Il Roland Garros si gioca sulla terra rossa"],
+      ["🎾", "I tornei del Grande Slam nel tennis sono 4"], ["⛳", "Il campo da golf ha di solito 18 buche"], ["🏊", "Gli stili del nuoto sono 4: libero, dorso, rana e farfalla"], ["🏃", "Marcell Jacobs ha vinto i 100 metri alle Olimpiadi di Tokyo"],
+      ["🦘", "A Tokyo Tamberi e Barshim hanno diviso l'oro nel salto in alto"], ["🏃", "Pietro Mennea detenne il record dei 200 metri per 17 anni"], ["🏊", "Federica Pellegrini vinse l'oro olimpico nei 200 stile libero nel 2008"], ["⛷️", "Alberto Tomba era soprannominato «la Bomba»"],
+      ["⚽", "Roberto Baggio vinse il Pallone d'Oro nel 1993"], ["⚽", "Maradona con il Napoli vinse due scudetti"], ["⚽", "Il Milan ha vinto 7 Champions League"], ["⚽", "L'Inter ha vinto 3 Champions League"],
+      ["⚽", "La Juventus ha vinto 2 Champions League"], ["🏀", "Michael Jordan ha vinto 6 titoli NBA"], ["⚽", "Pelé ha vinto 3 Mondiali con il Brasile"], ["🏐", "Nel 2024 la nazionale femminile di pallavolo ha vinto l'oro olimpico a Parigi"] ] },
+    'cinema': { name: "Cinema e TV", icon: '🎬', levels: ['adulti'], items: [
+      ["🎬", "Federico Fellini diresse «La dolce vita»"], ["🎬", "Roberto Benigni vinse l'Oscar nel 1999 con «La vita è bella»"], ["🎬", "Paolo Sorrentino vinse l'Oscar con «La grande bellezza»"], ["🎬", "Giuseppe Tornatore diresse «Nuovo Cinema Paradiso»"],
+      ["🎬", "Sergio Leone diresse «C'era una volta il West»"], ["🎭", "Totò era detto «il principe della risata»"], ["🚗", "Alberto Sordi interpretò «Un americano a Roma»"], ["💃", "Sophia Loren vinse l'Oscar per «La ciociara»"],
+      ["🎬", "Checco Zalone interpretò «Quo vado?»"], ["🌹", "Nanni Moretti diresse «Caro diario»"], ["🕵️", "Luca Zingaretti è il commissario Montalbano"], ["⛪", "Terence Hill è Don Matteo in TV"],
+      ["🎤", "Mike Bongiorno apriva i quiz con «Allegria!»"], ["🎙️", "Pippo Baudo ha condotto il Festival di Sanremo 13 volte"], ["👔", "«Il padrino» è di Francis Ford Coppola"], ["🚢", "«Titanic» vinse 11 Oscar"],
+      ["⚔️", "Il protagonista de «Il gladiatore» è Massimo Decimo Meridio"], ["🚗", "In «Ritorno al futuro» la macchina del tempo è una DeLorean"], ["🍫", "«La vita è come una scatola di cioccolatini» è in «Forrest Gump»"], ["🌌", "«Che la Forza sia con te» è di «Guerre stellari»"],
+      ["🧙", "La saga di Harry Potter ha 7 libri"], ["💍", "«Il signore degli anelli» ha 3 film"], ["👑", "«Game of Thrones» ha 8 stagioni"], ["🟡", "I Simpson vivono a Springfield"],
+      ["🛋️", "La serie «Friends» è ambientata a New York"], ["🦈", "«Lo squalo» è di Steven Spielberg"], ["👽", "«E.T.» è di Steven Spielberg"], ["📚", "«Il nome della rosa» è tratto dal romanzo di Umberto Eco"],
+      ["🦁", "Il Leone d'oro è il premio della Mostra del cinema di Venezia"], ["🏆", "Gli Oscar si assegnano a Hollywood"] ] },
+    'sapori': { name: "Sapori d'Italia", icon: '🍝', levels: ['adulti'], items: [
+      ["🍝", "La carbonara si fa con guanciale, uova e pecorino: niente panna!"], ["🍰", "Il tiramisù si fa con mascarpone e caffè"], ["🍕", "L'arte dei pizzaiuoli napoletani è patrimonio UNESCO"], ["🧀", "Il Parmigiano Reggiano stagiona almeno 12 mesi"],
+      ["🌿", "Il pesto alla genovese si fa con basilico, pinoli e olio"], ["🍚", "Il risotto alla milanese si colora con lo zafferano"], ["🥣", "Le orecchiette sono una pasta pugliese"], ["🧀", "La burrata nasce in Puglia"],
+      ["🎄", "Il panettone è un dolce di Milano"], ["🎄", "Il pandoro è un dolce di Verona"], ["🥘", "La lasagna è un piatto tipico dell'Emilia-Romagna"], ["🍝", "L'amatriciana prende il nome da Amatrice"],
+      ["🧀", "La cacio e pepe è un piatto romano"], ["🍷", "Il Primitivo di Manduria è un vino pugliese"], ["🧀", "La mozzarella di bufala è della Campania"], ["🍋", "Il limoncello è un liquore al limone tipico della Campania"],
+      ["🥮", "I cannoli sono un dolce siciliano"], ["🍰", "La cassata è un dolce siciliano"], ["🍙", "Gli arancini sono un piatto siciliano"], ["🍲", "La ribollita è una zuppa toscana"],
+      ["🍷", "Il Chianti è un vino toscano"], ["🍷", "Il Barolo è un vino piemontese"], ["🥂", "Il Prosecco è uno spumante veneto"], ["🫒", "La Puglia è la prima regione italiana per la produzione di olio"],
+      ["🍞", "La focaccia barese si fa con pomodorini e olive"], ["☕", "L'espresso si beve al banco, in piedi"], ["🥟", "I tortellini sono un piatto emiliano"], ["🌶️", "La 'nduja è un salume calabrese piccante"],
+      ["🍨", "Il gelato italiano è famoso in tutto il mondo"], ["🥔", "Gli gnocchi si fanno con le patate"] ] },
+    'capitali': { name: "Capitali e curiosità del mondo", icon: '🌍', levels: ['adulti'], items: [
+      ["🗼", "La capitale della Francia è Parigi"], ["🇬🇧", "La capitale del Regno Unito è Londra"], ["🇩🇪", "La capitale della Germania è Berlino"], ["🇪🇸", "La capitale della Spagna è Madrid"],
+      ["🇵🇹", "La capitale del Portogallo è Lisbona"], ["🇬🇷", "La capitale della Grecia è Atene"], ["🇦🇹", "La capitale dell'Austria è Vienna"], ["🇨🇭", "La capitale della Svizzera è Berna"],
+      ["🇧🇪", "La capitale del Belgio è Bruxelles"], ["🇳🇱", "La capitale dei Paesi Bassi è Amsterdam"], ["🇸🇪", "La capitale della Svezia è Stoccolma"], ["🇳🇴", "La capitale della Norvegia è Oslo"],
+      ["🇵🇱", "La capitale della Polonia è Varsavia"], ["🇭🇺", "La capitale dell'Ungheria è Budapest"], ["🇨🇿", "La capitale della Repubblica Ceca è Praga"], ["🇹🇷", "La capitale della Turchia è Ankara"],
+      ["🇪🇬", "La capitale dell'Egitto è Il Cairo"], ["🇯🇵", "La capitale del Giappone è Tokyo"], ["🇨🇦", "La capitale del Canada è Ottawa"], ["🇦🇺", "La capitale dell'Australia è Canberra"],
+      ["🇧🇷", "La capitale del Brasile è Brasilia"], ["🇺🇸", "La capitale degli Stati Uniti è Washington"], ["🇷🇺", "La capitale della Russia è Mosca"], ["🇮🇳", "La capitale dell'India è Nuova Delhi"],
+      ["🇨🇳", "La capitale della Cina è Pechino"], ["🏔️", "Il Monte Everest supera gli 8.800 metri"], ["🏜️", "Il Sahara è il più grande deserto caldo del mondo"], ["🏛️", "Il Vaticano è lo Stato più piccolo del mondo"],
+      ["🏰", "San Marino è una delle repubbliche più antiche del mondo"], ["🚤", "Venezia è costruita su oltre cento isolette"], ["🗼", "La Torre di Pisa è pendente"], ["🌍", "L'Africa ha 54 Stati"],
+      ["🌎", "Il Rio delle Amazzoni attraversa il Brasile"], ["🌊", "L'oceano più grande è il Pacifico"], ["🗽", "La Statua della Libertà è a New York"], ["🌉", "Il Golden Gate è a San Francisco"] ] },
+    'cultura': { name: "Storia, arte e scienza", icon: '🏛️', levels: ['adulti'], items: [
+      ["🌎", "Cristoforo Colombo arrivò in America nel 1492"], ["🇫🇷", "La Rivoluzione francese iniziò nel 1789"], ["🇮🇹", "L'Italia fu unita nel 1861"], ["🧱", "Il muro di Berlino cadde nel 1989"],
+      ["🌙", "Il primo uomo sulla Luna arrivò nel 1969"], ["🖼️", "Leonardo da Vinci dipinse la Gioconda"], ["🗿", "Michelangelo scolpì il David"], ["📖", "Dante scrisse la Divina Commedia"],
+      ["🔭", "Galileo Galilei perfezionò il telescopio"], ["📡", "Guglielmo Marconi ricevette il Nobel per la fisica nel 1909"], ["💶", "L'euro circola dal 2002"], ["🇪🇺", "L'Unione europea ha 27 Stati"],
+      ["🗳️", "Il 2 giugno 1946 gli italiani scelsero la Repubblica"], ["🧬", "Il DNA ha la forma di una doppia elica"], ["🧠", "Einstein formulò la teoria della relatività"], ["🚢", "Il Titanic affondò nel 1912"],
+      ["👑", "Napoleone fu sconfitto a Waterloo nel 1815"], ["⚔️", "La Prima guerra mondiale durò dal 1914 al 1918"], ["🕊️", "La Seconda guerra mondiale finì nel 1945"], ["📚", "Gutenberg inventò la stampa a caratteri mobili"],
+      ["🎨", "Caravaggio è famoso per i forti contrasti di luce"], ["🌅", "Il Rinascimento nacque in Italia"], ["🎭", "Shakespeare scrisse «Romeo e Giulietta»"], ["📜", "Alessandro Manzoni scrisse «I promessi sposi»"],
+      ["🍎", "Isaac Newton formulò la legge di gravitazione"], ["🧪", "Marie Curie vinse due premi Nobel"], ["🏛️", "Il Pantheon è a Roma"], ["🌋", "Pompei fu distrutta dall'eruzione del Vesuvio nel 79 d.C."],
+      ["🐺", "Secondo la leggenda Roma fu fondata nel 753 a.C."], ["🔋", "Alessandro Volta inventò la pila"] ] },
+    'puglia': { name: "Puglia e dintorni", icon: '🫒', levels: ['adulti'], items: [
+      ["🏠", "Ad Alberobello ci sono i trulli, patrimonio UNESCO"], ["🏰", "Castel del Monte fu voluto da Federico II"], ["⛪", "Lecce è chiamata la «Firenze del Sud»"], ["🤍", "Ostuni è la «città bianca»"],
+      ["🎤", "Domenico Modugno era di Polignano a Mare"], ["🌊", "Polignano a Mare è famosa per le scogliere e le grotte"], ["🍞", "Bari è la città di San Nicola e della focaccia"], ["🌅", "Il Gargano è lo sperone dello stivale"],
+      ["💃", "La pizzica è la danza del Salento"], ["🌳", "In Puglia ci sono milioni di ulivi"], ["🍷", "Il Primitivo è un vino di Manduria"], ["🥣", "Le orecchiette con le cime di rapa sono il piatto simbolo pugliese"],
+      ["🌉", "Taranto è chiamata la «città dei due mari»"], ["🏞️", "Ginosa è conosciuta per le sue gravine"], ["🎬", "Rodolfo Valentino nacque a Castellaneta"], ["🏖️", "Il Salento ha spiagge bianche e mare cristallino"],
+      ["🕳️", "Le grotte di Castellana sono tra le più belle d'Italia"], ["🏛️", "Matera, vicina alla Puglia, è famosa per i Sassi"], ["🧀", "La burrata è nata nelle campagne di Andria"] ] }
+  };
+
   // ---------- API ----------
-  const ALL = Object.assign({}, GEN, LISTE);
+  const ALL = Object.assign({}, GEN, LISTE, ADULTI);
   Object.keys(ALL).forEach(k => { ALL[k].key = k; });
 
   const themesFor = level => Object.keys(ALL).filter(k => ALL[k].levels.includes(level)).map(k => ({ key: k, name: ALL[k].name, icon: ALL[k].icon }));
