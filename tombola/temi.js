@@ -648,6 +648,82 @@
       ["💗", "«Siate misericordiosi, come è misericordioso il Padre vostro» (Lc 6,36)"], ["💞", "«Amatevi gli uni gli altri come io ho amato voi» (Gv 13,34)"] ] }
   };
 
+  // ---------- matematica, statistica e informatica (adulti) ----------
+  // Oltre alle frasi fisse, alcune «frasi vive» sono calcolate sui numeri usciti nella partita in corso
+  // (probabilità di ambo, terno... dopo N estrazioni, medie, pari e dispari). Valgono per la tombola classica da 90 numeri.
+  const LF = [0]; for (let i = 1; i <= 100; i++) LF[i] = LF[i - 1] + Math.log(i);
+  const lC = (n, r) => (r < 0 || r > n) ? -Infinity : LF[n] - LF[r] - LF[n - r];
+  // distribuzione ipergeometrica: pesco m numeri su N; K sono «i miei»; probabilità di averne almeno j tra i pescati
+  const atLeast = (N, K, m, j) => { let p = 0; for (let x = j; x <= Math.min(K, m); x++) p += Math.exp(lC(K, x) + lC(N - K, m - x) - lC(N, m)); return Math.min(1, p); };
+  const fmtPct = p => {
+    const v = p * 100;
+    if (v > 0 && v < 0.001) return 'meno di 0,001%';
+    let s = v >= 10 ? v.toFixed(1) : v >= 0.1 ? v.toFixed(2) : v.toFixed(3);
+    if (s.includes('.')) s = s.replace(/0+$/, '').replace(/\\.$/, '');
+    return s.replace('.', ',') + '%';
+  };
+  const fmt1 = x => x.toFixed(1).replace('.', ',');
+  // Frase viva: riceve il numero n e la partita ({ drawn, max }); restituisce { e, t } oppure null (allora si usa una frase fissa).
+  const viva = fn => (n, ctx) => {
+    if (!ctx || ctx.max !== 90) return null;
+    const k = ctx.drawn.indexOf(n) + 1;
+    return k ? fn(n, k, ctx.drawn.slice(0, k)) : null;
+  };
+  const probRiga = (j, label, emoji) => viva((n, k) => {
+    const p = atLeast(90, 5, k, j);
+    return p > 0 ? { e: emoji, t: `Dopo ${k} estrazioni, una riga di 5 numeri ha già fatto ${label} con probabilità ${fmtPct(p)}` } : null;
+  });
+  const MATE_DYN = [
+    viva((n, k) => ({ e: '🎯', t: `Il ${n} è uscito all'estrazione numero ${k}: la probabilità era 1 su ${91 - k}, cioè ${fmtPct(1 / (91 - k))}` })),
+    viva((n, k) => k < 90 ? { e: '🔢', t: `Dopo ${k} estrazioni restano ${90 - k} numeri: ognuno ha ${fmtPct(1 / (90 - k))} di probabilità di uscire alla prossima` } : null),
+    viva((n, k, pre) => { const e = pre.filter(x => x % 2 === 0).length; return k >= 4 ? { e: '⚖️', t: `Sono usciti ${e} numeri pari e ${k - e} dispari: a metà strada ne attenderemmo ${fmt1(k / 2)} per tipo` } : null; }),
+    viva((n, k, pre) => k >= 5 ? { e: '📊', t: `La media dei ${k} numeri usciti è ${fmt1(pre.reduce((a, b) => a + b, 0) / k)}: il valore atteso è 45,5` } : null),
+    viva((n, k, pre) => k >= 5 ? { e: '↕️', t: `Finora il numero più basso uscito è il ${Math.min(...pre)} e il più alto il ${Math.max(...pre)}` } : null),
+    viva((n, k, pre) => {
+      if (k < 8) return null;
+      const c = Array(9).fill(0); pre.forEach(x => c[Math.floor((x - 1) / 10)]++);
+      const d = c.indexOf(Math.max(...c));
+      return { e: '🌡️', t: `La decina più «calda» finora è ${d * 10 + 1}-${d * 10 + 10}, con ${c[d]} numeri usciti` };
+    }),
+    viva((n, k, pre) => { const rem = 90 - k; if (rem <= 0) return null; const alti = 45 - pre.filter(x => x > 45).length; return { e: '🎲', t: `Probabilità che il prossimo numero sia maggiore di 45: ${fmtPct(alti / rem)}` }; }),
+    viva((n, k) => ({ e: '🧮', t: `Dopo ${k} estrazioni una cartella da 15 numeri ha in media ${fmt1(15 * k / 90)} numeri già usciti` })),
+    probRiga(2, 'almeno ambo', '✌️'),
+    probRiga(3, 'almeno terno', '🥉'),
+    probRiga(4, 'almeno quaterna', '🥈'),
+    probRiga(5, 'cinquina (riga completa)', '🥇'),
+    viva((n, k) => { const p = atLeast(90, 15, k, 15); return p > 0 ? { e: '🏆', t: `Dopo ${k} estrazioni una cartella da 15 numeri è completa (tombola) con probabilità ${fmtPct(p)}` } : null; }),
+    viva((n, k) => k < 90 ? { e: '⏳', t: `Un numero specifico non è ancora uscito dopo ${k} estrazioni con probabilità ${fmtPct((90 - k) / 90)}` } : null)
+  ];
+  const MATEMATICA = {
+    'matematica': { name: "Matematica, statistica e informatica", icon: '📐', levels: ['adulti'], dyn: MATE_DYN, items: [
+      ["🎂", "Paradosso del compleanno: bastano 23 persone per avere più del 50% di probabilità che due compleanni coincidano"], ["🚪", "Problema di Monty Hall: cambiando porta si vince 2 volte su 3"],
+      ["🪙", "Legge dei grandi numeri: con molte prove la frequenza si avvicina alla probabilità"], ["🧠", "Nella tombola i numeri non hanno memoria: nessun numero è «in ritardo»"],
+      ["🎲", "Pascal e Fermat fondarono la teoria della probabilità nel 1654, scrivendosi lettere sui giochi d'azzardo"], ["📜", "Gerolamo Cardano scrisse un trattato sul gioco d'azzardo, il «Liber de ludo aleae»"],
+      ["🔔", "La curva a campana è la distribuzione normale di Gauss"], ["📏", "La deviazione standard misura quanto i dati si disperdono attorno alla media"],
+      ["➗", "La media aritmetica è la somma dei valori divisa per il loro numero"], ["🎯", "La mediana è il valore centrale, la moda è il valore più frequente"],
+      ["🧮", "Il valore atteso è la media dei risultati pesata sulle probabilità"], ["♻️", "La tombola è un'estrazione senza reinserimento: segue la distribuzione ipergeometrica"],
+      ["🔗", "Il teorema di Bayes aggiorna una probabilità alla luce di nuove informazioni"], ["🏛️", "Kolmogorov formalizzò la teoria della probabilità nel 1933"],
+      ["🔬", "Jakob Bernoulli dimostrò la legge dei grandi numeri"], ["📐", "Laplace scrisse la «Teoria analitica delle probabilità» nel 1812"],
+      ["🩺", "Florence Nightingale usò i grafici statistici per migliorare gli ospedali"], ["🌾", "Ronald Fisher è considerato uno dei padri della statistica moderna"],
+      ["🧪", "Il p-value misura quanto un risultato sarebbe sorprendente se contasse solo il caso"], ["🔄", "Correlazione non significa causalità"],
+      ["🔀", "Il paradosso di Simpson: un andamento può invertirsi quando si uniscono i dati di gruppi diversi"], ["🧑‍🔬", "Un campione deve essere rappresentativo della popolazione"],
+      ["🔔", "Il teorema del limite centrale: la somma di molte variabili casuali tende alla curva normale"], ["1️⃣", "Legge di Benford: la cifra 1 compare come prima cifra in circa il 30% dei dati reali"],
+      ["🔢", "Le possibili coppie di numeri su 90 sono 4.005: tanti sono gli ambi diversi"], ["🔢", "I terni possibili sono 117.480"],
+      ["🔢", "Le quaterne possibili sono 2.555.190"], ["🔢", "Le cinquine possibili sono 43.949.268"],
+      ["♾️", "I modi di estrarre i 90 numeri sono 90 fattoriale: un numero di 139 cifre"], ["⏱️", "In media servono circa 85 estrazioni per completare una cartella da 15 numeri"],
+      ["🕐", "Dopo 45 estrazioni ogni numero ha il 50% di probabilità di essere già uscito"], ["➕", "La somma dei numeri da 1 a 90 è 4.095"],
+      ["🧒", "Il piccolo Gauss sommò i numeri da 1 a 100 in un attimo: fa 5.050"], ["🧩", "Il 90 si scompone in 2 per 3 per 3 per 5 e ha 12 divisori"],
+      ["♾️", "I numeri primi sono infiniti: lo dimostrò Euclide"], ["🥧", "Pi greco ha infinite cifre decimali senza periodo: 3,14159..."],
+      ["🌀", "La successione di Fibonacci: 1, 1, 2, 3, 5, 8, 13, 21..."], ["📖", "Fibonacci portò in Europa i numeri arabi con il «Liber abaci» nel 1202"],
+      ["🔺", "Teorema di Pitagora: il quadrato dell'ipotenusa è la somma dei quadrati dei cateti"], ["🌀", "La congettura di Collatz: se pari dividi per 2, se dispari moltiplica per 3 e aggiungi 1"],
+      ["🔟", "Il 90 in binario si scrive 1011010 e in esadecimale 5A"], ["💾", "Un bit vale 0 o 1; otto bit formano un byte, che arriva fino a 255"],
+      ["🤖", "Alan Turing descrisse la macchina che porta il suo nome nel 1936"], ["👩‍💻", "Ada Lovelace scrisse il primo programma della storia per la macchina analitica di Babbage"],
+      ["🪲", "Il primo «bug» informatico fu una falena trovata in un computer nel 1947"], ["⚙️", "La parola «algoritmo» deriva dal nome del matematico al-Khwarizmi"],
+      ["👩‍🔧", "Grace Hopper sviluppò uno dei primi compilatori"], ["🐍", "Il linguaggio Python prende il nome dai Monty Python"],
+      ["🌐", "Il Web fu inventato da Tim Berners-Lee al CERN nel 1989"], ["🎰", "Un computer genera numeri pseudocasuali: seguono una formula, ma sembrano casuali"],
+      ["🔀", "L'algoritmo di Fisher-Yates mescola un elenco in modo uniforme"], ["❓", "«P contro NP» è uno dei sette problemi del millennio"] ] }
+  };
+
   // ---------- temi per adulti (tombola classica) ----------
   const ADULTI = {
     'verita': { name: "Verità universali", icon: '😂', levels: ['adulti'], items: [
@@ -753,18 +829,18 @@
   };
 
   // ---------- API ----------
-  const ALL = Object.assign({}, GEN, LISTE, CARTONI, CARTONI_OGGI, FESTE, GIOCHI, ANIME, MURPHY, SCUOLA_CARTONI, ANIMALI, REGIONI, FEDE, ADULTI);
+  const ALL = Object.assign({}, GEN, LISTE, CARTONI, CARTONI_OGGI, FESTE, GIOCHI, ANIME, MURPHY, SCUOLA_CARTONI, ANIMALI, REGIONI, FEDE, MATEMATICA, ADULTI);
   Object.keys(ALL).forEach(k => { ALL[k].key = k; });
 
   // Categorie per ordinare i menu (un tema sta in una sola categoria).
   const C = { mix: '🎲 Mix di temi', scuola: '📚 Scuola', cartoni: '📺 Cartoni, giochi e supereroi', animali: '🐾 Animali', regioni: "🇮🇹 Regioni d'Italia",
-              feste: '🎉 Feste e tradizioni', fede: '✝️ Santi, Chiesa e Vangelo', divertente: '😂 Divertente', cultura: '🎵 Cultura e passioni', mio: '✏️ I miei temi' };
-  const CATEGORIES = [C.mix, C.scuola, C.cartoni, C.animali, C.regioni, C.feste, C.fede, C.divertente, C.cultura, C.mio];
+              feste: '🎉 Feste e tradizioni', fede: '✝️ Santi, Chiesa e Vangelo', divertente: '😂 Divertente', cultura: '🎵 Cultura e passioni', mate: '📐 Matematica e statistica', mio: '✏️ I miei temi' };
+  const CATEGORIES = [C.mix, C.scuola, C.cartoni, C.animali, C.regioni, C.feste, C.fede, C.divertente, C.cultura, C.mate, C.mio];
   const CAT_KEYS = {
     [C.animali]: ['animali-versi', 'animali-classi', 'animali-curiosita', 'cuccioli', 'animali-habitat', 'dinosauri-tema', 'animali-modi-di-dire'],
     [C.cartoni]: ['cartoni', 'disney', 'cartoni-oggi', 'cartoni-80-90', 'ghibli', 'anime-classici', 'anime-oggi', 'super-mario', 'roblox', 'one-piece', 'minecraft', 'supereroi',
                   'conta-cartoni', 'problemi-piccoli', 'problemi-grandi', 'alfabeto-cartoni', 'colori-cartoni', 'cartoni-nel-mondo', 'inglese-cartoni'],
-    [C.feste]: ['feste'], [C.fede]: ['santi', 'chiesa', 'gesu'], [C.divertente]: ['verita', 'mamma', 'proverbi', 'modi-di-dire', 'murphy'], [C.cultura]: ['musica', 'sport', 'cinema', 'sapori', 'capitali', 'cultura']
+    [C.mate]: ['matematica'], [C.feste]: ['feste'], [C.fede]: ['santi', 'chiesa', 'gesu'], [C.divertente]: ['verita', 'mamma', 'proverbi', 'modi-di-dire', 'murphy'], [C.cultura]: ['musica', 'sport', 'cinema', 'sapori', 'capitali', 'cultura']
   };
   function catOf(key) {
     if (key.startsWith('mix-')) return C.mix;
@@ -799,15 +875,17 @@
 
   // Voce per il numero n del tema: { e: emoji, t: frase, sp?: testo da leggere, spk?: [[testo, lingua]] }
   // idx (facoltativo) sceglie la frase dell'elenco al posto di quella «di default» del numero.
-  function entry(key, n, idx) {
+  // ctx (facoltativo) = { drawn, max }: serve ai temi con «frasi vive» calcolate sulla partita in corso.
+  function entry(key, n, idx, ctx) {
     const th = ALL[key]; if (!th) return null;
     if (th.f) return th.f(n);
-    const L = th.items.length, i = idx != null ? idx : n - 1;
-    const it = th.items[((i % L) + L) % L];
+    const S = th.items.length, dn = th.dyn || [], L = S + dn.length, i = idx != null ? idx : n - 1, j = ((i % L) + L) % L;
+    if (j >= S) { const r = dn[j - S](n, ctx); if (r) return r; }   // frase viva; se non si può calcolare, una frase fissa
+    const it = th.items[j % S];
     return { e: it[0], t: it[1] };
   }
   // Quante frasi ha un tema a elenco (0 per i temi generati dal numero, che sono già tutti diversi).
-  const size = key => (ALL[key] && ALL[key].items) ? ALL[key].items.length : 0;
+  const size = key => { const t = ALL[key]; return t && t.items ? t.items.length + (t.dyn ? t.dyn.length : 0) : 0; };
 
   // Tema a caso per la classe, diverso dal precedente se possibile.
   function pick(level, avoid) {
