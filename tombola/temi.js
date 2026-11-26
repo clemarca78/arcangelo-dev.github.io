@@ -457,6 +457,53 @@
       ["🦸", "Hero vuol dire eroe"], ["🧙", "Wizard vuol dire mago"], ["🐢", "Turtle vuol dire tartaruga, come nelle Tartarughe Ninja"], ["🍌", "Banana si scrive uguale in inglese, come per i Minions"] ] }
   };
 
+  // ---------- animali ----------
+  const ANIMALI = {
+    'animali-curiosita': { name: "Curiosità sugli animali", icon: '🐾', levels: TUTTI, items: [
+      ["🐆", "Il ghepardo è l'animale terrestre più veloce"], ["🐋", "La balenottera azzurra è l'animale più grande del mondo"], ["🐦", "Il colibrì può volare anche all'indietro"], ["🐙", "Il polpo ha tre cuori"],
+      ["🦒", "Le giraffe dormono pochissimo"], ["🦒", "La giraffa ha sette vertebre nel collo, come noi"], ["🐘", "L'elefante è il più grande animale terrestre"], ["🐘", "Gli elefanti hanno una memoria eccezionale"],
+      ["🐝", "Le api comunicano con una danza"], ["🐝", "In un alveare c'è una sola regina"], ["🦎", "Il camaleonte cambia colore"], ["🐕", "Il cane ha un olfatto potentissimo"],
+      ["🦇", "I pipistrelli si orientano con gli ultrasuoni"], ["🐬", "I delfini dormono con metà cervello alla volta"], ["🐜", "Una formica può portare fino a 50 volte il proprio peso"], ["🐈", "Il gatto fa le fusa quando è contento"],
+      ["🦘", "Il canguro porta il cucciolo nel marsupio"], ["🐨", "Il koala dorme fino a 20 ore al giorno"], ["🐧", "Il papà pinguino imperatore cova l'uovo sui piedi"], ["🐢", "Alcune tartarughe vivono più di 100 anni"],
+      ["🌊", "Nel cavalluccio marino è il papà a portare i piccoli"], ["🦔", "Il riccio si appallottola quando ha paura"], ["🦅", "L'aquila ha una vista acutissima"], ["🐌", "La lumaca si porta la casa sulla schiena"],
+      ["🦉", "Il gufo può ruotare molto la testa"], ["🕷️", "Il ragno non è un insetto: ha otto zampe"], ["🦋", "La farfalla nasce da un bruco"], ["🐸", "La rana da piccola è un girino"],
+      ["🐟", "Il salmone nuota controcorrente per tornare dove è nato"], ["🕊️", "La rondine d'inverno migra verso l'Africa"], ["🐻", "In inverno l'orso va in letargo"], ["🐿️", "Lo scoiattolo nasconde le ghiande per l'inverno"],
+      ["🐪", "Il dromedario ha una gobba, il cammello ne ha due"], ["🦓", "Ogni zebra ha strisce diverse dalle altre"], ["🐠", "Il pesce pagliaccio vive tra le anemoni di mare"], ["🐼", "Il panda mangia soprattutto bambù"],
+      ["🦏", "Il corno del rinoceronte è fatto della stessa sostanza delle unghie"], ["🐄", "La mucca ha uno stomaco con quattro scomparti"], ["🐍", "Il serpente non ha le palpebre"], ["🐯", "Ogni tigre ha strisce uniche"],
+      ["🐱", "Si dice che il gatto abbia sette vite"], ["🦁", "Il leone dorme molte ore al giorno"] ] },
+    'cuccioli': { name: "I cuccioli degli animali", icon: '🍼', levels: ['asilo', '1', '2', '3'], items: [
+      ["🐴", "Il cucciolo del cavallo è il puledro"], ["🐄", "Il cucciolo della mucca è il vitello"], ["🐑", "Il cucciolo della pecora è l'agnello"], ["🐐", "Il cucciolo della capra è il capretto"],
+      ["🐔", "Il cucciolo della gallina è il pulcino"], ["🦆", "Il cucciolo dell'anatra è l'anatroccolo"], ["🐸", "Il cucciolo della rana è il girino"], ["🦌", "Il cucciolo del cervo è il cerbiatto"],
+      ["🐻", "Il cucciolo dell'orso è l'orsacchiotto"], ["🐘", "Il cucciolo dell'elefante è l'elefantino"], ["🦅", "Il cucciolo dell'aquila è l'aquilotto"], ["🦁", "Il cucciolo del leone è il leoncino"],
+      ["🐯", "Il cucciolo della tigre è il tigrotto"], ["🐋", "Il cucciolo della balena è il balenottero"], ["🐱", "Il cucciolo del gatto è il gattino"], ["🐶", "Il cucciolo del cane è il cagnolino"],
+      ["🐷", "Il cucciolo del maiale è il maialino"], ["🫏", "Il cucciolo dell'asino è l'asinello"], ["🐺", "Il cucciolo del lupo è il lupacchiotto"], ["🐰", "Il cucciolo del coniglio è il coniglietto"],
+      ["🪿", "Il cucciolo dell'oca è il papero"], ["🕊️", "Il cucciolo del piccione è il piccioncino"], ["🦘", "Il cucciolo del canguro vive nel marsupio"], ["🐎", "Il cucciolo della zebra è un puledro a strisce"] ] },
+    'animali-habitat': { name: "Dove vivono gli animali", icon: '🗺️', levels: ['2', '3', '4', '5', 'adulti'], items: [
+      ["❄️", "Al Polo Nord vive l'orso polare"], ["🐧", "In Antartide vivono i pinguini"], ["🐪", "Nel deserto vivono i dromedari"], ["🦁", "Nella savana vivono leoni, zebre e giraffe"],
+      ["🐅", "Le tigri vivono nelle foreste dell'Asia"], ["🦘", "In Australia vivono canguri e koala"], ["🐋", "Le balene vivono negli oceani"], ["🦜", "Nella foresta pluviale vivono pappagalli e scimmie"],
+      ["🐐", "Sulle Alpi vivono stambecchi e marmotte"], ["🐻", "In Abruzzo vive l'orso marsicano"], ["🐺", "Sugli Appennini vive il lupo italiano"], ["🫏", "In Puglia, a Martina Franca, c'è un famoso asino"],
+      ["🦩", "I fenicotteri rosa vivono nelle lagune e nelle saline, anche in Italia"], ["🐢", "Le tartarughe marine depongono le uova sulle spiagge"], ["🐬", "Nel mar Mediterraneo vivono i delfini"], ["🐘", "Gli elefanti vivono in Africa e in Asia"],
+      ["🦒", "Le giraffe vivono in Africa"], ["🐼", "Il panda gigante vive in Cina"], ["🦥", "I bradipi vivono in America centrale e meridionale"], ["🦎", "Il drago di Komodo vive in Indonesia"],
+      ["🐊", "I coccodrilli vivono nei fiumi e nelle paludi dei paesi caldi"], ["🦅", "L'aquila reale vive in montagna"], ["🐗", "Il cinghiale vive nei boschi"], ["🐠", "I pesci pagliaccio vivono nelle barriere coralline"],
+      ["🦉", "Il gufo caccia di notte"], ["🐝", "Le api vivono negli alveari"], ["🐜", "Le formiche vivono nei formicai"], ["🦫", "Il castoro costruisce dighe nei fiumi"],
+      ["🐿️", "Lo scoiattolo vive sugli alberi"], ["🐙", "Il polpo vive tra gli scogli"] ] },
+    'dinosauri-tema': { name: "Dinosauri e animali preistorici", icon: '🦖', levels: TUTTI, items: [
+      ["🦖", "Il T. rex era un grande predatore con denti enormi"], ["🦕", "Il Brachiosauro aveva un collo lunghissimo"], ["🌿", "Molti dinosauri mangiavano solo piante"], ["🦴", "I fossili sono i resti di animali del passato"],
+      ["☄️", "I dinosauri si sono estinti circa 66 milioni di anni fa"], ["🐦", "Gli uccelli discendono dai dinosauri"], ["🦏", "Il Triceratopo aveva tre corna"], ["🛡️", "Lo Stegosauro aveva placche sulla schiena"],
+      ["🦖", "Il Velociraptor era piccolo e aveva le piume"], ["🦅", "Lo Pterodattilo volava ma non era un dinosauro"], ["🐘", "Il mammut era un parente dell'elefante, coperto di pelo"], ["🐯", "La tigre dai denti a sciabola aveva canini lunghissimi"],
+      ["🥚", "I dinosauri nascevano dalle uova"], ["🔍", "Il paleontologo studia i fossili"], ["🌋", "Il Giurassico è il periodo che dà il nome a Jurassic Park"], ["🏜️", "Il Cretaceo è l'ultimo periodo dei dinosauri"],
+      ["🦕", "Il Diplodoco era lungo più di 25 metri"], ["🦤", "Il dodo viveva a Mauritius ed è estinto"], ["🦈", "Il Megalodonte era uno squalo gigantesco"], ["🦖", "Lo Spinosauro aveva una grande vela sul dorso"],
+      ["🇮🇹", "Ciro è un piccolo dinosauro trovato a Pietraroia, in Italia"], ["🌴", "Ai tempi dei dinosauri il clima era più caldo di oggi"], ["🐊", "I coccodrilli sono animali molto antichi"], ["🦎", "Le lucertole e i serpenti sono rettili, come i dinosauri"] ] },
+    'animali-modi-di-dire': { name: "Gli animali nei modi di dire", icon: '🦊', levels: ['4', '5', 'adulti'], items: [
+      ["🦊", "Furbo come una volpe: molto astuto"], ["🐘", "Avere una memoria d'elefante: ricordare tutto"], ["🐴", "Lavorare come un mulo: lavorare moltissimo"], ["🐟", "Muto come un pesce: non dire una parola"],
+      ["🐺", "Avere una fame da lupi: avere tantissima fame"], ["🐕", "Fare una vita da cani: una vita difficile"], ["🥶", "Fa un freddo cane: fa molto freddo"], ["🐠", "Sentirsi un pesce fuor d'acqua: a disagio"],
+      ["🐊", "Piangere lacrime di coccodrillo: piangere senza essere sinceri"], ["🐷", "Mangiare come un maiale: mangiare in modo sporco e senza misura"], ["🫏", "Testardo come un mulo: molto ostinato"], ["🦅", "Avere un occhio di falco: vedere benissimo"],
+      ["🐭", "Dormire come un ghiro: dormire profondamente"], ["🐜", "Lavorare come una formica: con impegno e costanza"], ["🦗", "La cicala canta tutta l'estate, la formica lavora: la favola di Esopo"], ["🦢", "Il canto del cigno: l'ultima opera di un artista"],
+      ["🦁", "Fare la parte del leone: prendersi la parte più grande"], ["🐎", "Cavallo di battaglia: la cosa in cui si è più bravi"], ["🐑", "Pecora nera: chi è diverso dagli altri nel gruppo"], ["🐔", "Gallina dalle uova d'oro: una fonte di guadagno"],
+      ["🐺", "Lupo travestito da agnello: finto buono"], ["🦚", "Fare il pavone: mettersi in mostra"], ["🐕", "Il cane che si morde la coda: un problema senza soluzione"], ["🐈", "Gatta ci cova: c'è qualcosa di strano sotto"],
+      ["🦉", "Essere un gufo: portare sfortuna"], ["🕊️", "Colomba di pace: simbolo di pace"], ["🐄", "Dalle stalle alle stelle: dalla povertà al successo"], ["🐒", "Fare le scimmie: imitare gli altri"] ] }
+  };
+
   // ---------- temi per adulti (tombola classica) ----------
   const ADULTI = {
     'verita': { name: "Verità universali", icon: '😂', levels: ['adulti'], items: [
@@ -562,7 +609,7 @@
   };
 
   // ---------- API ----------
-  const ALL = Object.assign({}, GEN, LISTE, CARTONI, CARTONI_OGGI, FESTE, GIOCHI, ANIME, MURPHY, SCUOLA_CARTONI, ADULTI);
+  const ALL = Object.assign({}, GEN, LISTE, CARTONI, CARTONI_OGGI, FESTE, GIOCHI, ANIME, MURPHY, SCUOLA_CARTONI, ANIMALI, ADULTI);
   Object.keys(ALL).forEach(k => { ALL[k].key = k; });
 
   const themesFor = level => Object.keys(ALL).filter(k => ALL[k].levels.includes(level)).map(k => ({ key: k, name: ALL[k].name, icon: ALL[k].icon }));
