@@ -1236,7 +1236,7 @@
       ["🙏", "CI VUÒ SPECCIÀ A PEZZENDARÌ MANN E NON GE SCÌ."],
       ["🏠", "SALVE EEGIN, LA CAMASTR APPES O 'NGIN, PESCKER E ZAVORR, MAMT FUSCE E ATTANT CORR, ARRIV AFFIN A SERRARÌ, VAFFANGUL A SEGNERÌ."],
       ["🐟", "QUAND È BBELL U PESCE, IND ALL'ACQUE CRESCE, DA FOR ALL'ACQUE MOR, SPACC U PESCE E IACCHIE U COR."],
-      // dalle immagini della pagina «ginosaproverbi»: dialetto e traduzione in italiano (per cinque proverbi la traduzione sotto l.immagine non era visibile: è una traduzione letterale scritta da Claude)
+      // dalle immagini della pagina «ginosaproverbi»: dialetto e traduzione in italiano (per alcuni proverbi la traduzione sotto l'immagine non era visibile o era interrotta: l'ha completata Claude in modo letterale)
       ["🐈", "Che n'uôcchie frisce u pèsce e che l'alde uàrde la iàtte", "Con un occhio friggi il pesce e con l'altro guardi la gatta"],
       ["🍀", "Fertüne nge völe a sapè sckitte non giöve", "Fortuna ci vuole poiché il solo sapere non giova"],
       ["🛞", "Jünge l'asse ca la röte camìne", "Ungi l'asse che la ruota cammina"],
@@ -1260,7 +1260,27 @@
       ["🩺", "U miédeche vè e véne, ma ci jàve le wàje se le téne", "Il medico va e viene, ma colui che ha i guai se li tiene"],
       ["👀", "Ci s'assrummàvene le mane accòme s'assròmmene l'uôcchie, nesciüne jér'a fa chiü niénde", "Se si spaventassero le mani come si spaventano gli occhi, nessuno farebbe più niente"],
       ["🫏", "U ciücce ca non völe sénde non sénde manghe le mazzàte", "L'asino che non vuole sentire non sente neanche le mazzate"],
-      ["🐕", "U cuàne scallàte dall'acqua frevüte s'assròmme de chèra frédde", "Il cane scottato dall'acqua bollente si spaventa dell'acqua fredda"]
+      ["🐕", "U cuàne scallàte dall'acqua frevüte s'assròmme de chèra frédde", "Il cane scottato dall'acqua bollente si spaventa dell'acqua fredda"],
+      ["✂️", "Tàgghie de cchiü la lègne ca la fuôrce affelàte", "Taglia di più la lingua che le forbici affilate"],
+      ["🔐", "Ci mégghie achiüte mégghie jàpre", "Chi meglio chiude meglio apre"],
+      ["🌦️", "Chiuwì, scambò, tütte u munne allariò", "Piovve, smise, tutto tornò sereno"],
+      ["🐦", "L'acéddere s'accòcchiene 'ngiéle le fetiénde s'accòcchiene 'ndérre", "Gli uccelli si incontrano in cielo, gli imbroglioni si incontrano sulla terra"],
+      ["🍽️", "U segghiütte jé véndra chiène", "Il singhiozzo è pancia piena"],
+      ["🏛️", "U sìneche stè cing'anne u fésse stè sémbe", "Il sindaco sta cinque anni, il fesso sta sempre"],
+      ["💋", "U prime vase véne arrubbuàte u secònde véne dunàte", "Il primo bacio viene rubato, il secondo viene donato"],
+      ["🤞", "Ci assè premètte picche mandéne", "Chi tanto promette poco mantiene"],
+      ["🧠", "Tütte cunzìgghie a pigghià, ma u tùje non l'a lassà", "Tutti i consigli devi prendere, ma il tuo non lo devi lasciare"],
+      ["👁️", "Ó paìse de le cecàte ci téne n'uôcchie jé u mégghie", "Nel paese dei ciechi chi ha un occhio è il migliore"],
+      ["🍇", "Acque d'aiüste tütte iuôgghie e tütte müste", "Acqua di agosto, tutto olio e tutto mosto"],
+      ["💸", "Le sölde du carrucchiàle se le mange u sciampagnòne", "I soldi dell'avaro li spende lo sciupone"],
+      ["🎻", "Càngene le sunatüre, ma la canzòne jè la stésse", "Cambiano i suonatori, ma la canzone è la stessa"],
+      ["☀️", "Quanne véne u mese d'aiüste a ci téne da dà le véne la süste", "Quando arriva il mese di agosto, a chi ha da dare gli viene la stizza"],
+      ["🤚", "Ci téne la rügne se l'a jrattà", "Chi ha la rogna se la deve grattare"],
+      ["❤️", "Jàme a ci te jàme e respünne a ci te chiàme", "Ama chi ti ama e rispondi a chi ti chiama"],
+      ["🐤", "L'aciédde achiüse ind'a gàbbie non cande c'amòre, ma che ràbbie", "L'uccello chiuso in gabbia non canta per amore, ma per rabbia"],
+      ["🦊", "Ci secutèsce la vòlpe sape quànte iòste la pédde", "Chi caccia la volpe sa quanto costa la sua pelle"],
+      ["🧦", "A vecchièzze le càlze rosse", "In vecchiaia le calze rosse"],
+      ["🃏", "Quànne la carte véne u sciuquatòre s'avànde", "Quando la carta viene, il giocatore si vanta"]
     ] }
   };
   Object.keys(GINOSA).forEach(k => { GINOSA[k].key = k; ALL[k] = GINOSA[k]; });
