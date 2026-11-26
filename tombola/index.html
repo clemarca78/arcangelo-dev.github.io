@@ -108,6 +108,11 @@ select { font: inherit; background: var(--bg); color: var(--text); border: 1px s
 @keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
 .only-kids { display: none; }
 .kids .only-kids { display: flex; }
+.cards-bar.player-only { display: none; }
+body.player .cards-bar.player-only { display: flex; }
+.stepper { display: flex; align-items: center; gap: 8px; }
+.stepper button { width: 38px; padding: 6px 0; font-size: 1.2rem; }
+.stepper span { font-weight: 800; font-size: 1.3rem; min-width: 1.6em; text-align: center; }
 .opt-auto { display: none; }
 .kids .opt-auto, .player .opt-auto { display: flex; }
 body.player .host-only, body.nojoin .needs-join { display: none !important; }
@@ -272,6 +277,11 @@ details summary { cursor: pointer; font-weight: 600; }
       </label>
       <button id="newCards">Cambia cartelle</button>
       </div>
+    <div class="cards-bar player-only">
+      <b>Le mie cartelle</b>
+      <div class="stepper"><button id="cardsMinus" aria-label="Meno cartelle">−</button><span id="cardsCount">1</span><button id="cardsPlus" aria-label="Più cartelle">+</button></div>
+      <span class="hint" id="cardsLimit"></span>
+    </div>
     <p class="hint" id="cardsHint" style="margin-bottom:10px"></p>
     <div class="cards" id="cards"></div>
   </section>
@@ -558,6 +568,14 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     $('colsSel').value = state.cols;
     $('themeSel').value = state.theme;
     $('autoMark').checked = !!state.autoMark;
+    if (isPlayer) {
+      const n = state.cards.length, mx = Math.max(state.maxCards || 4, n), locked = state.drawn.length > 0 && !state.late;
+      $('cardsCount').textContent = n;
+      $('cardsMinus').disabled = locked || n <= 1;
+      $('cardsPlus').disabled = locked || n >= mx;
+      $('cardsLimit').textContent = locked ? 'Cartelle bloccate: la partita è iniziata'
+        : `Puoi prenderne fino a ${mx}${state.late ? '' : ', prima che inizi la partita'}`;
+    }
     $('cardsHint').textContent = isPlayer
       ? (state.autoMark ? 'I numeri estratti si segnano da soli. Chiama il premio quando lo hai!' : 'Tocca i numeri sulla cartella quando escono. Hai un premio? Chiamalo!')
       : kids() && !state.autoMark
@@ -723,20 +741,20 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   const setStatus = t => { $('netStatus').textContent = t; };
 
   // ----- host -----
-  function dealCards() {
-    return Array.from({ length: state.room.perPlayer }, () => kids() ? kidCard(state.max, state.cols) : classicCard());
+  function dealCards(n) {
+    return Array.from({ length: n }, () => kids() ? kidCard(state.max, state.cols) : classicCard());
   }
-  function dealAll() { if (state.room) Object.values(state.room.players).forEach(p => p.cards = dealCards()); }
+  function dealAll() { if (state.room) Object.values(state.room.players).forEach(p => p.cards = dealCards(p.cards.length || 1)); }
   function snapshot(token) {
     const p = state.room.players[token];
-    return { t: 'state', mode: state.mode, max: state.max, cols: state.cols, theme: state.theme, drawn: state.drawn, won: state.won, gen: state.gen, cards: p.cards };
+    return { t: 'state', mode: state.mode, max: state.max, cols: state.cols, theme: state.theme, drawn: state.drawn, won: state.won, gen: state.gen, cards: p.cards, maxCards: state.room.maxCards || 4, late: !!state.room.lateCards };
   }
   function sendTo(token, msg) { const c = conns[token]; if (c && c.open) { try { c.send(msg); } catch (e) {} } }
   function broadcast() { if (state.room) Object.keys(conns).forEach(t => state.room.players[t] && sendTo(t, snapshot(t))); }
   function broadcastMsg(msg) { Object.keys(conns).forEach(t => sendTo(t, msg)); }
 
   function createRoom() {
-    state.room = { code: newCode(), perPlayer: 2, players: {} };
+    state.room = { code: newCode(), maxCards: 4, lateCards: false, players: {} };
     openRoom(state.room.code, 0); save();
   }
   function openRoom(code, tries) {
@@ -769,7 +787,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       const P = state.room.players;
       if (!P[token]) {
         if (Object.keys(P).length >= 40) { try { c.send({ t: 'full' }); } catch (e) {} return; }
-        P[token] = { name, cards: dealCards() };
+        P[token] = { name, cards: dealCards(1) };
         log(`👋 ${name} è entrato`);
       }
       P[token].name = name; c.token = token;
@@ -777,7 +795,23 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       conns[token] = c; save(); renderRoom(); sendTo(token, snapshot(token));
     } else if (m.t === 'claim' && c.token) {
       claim(c.token, +m.prize, +m.card);
+    } else if (m.t === 'cards' && c.token) {
+      setCards(c.token, +m.n);
     }
+  }
+  // Il giocatore sceglie quante cartelle prendere (1..massimo), di norma prima che la partita inizi.
+  function setCards(token, n) {
+    const R = state.room, p = R.players[token];
+    if (!p || !Number.isFinite(n)) return;
+    n = Math.max(1, Math.min(Math.max(R.maxCards || 4, p.cards.length), Math.floor(n)));
+    if (n !== p.cards.length && state.drawn.length > 0 && !R.lateCards) {
+      sendTo(token, { t: 'toast', text: 'La partita è già iniziata: le cartelle non si cambiano più' });
+      sendTo(token, snapshot(token)); return;
+    }
+    if (n > p.cards.length) { while (p.cards.length < n) p.cards.push(kids() ? kidCard(state.max, state.cols) : classicCard()); }
+    else p.cards.length = n;
+    log(`🎟️ ${p.name} ora ha ${n} ${n === 1 ? 'cartella' : 'cartelle'}`);
+    save(); renderRoom(); sendTo(token, snapshot(token));
   }
   // Verifica di un premio chiamato da un giocatore (conta solo ciò che è davvero uscito).
   function claim(token, n, i) {
@@ -838,15 +872,18 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     const row = el('div', 'row');
     const cp = el('button', null, '📋 Copia link');
     cp.onclick = () => { try { navigator.clipboard.writeText(roomLink()); cp.textContent = '✓ Copiato'; } catch (e) { link.select(); } };
-    const sel = el('select'); for (let i = 1; i <= 4; i++) { const o = el('option', null, i); o.value = i; sel.appendChild(o); }
-    sel.value = R.perPlayer; sel.onchange = () => { R.perPlayer = +sel.value; save(); };
-    const lab = el('label', 'hint'); lab.append('Cartelle a giocatore (dalla prossima partita): ', sel);
+    const sel = el('select'); for (let i = 1; i <= 6; i++) { const o = el('option', null, i); o.value = i; sel.appendChild(o); }
+    sel.value = R.maxCards || 4; sel.onchange = () => { R.maxCards = +sel.value; save(); broadcast(); };
+    const lab = el('label', 'hint'); lab.append('Massimo cartelle a testa: ', sel);
+    const late = el('input'); late.type = 'checkbox'; late.checked = !!R.lateCards;
+    late.onchange = () => { R.lateCards = late.checked; save(); broadcast(); };
+    const lab2 = el('label', 'hint'); lab2.style.cssText = 'display:flex;gap:6px;align-items:center'; lab2.append(late, 'Si possono prendere anche a partita iniziata');
     const cl = el('button', null, 'Chiudi stanza'); cl.onclick = closeRoom;
-    row.append(cp, lab, cl); right.append(row);
+    row.append(cp, lab, lab2, cl); right.append(row);
     if (roomError) right.append(el('div', 'err', roomError));
     const list = el('div', 'plist');
     if (!players.length) list.append(el('p', 'hint', 'In attesa dei giocatori… fai scansionare il QR o condividi il codice.'));
-    players.forEach(([t, p]) => { const d = el('div'); d.append(el('span', 'dot' + (conns[t] && conns[t].open ? ' on' : '')), p.name); list.appendChild(d); });
+    players.forEach(([t, p]) => { const d = el('div'); d.append(el('span', 'dot' + (conns[t] && conns[t].open ? ' on' : '')), `${p.name} · ${p.cards.length} ${p.cards.length === 1 ? 'cartella' : 'cartelle'}`); list.appendChild(d); });
     right.append(list);
     wrap.append(left, right); box.append(wrap);
   }
@@ -876,8 +913,9 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if (!m) return;
     if (m.t === 'state') {
       const prev = state.drawn.length;
-      if (m.gen !== state.gen || state.marks.length !== m.cards.length) state.marks = m.cards.map(() => []);
-      Object.assign(state, { mode: m.mode, max: m.max, cols: m.cols || 3, theme: m.theme || 'auto', drawn: m.drawn, won: m.won, gen: m.gen, cards: m.cards });
+      if (m.gen !== state.gen) state.marks = m.cards.map(() => []);
+      else state.marks = m.cards.map((_, i) => state.marks[i] || []);
+      Object.assign(state, { mode: m.mode, max: m.max, cols: m.cols || 3, theme: m.theme || 'auto', maxCards: m.maxCards || 4, late: !!m.late, drawn: m.drawn, won: m.won, gen: m.gen, cards: m.cards });
       if (!state.drawn.length) { logLines.length = 0; log('Nuova partita. Buona fortuna!'); }
       save(); setStatus(`🟢 Stanza ${ROOM_CODE} · ${state.pname} ·`);
       const fresh = m.drawn.length === prev + 1;
@@ -899,6 +937,8 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       document.body.classList.remove('nojoin'); playerConnect();
     };
     $('joinBtn').onclick = go;
+    $('cardsMinus').onclick = () => send({ t: 'cards', n: state.cards.length - 1 });
+    $('cardsPlus').onclick = () => send({ t: 'cards', n: state.cards.length + 1 });
     $('joinName').onkeydown = e => { if (e.key === 'Enter') go(); };
     if (state.pname) playerConnect(); else document.body.classList.add('nojoin');
     render();
