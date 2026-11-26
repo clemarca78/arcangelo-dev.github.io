@@ -1217,6 +1217,29 @@
   };
   Object.keys(MESTIERI).forEach(k => { MESTIERI[k].key = k; ALL[k] = MESTIERI[k]; });
 
+  // Proverbi e modi di dire in dialetto ginosino (Ginosa, Puglia), nella grafia in cui sono stati scritti.
+  // Per ora sono poche frasi: il tema è «da scegliere a mano» (non entra nei mix né nella scelta a sorpresa) e le frasi si ripetono.
+  const GINOSA = {
+    'ginosa': { name: "Proverbi e modi di dire ginosini", icon: '🗣️', levels: ['adulti'], optIn: true, items: [
+      ["🔥", "LA CAPA TORT L'AMMATUR LA CORT, LA LION TORT L'ADDRIZZ U FUOC."],
+      ["🐖", "PUORC E 'NNAMURAT NA VOLD VOLN IESS PURTAT."],
+      ["🎣", "A MAR AVANDAT NON GE SCENN A PESCÀ."],
+      ["🌅", "CI VUÒ FRECÀ U VESCIN IALZT PREST LA MATIN."],
+      ["🍈", "QUANN AMMATUR LA FIC U MELON S' APPIC."],
+      ["👬", "CI GIACOBB L SAPEV 'MMIENZ A DDO FRATR NON Z METTEV."],
+      ["❄️", "GENNAR SICC MASSAR RICC."],
+      ["🌾", "A MAL METETOR L VÈ STRITT U PETTERRAL."],
+      ["🎶", "ASTIP LA ZAMPOGN CHE QUANN ABBESOGN"],
+      ["🍑", "ROCC ROCC S'E' MMANGIAT LA VERNECOCC, L'E' RUMAST U NUZZ NGANN CURR CURR DA CUMBA' GIUANN."],
+      ["🧒", "NECOL NECOL LA ZIT NON T VOL, T' A' MIS U CACCHIE VERDE NECOL MANGIAMMERD."],
+      ["🌧️", "QUANN CHIOV LA MATIN PIGGHIE LA ZAPP E CAMIN."],
+      ["🙏", "CI VUÒ SPECCIÀ A PEZZENDARÌ MANN E NON GE SCÌ."],
+      ["🏠", "SALVE EEGIN, LA CAMASTR APPES O 'NGIN, PESCKER E ZAVORR, MAMT FUSCE E ATTANT CORR, ARRIV AFFIN A SERRARÌ, VAFFANGUL A SEGNERÌ."],
+      ["🐟", "QUAND È BBELL U PESCE, IND ALL'ACQUE CRESCE, DA FOR ALL'ACQUE MOR, SPACC U PESCE E IACCHIE U COR."]
+    ] }
+  };
+  Object.keys(GINOSA).forEach(k => { GINOSA[k].key = k; ALL[k] = GINOSA[k]; });
+
   // Categorie per ordinare i menu (un tema sta in una sola categoria).
   const C = { mix: '🎲 Mix di temi', scuola: '📚 Scuola', cartoni: '📺 Cartoni, giochi e supereroi', animali: '🐾 Animali', regioni: "🇮🇹 Regioni d'Italia",
               feste: '🎉 Feste e tradizioni', fede: '✝️ Santi, Chiesa e Vangelo', divertente: '😂 Divertente', cultura: '🎵 Cultura e passioni', mate: '📐 Matematica e statistica', mestieri: '🧑‍⚕️ Mestieri e salute', mio: '✏️ I miei temi' };
@@ -1230,7 +1253,7 @@
   function catOf(key) {
     if (key.startsWith('mix-')) return C.mix;
     if (key.startsWith('mio-')) return C.mio;
-    if (key === 'puglia' || key === 'regioni' || key.startsWith('reg-')) return C.regioni;
+    if (key === 'puglia' || key === 'ginosa' || key === 'regioni' || key.startsWith('reg-')) return C.regioni;
     for (const c in CAT_KEYS) if (CAT_KEYS[c].includes(key)) return c;
     return C.scuola;   // tutto il resto è materia di scuola
   }
@@ -1295,7 +1318,9 @@
   // si leggono come si pronunciano (a schermo il testo resta com'è). Es.: «753 a.C.» → «753 avanti Cristo».
   const LIBRI = { Mt: 'Matteo', Mc: 'Marco', Lc: 'Luca', Gv: 'Giovanni' };
   function speakable(text) {
-    return String(text)
+    let t = String(text);
+    if (t === t.toUpperCase() && /[A-ZÀ-ÖØ-Ý]/.test(t)) t = t.toLowerCase();   // un testo tutto in maiuscolo non va letto lettera per lettera
+    return t
       .replace(/\b([ad])\.\s?C\./gi, (m, x) => x.toLowerCase() === 'a' ? 'avanti Cristo' : 'dopo Cristo')
       .replace(/\((Mt|Mc|Lc|Gv)\s*(\d+),\s*(\d+)\)/g, (m, b, c, v) => `, ${LIBRI[b]}, capitolo ${c}, versetto ${v}`)
       .replace(/\b1°/g, 'primo')
