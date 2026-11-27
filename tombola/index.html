@@ -480,7 +480,7 @@ details summary { cursor: pointer; font-weight: 600; }
         <label class="host-only">Estrae
           <select id="drawerSel"></select>
         </label>
-        <label class="opt-auto"><input type="checkbox" id="autoMark"> Segna da solo</label>
+        <label class="opt-auto"><input type="checkbox" id="autoMark"> Segna numeri automaticamente</label>
         <label class="host-only">Ritmo
           <select id="speed" title="Pausa tra un numero e l'altro: il numero successivo aspetta comunque che la voce abbia finito di leggere">
             <option value="2500">Veloce</option>
@@ -1234,7 +1234,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     state.max = +$('maxSel').value; reset();
   };
   $('autoMark').onchange = () => { state.autoMark = $('autoMark').checked; state.amChosen = true; checkPrizes(); save(); render(); };
-  $('autoMark').title = 'Segna da solo i numeri estratti';
+  $('autoMark').title = 'Se è spuntato, i numeri estratti si segnano da soli sulle cartelle; altrimenti li tocchi tu';
   document.addEventListener('keydown', e => {
     if (!isPlayer && state.source === 'app' && e.code === 'Space' && !/SELECT|INPUT|BUTTON/.test(e.target.tagName)) { e.preventDefault(); draw(); }
     if (e.key === 'Escape' && limOn) setLim(false);
@@ -1247,7 +1247,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   // Il dispositivo del maestro (host) decide tutto: estrae, distribuisce le cartelle e verifica i premi.
   // I giocatori si collegano con il codice stanza; nessun server di gioco.
   // Versione dell'app (da aggiornare a ogni modifica): compare in alto e in fondo alla pagina, anche sui telefoni dei giocatori.
-  const VERSION = '26.11.2026-m';
+  const VERSION = '26.11.2026-n';
   $('verHead').textContent = 'versione ' + VERSION; $('ver').textContent = 'versione ' + VERSION;
   const PREFIX = 'tombola-clm-';
   const PEER_OPTS = {};
