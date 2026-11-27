@@ -149,6 +149,8 @@ body.player .cards-bar.player-only { display: flex; }
 .stepper button { width: 38px; padding: 6px 0; font-size: 1.2rem; }
 .stepper span { font-weight: 800; font-size: 1.3rem; min-width: 1.6em; text-align: center; }
 .opt-auto { display: none; }
+.opt-auto-hint { display: none; text-align: left; margin-top: 8px; }
+.kids .opt-auto-hint, .player .opt-auto-hint, .host-plays .opt-auto-hint { display: block; }
 .kids .opt-auto, .player .opt-auto, .host-plays .opt-auto { display: flex; }
 body.player .host-only, body.nojoin .needs-join { display: none !important; }
 body.play-paper .host-cards, body.play-devices .host-cards, body.play-mixed .host-cards { display: none !important; }
@@ -478,6 +480,7 @@ details summary { cursor: pointer; font-weight: 600; }
           </select>
         </label>
       </div>
+      <p class="hint opt-auto-hint"><b>Segna numeri automaticamente</b>: se è spuntato, i numeri estratti si segnano da soli sulle tue cartelle e i premi (ambo, terno…) si calcolano da soli. Se lo togli, i numeri li segni tu toccandoli quando escono, utile per esercitarsi o per i bambini: ambo, terno e gli altri premi contano solo i numeri che hai segnato.</p>
       <div class="history" id="history"></div>
       <p class="hint host-only" style="margin-top:8px">Barra spaziatrice = estrai</p>
     </div>
@@ -1248,7 +1251,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     state.max = +$('maxSel').value; reset();
   };
   $('autoMark').onchange = () => { state.autoMark = $('autoMark').checked; state.amChosen = true; checkPrizes(); save(); render(); };
-  $('autoMark').title = 'Se è spuntato, i numeri estratti si segnano da soli sulle cartelle; altrimenti li tocchi tu';
+  $('autoMark').title = 'Spuntato: i numeri estratti si segnano da soli sulle tue cartelle e i premi si calcolano da soli. Non spuntato: li tocchi tu quando escono e i premi contano solo i numeri che hai segnato.';
   document.addEventListener('keydown', e => {
     if (!isPlayer && state.source === 'app' && e.code === 'Space' && !/SELECT|INPUT|BUTTON/.test(e.target.tagName)) { e.preventDefault(); draw(); }
     if (e.key === 'Escape' && limOn) setLim(false);
@@ -1261,7 +1264,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   // Il dispositivo del maestro (host) decide tutto: estrae, distribuisce le cartelle e verifica i premi.
   // I giocatori si collegano con il codice stanza; nessun server di gioco.
   // Versione dell'app (da aggiornare a ogni modifica): compare in alto e in fondo alla pagina, anche sui telefoni dei giocatori.
-  const VERSION = '26.11.2026-ab';
+  const VERSION = '26.11.2026-ac';
   $('verHead').textContent = 'versione ' + VERSION; $('ver').textContent = 'versione ' + VERSION;
   const PREFIX = 'tombola-clm-';
   const PEER_OPTS = {};
