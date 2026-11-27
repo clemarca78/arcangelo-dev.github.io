@@ -47,6 +47,8 @@ header { display: flex; justify-content: space-between; align-items: center; fle
 @keyframes pop { 0% { transform: scale(.3) rotate(-30deg); opacity: 0; } 70% { transform: scale(1.12); } 100% { transform: scale(1); opacity: 1; } }
 
 .info { min-height: 74px; margin-bottom: 12px; }
+.themecredit { margin: -4px 0 10px; font-size: .78rem; color: var(--muted); }
+.themecredit[hidden] { display: none; }
 .info .words { font-size: 1.5rem; font-weight: 800; color: var(--gold); }
 .info .dec { font-size: .95rem; color: var(--accent); margin: 2px 0 6px; }
 .info .smorf { font-size: 1.05rem; }
@@ -455,6 +457,7 @@ details summary { cursor: pointer; font-weight: 600; }
       <h2>Estrazione</h2>
       <div class="ball empty" id="ball">–</div>
       <div class="info" id="info"></div>
+      <div class="themecredit" id="themeCredit" hidden></div>
       <div id="urnBox" class="host-only">
         <div class="row" style="justify-content:center;margin-top:0">
           <input type="text" inputmode="numeric" id="urnNum" placeholder="N°" maxlength="2" autocomplete="off">
@@ -1027,6 +1030,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
         ? 'Tema di questa partita: ' + TombolaTemi.name(state.sTheme) + (state.themeMode === 'auto' ? ' (cambia a ogni nuova partita)' : '') + moreHint(state.sTheme)
         : 'La pallina racconta la smorfia napoletana, in versione per bambini.';
     }
+    { const ck = activeThemeKey(), cr = ck ? TombolaTemi.credit(ck) : ''; $('themeCredit').hidden = !cr; $('themeCredit').textContent = cr; }
     $('autoMark').checked = !!state.autoMark;
     if (isPlayer) {
       const n = state.cards.length, mx = Math.max(state.maxCards || 4, n), locked = state.drawn.length > 0 && !state.late;
@@ -1243,7 +1247,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   // Il dispositivo del maestro (host) decide tutto: estrae, distribuisce le cartelle e verifica i premi.
   // I giocatori si collegano con il codice stanza; nessun server di gioco.
   // Versione dell'app (da aggiornare a ogni modifica): compare in alto e in fondo alla pagina, anche sui telefoni dei giocatori.
-  const VERSION = '26.11.2026-k';
+  const VERSION = '26.11.2026-l';
   $('verHead').textContent = 'versione ' + VERSION; $('ver').textContent = 'versione ' + VERSION;
   const PREFIX = 'tombola-clm-';
   const PEER_OPTS = {};
