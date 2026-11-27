@@ -220,6 +220,7 @@ body.lim #saveNote, body.lim #storeWarn { display: none !important; }
 /* i miei temi */
 .mt-item { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 6px 10px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 6px; }
 .mt-item .hint { flex: 1 1 100px; text-align: left; }
+#myThemesPanel > summary { cursor: pointer; font-weight: 600; color: var(--accent); }
 #myEditor { margin-top: 10px; }
 #myEditor summary { cursor: pointer; font-weight: 600; color: var(--accent); }
 #mtName, #mtText { width: 100%; margin-top: 8px; }
@@ -381,23 +382,6 @@ details summary { cursor: pointer; font-weight: 600; }
     <p class="hint" id="adultHint" style="text-align:left;margin-top:8px"></p>
   </section>
 
-  <section class="panel host-only" id="myThemesPanel">
-    <h2>✏️ I miei temi</h2>
-    <p class="hint" style="text-align:left;margin-bottom:8px">Crea un tema tutto tuo: per esempio i modi di dire del tuo paese, le frasi della tua classe o i ricordi di famiglia. A ogni numero estratto la pallina racconta una frase del tuo elenco.</p>
-    <div id="myThemesList"></div>
-    <div class="row" style="margin:8px 0 0">
-      <button id="mtExportAll">⬇️ Esporta tutti</button>
-      <button id="mtImport">⬆️ Importa da file</button>
-      <input type="file" id="mtFile" accept=".json,.txt,application/json,text/plain" hidden>
-      <span class="hint" id="mtIoMsg"></span>
-    </div>
-    <details id="myEditor">
-      <summary>➕ Crea o modifica un tema</summary>
-      <input type="text" id="mtName" maxlength="40" placeholder="Nome del tema (es. Modi di dire di Ginosa)" autocomplete="off">
-      <textarea id="mtText" rows="8" placeholder="Una frase per riga (almeno 3). Se vuoi, metti un'emoji all'inizio della riga.&#10;🍞 Pane e cipolla, mai un'illusione&#10;Una frase senza emoji va bene lo stesso"></textarea>
-      <div class="row"><button class="primary" id="mtSave" style="padding:10px 18px;font-size:1rem">Salva tema</button><button id="mtCancel">Annulla</button><span class="hint" id="mtMsg"></span></div>
-    </details>
-  </section>
 
   <section class="panel host-only" id="playPanel">
     <h2>Come giocate?</h2>
@@ -541,6 +525,24 @@ details summary { cursor: pointer; font-weight: 600; }
       <div class="smgrid" id="smgrid"></div>
     </details>
   </section>
+
+  <details class="panel host-only" id="myThemesPanel">
+    <summary>✏️ I miei temi: crea, esporta o importa un tema tuo</summary>
+    <p class="hint" style="text-align:left;margin:10px 0 8px">Crea un tema tutto tuo: per esempio i modi di dire del tuo paese, le frasi della tua classe o i ricordi di famiglia. A ogni numero estratto la pallina racconta una frase del tuo elenco.</p>
+    <div id="myThemesList"></div>
+    <div class="row" style="margin:8px 0 0">
+      <button id="mtExportAll">⬇️ Esporta tutti</button>
+      <button id="mtImport">⬆️ Importa da file</button>
+      <input type="file" id="mtFile" accept=".json,.txt,application/json,text/plain" hidden>
+      <span class="hint" id="mtIoMsg"></span>
+    </div>
+    <details id="myEditor">
+      <summary>➕ Crea o modifica un tema</summary>
+      <input type="text" id="mtName" maxlength="40" placeholder="Nome del tema (es. Modi di dire di Ginosa)" autocomplete="off">
+      <textarea id="mtText" rows="8" placeholder="Una frase per riga (almeno 3). Se vuoi, metti un'emoji all'inizio della riga.&#10;🍞 Pane e cipolla, mai un'illusione&#10;Una frase senza emoji va bene lo stesso"></textarea>
+      <div class="row"><button class="primary" id="mtSave" style="padding:10px 18px;font-size:1rem">Salva tema</button><button id="mtCancel">Annulla</button><span class="hint" id="mtMsg"></span></div>
+    </details>
+  </details>
 
   <footer class="credit">🎱 Tombola · ideata e realizzata da <a href="../">Arcangelo Clemente</a> · <a href="privacy.html">🔒 Privacy</a> · <span id="ver" title="Se non è questo numero, ricarica la pagina"></span></footer>
 </main>
@@ -1251,7 +1253,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   // Il dispositivo del maestro (host) decide tutto: estrae, distribuisce le cartelle e verifica i premi.
   // I giocatori si collegano con il codice stanza; nessun server di gioco.
   // Versione dell'app (da aggiornare a ogni modifica): compare in alto e in fondo alla pagina, anche sui telefoni dei giocatori.
-  const VERSION = '26.11.2026-u';
+  const VERSION = '26.11.2026-v';
   $('verHead').textContent = 'versione ' + VERSION; $('ver').textContent = 'versione ' + VERSION;
   const PREFIX = 'tombola-clm-';
   const PEER_OPTS = {};
@@ -1903,7 +1905,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     const c = state.custom.find(x => x.key === key); if (!c) return;
     editingKey = key; $('mtName').value = c.name;
     $('mtText').value = c.items.map(i => i[0] === '💬' ? i[1] : i[0] + ' ' + i[1]).join('\n');
-    $('myEditor').open = true; $('mtMsg').textContent = 'Stai modificando «' + c.name + '».'; $('mtName').focus();
+    $('myThemesPanel').open = true; $('myEditor').open = true; $('mtMsg').textContent = 'Stai modificando «' + c.name + '».'; $('mtName').focus();
   }
   function deleteCustom(key) {
     const c = state.custom.find(x => x.key === key); if (!c) return;
