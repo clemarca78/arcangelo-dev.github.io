@@ -215,7 +215,7 @@ mark{background:#ffe680;color:#2a2100;border-radius:4px;padding:0 3px}
     <div class="row"><button class="go" id="again" style="flex:1">Gioca ancora</button><button data-back="home">Home</button></div>
     <div class="card"><h3 style="margin-bottom:6px">Correzione con le spiegazioni</h3><div id="review"></div></div>
   </section>
-  <p class="note">Quesiti generati in modo casuale nello stile delle gare (risposta numerica, niente calcolatrice): non sono i testi ufficiali. Usa un foglio per i calcoli come in gara. I progressi restano solo su questo dispositivo.</p>
+  <p class="note">Quesiti generati in modo casuale nello stile delle gare (risposta numerica o a scelta multipla A–E, niente calcolatrice): non sono i testi ufficiali. Usa un foglio per i calcoli come in gara. I progressi restano solo su questo dispositivo.</p>
 </main>
 
 <script>
@@ -276,7 +276,16 @@ const vFila=(k,j)=>{const n=k+j-1,dx=Math.min(28,520/n),X=i=>20+i*dx,W=Math.max(
  s+=`<path d="M${X(0)-8} 68 V76 H${X(k-1)+8} V68" fill="none" stroke="${C.sea}" stroke-width="2"/>`+tx(Math.max(60,(X(0)+X(k-1))/2),96,`${k}° da sinistra`,{s:13,c:C.sea});
  s+=`<path d="M${X(k-1)-8} 36 V28 H${X(n-1)+8} V36" fill="none" stroke="${C.ko}" stroke-width="2"/>`+tx(Math.min(W-60,(X(k-1)+X(n-1))/2),18,`${j}° da destra`,{s:13,c:C.ko});return sv(W,104,s)};
 /* pali e spazi */
-const vPosts=(n,d)=>{const dx=Math.min(44,520/n);let s=ln(14,40,14+n*dx,40,C.soft,3);for(let i=0;i<n;i++)s+=tx(14+i*dx+dx/2,76,d+' m',{s:11,c:C.soft});for(let i=0;i<=n;i++)s+=rc(14+i*dx-4,20,8,36,i===0||i===n?C.lem:C.fill,i===0||i===n?C.lemS:C.sea,2);return sv(n*dx+30,84,s)};
+const vPosts=(n,d)=>{const dx=Math.min(44,520/n),lab=typeof d==='number'?d+' m':d;let s=ln(14,40,14+n*dx,40,C.soft,3);for(let i=0;i<n;i++)if(dx>30||i%2===0)s+=tx(14+i*dx+dx/2,76,lab,{s:11,c:C.soft});for(let i=0;i<=n;i++)s+=rc(14+i*dx-4,20,8,36,i===0||i===n?C.lem:C.fill,i===0||i===n?C.lemS:C.sea,2);return sv(n*dx+40,84,s)};
+const vPizza=(N,s)=>{const c=Math.ceil(N/s);let g='';for(let i=0;i<c;i++){const cx=34+(i%6)*64,cy=34+Math.floor(i/6)*64,r=28,used=Math.min(s,N-i*s);for(let j=0;j<s;j++){const a1=2*Math.PI*j/s-Math.PI/2,a2=2*Math.PI*(j+1)/s-Math.PI/2,p=a=>`${(cx+r*Math.cos(a)).toFixed(1)} ${(cy+r*Math.sin(a)).toFixed(1)}`;g+=`<path d="M${cx} ${cy} L${p(a1)} A${r} ${r} 0 0 1 ${p(a2)} Z" fill="${j<used?C.lem:'none'}" stroke="${j<used?C.lemS:C.soft}" stroke-width="1.5"/>`}}return sv(Math.min(c,6)*64+6,Math.ceil(c/6)*64+6,g)};
+const vStair=(n,out)=>{const s0=Math.min(28,150/n),o=20;let g='';for(let r=0;r<n;r++)for(let c=0;c<=r;c++)g+=rc(o+c*s0,o+r*s0,s0,s0,C.fill,C.sea,0);if(out){g+=`<rect x="${o}" y="${o}" width="${n*s0}" height="${n*s0}" fill="none" stroke="${C.ko}" stroke-width="2" stroke-dasharray="6 4"/>`;for(let r=0;r<n-1;r++)g+=ar(o+(r+1)*s0+3,o+r*s0+s0/2,o+n*s0-3,o+r*s0+s0/2,C.ko);for(let c=1;c<n;c++)g+=ar(o+c*s0+s0/2,o+c*s0-3,o+c*s0+s0/2,o+3,C.ko)}return sv(n*s0+2*o,n*s0+2*o,g)};
+const vGridLines=(a,b)=>{const s0=Math.min(34,220/a,150/b),o=16;let g='';for(let i=0;i<=a;i++)g+=ln(o+i*s0,o,o+i*s0,o+b*s0,C.sea,3);for(let j=0;j<=b;j++)g+=ln(o,o+j*s0,o+a*s0,o+j*s0,C.ko,3);return sv(a*s0+2*o+90,b*s0+2*o,g+tx(a*s0+o+10,o+14,`${a+1} blu`,{a:'start',s:14,c:C.sea})+tx(a*s0+o+10,o+36,`${b+1} rosse`,{a:'start',s:14,c:C.ko}))};
+const vSocks=k=>{const SC=['#e4572e','#1565c0','#3d8b37','#ffd23f','#333'],sock=(x,col)=>`<path d="M${x} 10 h18 v34 l12 8 a6 6 0 0 1 -4 12 h-20 a6 6 0 0 1 -6 -6 z" fill="${col}" stroke="#10223a" stroke-width="1.2"/>`;let g='';for(let i=0;i<k;i++)g+=sock(14+i*44,SC[i]);g+=sock(34+k*44,'#c9c9c9')+tx(52+k*44,44,'?',{s:20,c:'#10223a'});return sv(k*44+90,72,g)};
+const vOrder=ns=>{let g='';ns.forEach((n,i)=>{const h=36+i*26,x=14+i*80;g+=rc(x,140-h,50,h,COL[i],'#10223a',4)+tx(x+25,162,n,{s:14})});return sv(ns.length*80+10,170,g)};
+const vColumns=rows=>{const X=i=>60+i*36+(i>=2?16:0);let g='';['da','u','d','c'].forEach((h,i)=>g+=tx(X(i),18,h,{s:13,c:C.soft}));rows.forEach(([v,sg],r)=>{const y=48+r*34,ds=String(v).padStart(4,' ').split(''),last=r===rows.length-1;if(last)g+=ln(26,y-25,X(3)+16,y-25,C.ink,2);g+=tx(30,y,sg,{s:20,c:C.ko});ds.forEach((d,i)=>{if(d!==' ')g+=tx(X(i),y,d,{s:22,c:last?C.ko:C.ink})});g+=tx((X(1)+X(2))/2,y,',',{s:22})});return sv(X(3)+30,rows.length*34+24,g)};
+const vTilesPair=(l,k)=>{const s0=Math.min(14,110/(k*l));const sq=(ox,n,f)=>{let s=`<rect x="${ox}" y="10" width="${n*s0}" height="${n*s0}" fill="${f}" stroke="${C.sea}" stroke-width="2.5"/>`;for(let i=1;i<n;i++)s+=ln(ox+i*s0,10,ox+i*s0,10+n*s0,C.sea,i%l?.7:2.5)+ln(ox,10+i*s0,ox+n*s0,10+i*s0,C.sea,i%l?.7:2.5);return s};return sv(50+(k+1)*l*s0,k*l*s0+20,sq(10,l,C.lemF)+sq(40+l*s0,k*l,C.fill))};
+const vDice=S=>{const c=30,X=j=>40+(j-1)*c,Y=i=>30+(i-1)*c;let g='';for(let i=1;i<=6;i++){g+=tx(24,Y(i)+19,i,{s:14,c:C.ko})+tx(X(i)+(c-2)/2,22,i,{s:14,c:C.sea});for(let j=1;j<=6;j++){const hit=i+j===S;g+=rc(X(j),Y(i),c-3,c-3,hit?C.lem:'none',hit?C.lemS:C.soft,4)+tx(X(j)+(c-3)/2,Y(i)+19,i+j,{s:13,c:hit?'#10223a':C.soft})}}return sv(X(7)+8,Y(7)+6,g)};
+const vTrap=a=>{const H=90,dx=H/Math.tan(a*Math.PI/180),x0=20,x1=300,y0=130,y1=y0-H;return sv(320,150,`<path d="M${x0} ${y0} L${x1} ${y0} L${(x1-dx).toFixed(1)} ${y1} L${(x0+dx).toFixed(1)} ${y1} Z" fill="${C.fill}" stroke="${C.sea}" stroke-width="3"/>`+tx(x0+40,y0-8,a+'°',{s:14,c:C.sea})+tx(x1-40,y0-8,a+'°',{s:14,c:C.sea})+tx(x0+dx+8,y1+22,'?',{s:18,c:C.ko,a:'start'})+tx(x1-dx-8,y1+22,'?',{s:18,c:C.ko,a:'end'}))};
 /* strette di mano */
 const vHand=n=>{const cx=110,cy=104,r=82,Pt=[...Array(n)].map((_,i)=>[cx+r*Math.sin(2*Math.PI*i/n),cy-r*Math.cos(2*Math.PI*i/n)]);let s='';for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)s+=ln(...Pt[i],...Pt[j],i===0?C.ko:C.sea,i===0?2.5:1.3);Pt.forEach((p,i)=>s+=ci(p[0],p[1],9,i===0?C.lem:C.fill,i===0?C.lemS:C.sea));return sv(220,208,s)};
 /* vestiti */
@@ -507,6 +516,78 @@ G('misure',2,'mesi',()=>{const a=R(5,28),b=R(2,20);return{t:`Quanti giorni ci so
 G('misure',2,'orologio',()=>{const st=R(14,20)*60+P([5,15,25,35,45,50]),du=R(9,26)*5,e=st+du,o=new Set([hm(e)]);for(const d of[-10,10,-60,60,20,-20])if(o.size<4)o.add(hm(e+d));return{t:`Un film inizia alle ${hm(st)} e dura ${du} minuti. A che ora finisce?`,ch:[...o].sort(),a:hm(e),h:`Trasforma ${du} minuti in ore e minuti.`,
  st:[L(`${du} minuti = ${Math.floor(du/60)} h e ${du%60} min.`),L(`Avanzo sulla linea del tempo dalle ${hm(st)}.`,vTime(st,e)),L(`Il film finisce alle ${M(hm(e))}.`)]}});
 
+/* ---- PROBLEMI CON LA STORIA, nello stile delle prove GMM ---- */
+const TT=s=>`<b>${s}</b> – `;
+const three=()=>{const a=P(NOMI),b=P(NOMI.filter(x=>x!==a)),c=P(NOMI.filter(x=>x!==a&&x!==b));return[a,b,c]};
+const dec=v=>v.toFixed(2).replace('.',',');
+const neg=v=>v<0?'−'+(-v):String(v);
+const mcT=(e,ds)=>{const v=[e];ds.forEach(d=>{if(v.length<5&&!v.includes(e+d))v.push(e+d)});v.sort((a,b)=>a-b);const ch=v.map((m,i)=>`${'ABCDE'[i]}) ${hm(m)}`);return{ch,a:ch[v.indexOf(e)]}};
+const digs=n=>String(n).split('').reduce((a,b)=>a+ +b,0);
+
+/* classe 3ª */
+G('problemi',0,'barre',()=>{const[a,b,c]=three(),k=P([2,3]),x=R(6,25),cost=2*k*x,nm=k===2?`${a} e ${b}`:`${a}, ${b} e ${c}`;return{t:`${TT('IL REGALO')}Per il compleanno della nonna, ${nm} vogliono regalarle una borsa che costa ${cost} €. Il papà paga la metà e i ${k} fratelli si dividono in parti uguali il resto. Quanto paga ${a}?`,a:x,u:' €',d:[cost/2,cost/k,2*x,Math.round(cost/(k+1)),x+k],h:`Prima togli la parte del papà, poi dividi quello che resta tra i ${k} fratelli.`,
+ st:[L(`Il papà paga la metà: ${cost} : 2 = ${M(cost/2)} €.`,vBars([{l:'borsa',s:[[cost/2,'papà'],...[...Array(k)].map((_,i)=>[x,x,i?C.fill:C.lemF])]}])),L(`Restano ${cost/2} € da dividere tra ${k}: ${cost/2} : ${k} = ${M(x+' €')}.`)]}});
+G('problemi',0,'scala',()=>{const n=P(NOMI),l=P([1,2,3]),D=P([5,6,7,10]);return{t:`${TT('LE BOTTIGLIE')}${n} beve ${l} litr${l>1?'i':'o'} d'acqua al giorno e compra solo bottigliette da mezzo litro. Quante bottigliette servono a ${n} per ${D} giorni?`,a:2*l*D,d:[l*D,4*l*D,2*l*D+2,2*D,l*D+D],h:`Quanti litri beve in ${D} giorni? Quante bottigliette da mezzo litro fanno 1 litro?`,
+ st:[L(`In ${D} giorni beve ${l} × ${D} = ${M(l*D)} litri.`),L(`1 litro = 2 bottigliette da mezzo litro: ${l*D} × 2 = ${M(2*l*D)}.`,vChain([l+' L',l*D+' L',2*l*D],['×'+D,'×2'],null,2))]}});
+G('problemi',0,'barre',()=>{const x=R(2,12);return{t:`${TT('QUESTIONE DI PESO')}Tre pacchi pesano insieme ${7*x} kg. Il pacco rosso pesa il doppio del pacco blu e la metà del pacco verde. Quanto pesa il pacco rosso?`,a:2*x,u:' kg',d:[x,4*x,Math.round(7*x/3),3*x,Math.round(7*x/2)],h:`Disegna il pacco blu come 1 barra: quante barre è il rosso? E il verde?`,
+ st:[L(`Blu = 1 barra, rosso = 2 barre, verde = 4 barre: in tutto ${M('7 barre')} uguali.`,vBars([{l:'blu',s:[[x,'']]},{l:'rosso',s:[[x,'',C.lemF],[x,'',C.lemF]]},{l:'verde',s:[[x,''],[x,''],[x,''],[x,'']]}])),L(`1 barra = ${7*x} : 7 = ${x} kg.`),L(`Il rosso è 2 barre: ${M(2*x+' kg')}.`)]}});
+G('problemi',0,'salti_seq',()=>{const n=P(NOMI),d=R(2,5),a1=R(2,12),a3=a1+2*d;return{t:`${TT('LE CONCHIGLIE')}In spiaggia ${n} raccoglie conchiglie: ogni giorno ne raccoglie ${d} più del giorno prima. Il terzo giorno ne raccoglie ${a3}. Quante conchiglie ha raccolto il primo giorno?`,a:a1,d:[a3-d,a3-3*d,a3+2*d,Math.round(a3/3),a1+1],h:`Torna indietro un giorno alla volta: ogni giorno prima sono ${d} conchiglie in meno.`,
+ st:[L(`Dal 1° al 3° giorno ci sono 2 salti da +${d}.`,vSeq([a1,a1+d,a3],['+'+d,'+'+d],0)),L(`Torno indietro: ${a3} − ${d} − ${d} = ${M(a1)}.`)]}});
+G('problemi',0,'salti',()=>{const v=R(0,1),Y=v?R(1940,1965):R(1850,1950),Z=v?2026:R(1960,2020),dd=Z-Y,n1=Math.ceil(Y/10)*10,n2=Math.floor(Z/10)*10,ds=[n1-Y,n2-n1,Z-n2].filter(x=>x>0);return{t:v?`${TT('IL COMPLEANNO DEL NONNO')}Il nonno è nato nel ${Y}. Quanti anni compie quest'anno, nel ${Z}?`:`${TT('IL PONTE')}Un ponte fu costruito nel ${Y} e restaurato nel ${Z}. Quanti anni dopo fu restaurato?`,a:dd,d:[dd+1,dd-1,dd+10,dd-10],h:`Fai una sottrazione a salti: arriva prima a un numero tondo.`,
+ st:[L(`Salto da ${Y} a ${Z} passando per i numeri tondi.`,vJumps(Y,ds)),L(`${ds.join(' + ')} = ${M(dd)} anni.`)]}});
+G('problemi',0,'orologio',()=>{const st=R(6,10)*60+P([0,15,30,45]),f1=R(10,24)*5,w=R(4,12)*5,f2=R(8,20)*5,tot=f1+w+f2,m=mcT(st+tot,[-w,10,-10,60,-60]);return{t:`${TT('IL VIAGGIO')}Un aereo parte alle ${hm(st)} e vola per ${f1} minuti. All'aeroporto di scalo si aspettano ${w} minuti, poi il secondo volo dura ${f2} minuti. A che ora si arriva?`,ch:m.ch,a:m.a,h:`Somma tutti i minuti, anche quelli dell'attesa, poi trasformali in ore e minuti.`,
+ st:[L(`Minuti in tutto: ${f1} + ${w} + ${f2} = ${M(tot)} (non dimenticare l'attesa!).`),L(`${tot} minuti = ${Math.floor(tot/60)} h e ${tot%60} min.`,vTime(st,st+tot)),L(`Si arriva alle ${M(hm(st+tot))}.`)]}});
+G('problemi',0,'scatole',()=>{const s=P([6,8]),N=R(20,60),c=Math.ceil(N/s);return{t:`${TT('LE PIZZE')}Ogni pizza è tagliata in ${s} spicchi. Alla festa servono ${N} spicchi. Quante pizze bisogna ordinare, come minimo?`,a:c,d:[Math.floor(N/s),c+1,Math.round(N/2),N-s],h:`Se avanza anche un solo spicchio da coprire, serve un'altra pizza.`,
+ st:[L(`${N} : ${s} = ${Math.floor(N/s)}${N%s?` con resto ${N%s}`:''}.`,vPizza(N,s)),L(N%s?`Per gli ultimi ${N%s} spicchi serve un'altra pizza: ${M(c)}.`:`Non avanza niente: ${M(c)} pizze.`)]}});
+G('geometria',0,'forma_l',()=>{const n=R(3,6);return{t:`${TT('LA SCALETTA')}Questa figura a scaletta è fatta di quadretti con il lato di 1 cm. Quanti cm misura il suo perimetro?`,f:vStair(n,false),a:4*n,d:[n*(n+1)/2,2*n,4*n+2,4*n-2,3*n],h:`Prova a "spingere fuori" i gradini: che figura ottieni?`,
+ st:[L(`Spingo i gradini verso fuori (frecce rosse): il giro diventa quello di un quadrato ${n} × ${n}.`,vStair(n,true)),L(`Perimetro del quadrato: ${n} × 4 = ${M(4*n+' cm')}. (Attento: ${n*(n+1)/2} è il numero dei quadretti, cioè l'area!)`)]}});
+
+/* classe 4ª */
+G('geometria',1,'pali',()=>{const a=R(4,8),b=R(3,6);return{t:`${TT('IL CARTONCINO')}Un cartoncino di ${a*10} cm × ${b*10} cm viene diviso in quadrati di 10 cm di lato tracciando righe verticali e orizzontali, contando anche le righe del bordo. Quante righe si tracciano in tutto?`,a:a+b+2,d:[a+b,a*b,(a+1)*(b+1),a+b+1,2*(a+b)],h:`Quanti quadrati ci stanno in larghezza? Le righe sono come i pali: una in più.`,
+ st:[L(`In larghezza ci stanno ${a*10} : 10 = ${a} quadrati, quindi ${M(a+1)} righe verticali (blu), come pali e spazi.`,vGridLines(a,b)),L(`In altezza ${b} quadrati, quindi ${M(b+1)} righe orizzontali (rosse).`),L(`${a+1} + ${b+1} = ${M(a+b+2)}.`)]}});
+G('problemi',1,'proporzioni',()=>{const q=P([6,7,8,9,11,12]),k=R(3,20),A=5*k;return{t:`${TT('IL CAMBIO')}Nel paese immaginario di Numerolandia, 5 € valgono ${q} talleri. Quanti talleri si ottengono con ${A} €?`,a:k*q,d:[A*q,A+q,k+q,k*q+q,A],h:`Quante volte ci sta 5 € in ${A} €?`,
+ st:[L(`${A} € sono ${A} : 5 = ${M(k+' volte')} 5 €.`),L(`Ogni 5 € danno ${q} talleri: ${k} × ${q} = ${M(k*q)} talleri.`,vChain([A+' €',k,k*q+' tl'],[': 5','×'+q],null,2))]}});
+G('problemi',1,'proporzioni',()=>{const p=P([2,3,4]),m=R(2,4),g=p*R(4,12)*5,Pn=p*m;return{t:`${TT('LE CRÊPES')}Una ricetta per ${p} persone usa ${g} g di farina. Quanti grammi di farina servono per ${Pn} persone?`,a:g*m,u:' g',d:[g+Pn-p,g*Pn,g*m+g,g*2===g*m?g*3:g*2,Math.round(g/p*(Pn+1))],h:`Quante volte ${p} persone ci stanno in ${Pn} persone?`,
+ st:[L(`${Pn} persone sono ${Pn} : ${p} = ${M(m+' volte')} ${p} persone.`),L(`Tutta la ricetta va moltiplicata per ${m}: ${g} × ${m} = ${M(g*m+' g')}.`,vBars([{l:p+' pers.',s:[[g,g]]},{l:Pn+' pers.',s:[...Array(m)].map((_,i)=>[g,g,i%2?C.lemF:C.fill])}]))]}});
+G('logica',1,'ordinare',()=>{const ns=[...NOMI].sort(()=>Math.random()-.5).slice(0,4),cl=[0,1,2].map(i=>P([`la torre di ${ns[i+1]} è più alta di quella di ${ns[i]}`,`la torre di ${ns[i]} è più bassa di quella di ${ns[i+1]}`])).sort(()=>Math.random()-.5),ask=P(['bassa','alta']),ans=ask==='bassa'?ns[0]:ns[3];return{t:`${TT('LE TORRI DI MATTONCINI')}Quattro amici costruiscono una torre ciascuno. Sappiamo che ${cl.join('; ')}. Di chi è la torre più ${ask}?`,ch:[...ns].sort(),a:ans,h:`Disegna le torri in fila, sistemandole un indizio alla volta.`,
+ st:[L(`Metto in fila le torri un indizio alla volta, dalla più bassa alla più alta.`,vOrder(ns)),L(`La più ${ask} è quella di ${M(ans)}.`)]}});
+G('logica',1,'cassetti',()=>{const k=R(2,5),cols=['rossi','blu','verdi','gialli','neri'].slice(0,k);return{t:`${TT('I CALZINI AL BUIO')}In un cassetto ci sono tanti calzini ${cols.slice(0,-1).join(', ')} e ${cols[k-1]}, tutti mescolati. Al buio, quanti calzini devi prendere, come minimo, per essere sicuro di averne due dello stesso colore?`,a:k+1,d:[2,k,2*k,k+2],h:`Pensa al caso più sfortunato possibile.`,
+ st:[L(`Caso più sfortunato: i primi ${k} calzini sono tutti di colore diverso.`,vSocks(k)),L(`Il calzino dopo fa per forza coppia con uno di loro: ${k} + 1 = ${M(k+1)}.`)]}});
+G('problemi',1,'bottiglia',()=>{const p=R(12,25)*10,c=R(2,8)*50,m1=R(5,8),m2=R(1,3),W1=c+m1*p,W2=c+m2*p;return{t:`${TT('IL CESTO DI MELE')}Un cesto con ${m1} mele pesa ${W1} g. Lo stesso cesto con ${m2} mel${m2>1?'e':'a'} pesa ${W2} g. Le mele pesano tutte uguali. Quanto pesa il cesto vuoto?`,a:c,u:' g',d:[W2,W1-W2,p,Math.round(W1/m1),W2-p],h:`Che cosa cambia tra le due pesate? Solo alcune mele…`,
+ st:[L(`Tra le due pesate cambiano solo ${m1-m2} mele: ${W1} − ${W2} = ${W1-W2} g.`),L(`Una mela pesa ${W1-W2} : ${m1-m2} = ${M(p+' g')}.`),L(`Cesto vuoto: ${W2} − ${m2} × ${p} = ${M(c+' g')}.`)]}});
+G('problemi',1,'pali',()=>{const f=P([10,15,20,30]),h=R(7,9),hh=R(1,3),n=hh*60/f;return{t:`${TT("L'AUTOBUS")}Un autobus parte dal capolinea alle ${h}:00 e poi ogni ${f} minuti. L'ultima corsa parte alle ${h+hh}:00. Quante corse ci sono in tutto?`,a:n+1,d:[n,n+2,2*n,hh*60/10],h:`Conta gli intervalli di ${f} minuti: le corse sono come i pali.`,
+ st:[L(`Dalle ${h}:00 alle ${h+hh}:00 ci sono ${hh*60} minuti: ${hh*60} : ${f} = ${M(n)} intervalli.`),L(`Le corse sono una in più degli intervalli (come i pali): ${n} + 1 = ${M(n+1)}.`,vPosts(n,f+' min'))]}});
+G('problemi',1,'barre',()=>{const x=R(3,15);return{t:`${TT('IL NASTRO')}Un nastro lungo ${6*x} cm viene tagliato in tre pezzi. Il secondo pezzo è lungo il doppio del primo e il terzo il triplo del primo. Quanto è lungo il pezzo più lungo?`,a:3*x,u:' cm',d:[x,2*x,6*x,4*x,2*x+3],h:`Il primo pezzo è 1 barra: quante barre è tutto il nastro?`,
+ st:[L(`1° = 1 barra, 2° = 2 barre, 3° = 3 barre: in tutto ${M('6 barre')}.`,vBars([{l:'nastro',s:[[x,'1°'],[2*x,'2°',C.lemF],[3*x,'3°']]}])),L(`1 barra = ${6*x} : 6 = ${x} cm. Il pezzo più lungo è 3 barre: ${M(3*x+' cm')}.`)]}});
+G('numeri',1,'decimali',()=>{const b=R(1001,8999),u=R(1,5),t=R(1,8),r=b+100*u+10*t;return{t:`${TT('QUESTIONE DI SOMMA')}Al numero ${dec(b/100)} aggiungi ${u} unità e ${t} decimi. Che numero ottieni?`,a:r/100,fmt:dec,d:[(b+10*u+t)/100,(b+100*u+t)/100,(b+1000*u+10*t)/100,(b+100*t+10*u)/100],h:'Le unità stanno subito a sinistra della virgola, i decimi subito a destra.',
+ st:[L(`Metto in colonna con le virgole una sotto l'altra: ${u} unità e ${t} decimi sono ${u},${t}.`,vColumns([[b,''],[100*u+10*t,'+'],[r,'=']])),L(`${dec(b/100)} + ${u},${t} = ${M(dec(r/100))}.`)]}});
+G('problemi',1,'gruppi',()=>{const r=R(4,8),s=R(6,12),e=R(2,9);return{t:`${TT('A TEATRO')}In un teatro ci sono ${r} file da ${s} poltrone. Tutte le poltrone sono occupate tranne ${e}. Quanti spettatori ci sono?`,a:r*s-e,d:[r*s,r*s+e,r+s,(r-1)*s,r*s-e+1],h:`Quante poltrone ci sono in tutto? Poi togli quelle vuote.`,
+ st:[L(`Poltrone in tutto: ${r} file da ${s}.`,vArray(r,s)),L(`${r} × ${s} = ${r*s}; tolgo le ${e} vuote: ${M(r*s-e)}.`)]}});
+G('logica',1,'indizi',()=>{let res;for(let tr=0;tr<300&&!res;tr++){const code=R(102,987),h=Math.floor(code/100),t=Math.floor(code/10)%10,u=code%10;
+ const pool=[[`è un numero ${code%2?'dispari':'pari'}`,n=>n%2===code%2],[`la somma delle sue cifre è ${h+t+u}`,n=>digs(n)===h+t+u],
+  [h===2*u?'la cifra delle centinaia è il doppio di quella delle unità':h>u?`la cifra delle centinaia supera di ${h-u} quella delle unità`:h<u?`la cifra delle unità supera di ${u-h} quella delle centinaia`:'la cifra delle centinaia è uguale a quella delle unità',n=>{const a=Math.floor(n/100),c=n%10;return h===2*u?a===2*c:a-c===h-u}],
+  [`la cifra delle decine è ${t}`,n=>Math.floor(n/10)%10===t],[`è maggiore di ${Math.max(150,code-R(10,120))}`,null],[`le tre cifre sono ${new Set(String(code)).size===3?'tutte diverse':'non tutte diverse'}`,n=>(new Set(String(n)).size===3)===(new Set(String(code)).size===3)]];
+ const lo=+pool[4][0].match(/\d+/)[0];pool[4][1]=n=>n>lo;if(lo>=code)pool.splice(4,1);
+ const all=[...Array(900)].map((_,i)=>i+100),cnt=c=>all.filter(c[1]).length;
+ const pick=[...pool].sort(()=>Math.random()-.5).slice(0,R(3,4)).sort((a,b)=>cnt(a)-cnt(b));const ok=all.filter(n=>pick.every(c=>c[1](n)));
+ if(ok.length===1&&(!pick.some(c=>c[0].startsWith('la cifra delle decine'))||tr>150)){const prog=[];let cur=all;pick.forEach(c=>{cur=cur.filter(c[1]);prog.push(cur)});const e=prog.findIndex(x=>x.length===1)+1;res={code,pick:pick.slice(0,e),prog:prog.slice(0,e)}}}
+ const{code,pick,prog}=res,show=prog.findIndex(x=>x.length<=40);
+ return{t:`${TT('LA CASSAFORTE')}Il codice di una cassaforte è un numero di tre cifre. Indizi: ${pick.map((c,i)=>`<br>${i+1}) ${c[0]}`).join('')}<br>Qual è il codice?`,a:code,h:`Parti dall'indizio che elimina più numeri e cancella quelli che non vanno bene.`,
+ st:[...pick.map((c,i)=>L(`Indizio ${i+1} (${c[0]}): ${prog[i].length===1?'resta solo '+M(prog[i][0]):`restano ${prog[i].length} numeri${prog[i].length<=6?': '+prog[i].join(', '):''}`}.`,i===show&&prog[i].length>1?vChips(prog[i].map(n=>[n,n===code?2:1])):null)),L(`Il codice è ${M(code)}.`)]}});
+
+
+/* classe 5ª */
+G('numeri',2,'termometro',()=>{const t1=R(3,18),t2=-R(1,9),c1=P(['Bari','Palermo','Napoli','Cagliari']),c2=P(['Bolzano','Aosta','Cortina','Trento']);return{t:`${TT('TEMPERATURE')}Stamattina a ${c1} ci sono ${t1} °C, a ${c2} ${neg(t2)} °C. Di quanti gradi è più caldo a ${c1}?`,a:t1-t2,d:[Math.abs(t1+t2),t1,-t2,t1-t2+1,t1-t2-2],h:`Sul termometro: quanti gradi per arrivare da ${neg(t2)} a 0? E poi da 0 a ${t1}?`,
+ st:[L(`Da ${neg(t2)} a 0 ci sono ${-t2} gradi; da 0 a ${t1} altri ${t1}.`,vJumps(t2,[-t2,t1])),L(`${-t2} + ${t1} = ${M(t1-t2)} gradi.`)]}});
+G('geometria',2,'area',()=>{const k=P([2,3]),l=R(2,4),o=['il doppio','il triplo','4 volte','6 volte','9 volte'],ch=o.map((x,i)=>'ABCDE'[i]+') '+x);return{t:`${TT('AREA DEL QUADRATO')}Un quadrato ha il lato di ${l} cm. Un secondo quadrato ha il lato ${k===2?'doppio':'triplo'}. Quanto è grande l'area del secondo quadrato rispetto a quella del primo?`,ch,a:ch[k===2?2:4],h:`Disegna i due quadrati con le piastrelle e conta quante volte il piccolo sta nel grande.`,
+ st:[L(`Nel quadrato grande ci stanno ${k} × ${k} = ${k*k} quadrati piccoli.`,vTilesPair(l,k)),L(`Area 1°: ${l*l} cm²; area 2°: ${k*l} × ${k*l} = ${k*k*l*l} cm². È ${M(k*k+' volte')}, non ${k===2?'il doppio':'il triplo'}!`)]}});
+G('logica',2,'combinazioni',()=>{const S=R(3,11),w=6-Math.abs(S-7);return{t:`${TT('IL LANCIO DEI DADI')}Lanci insieme un dado rosso e un dado blu. In quanti modi diversi puoi ottenere ${S} come somma dei due numeri?`,a:w,d:[S-1,6,Math.ceil(S/2),w+1,w-1],h:`Fai una tabella 6 × 6 con tutte le somme possibili.`,
+ st:[L(`Tabella di tutte le somme: dado rosso nelle righe, blu nelle colonne.`,vDice(S)),L(`Le caselle con ${S} sono ${M(w)}. (La somma più probabile è 7, con 6 modi.)`)]}});
+G('geometria',2,'angoli',()=>{const a=R(8,16)*5;return{t:`${TT('ANGOLI E TRAPEZIO')}Un trapezio isoscele ha i due angoli alla base maggiore di ${a}° ciascuno. Quanto misura ciascuno degli altri due angoli?`,a:180-a,u:'°',d:[a,360-2*a,90+a,360-a,180-2*a],h:`Gli angoli di un quadrilatero sommano 360°.`,
+ st:[L(`Gli angoli di un quadrilatero fanno in tutto ${M('360°')} (si divide in due triangoli da 180°).`,vTrap(a)),L(`360 − ${a} − ${a} = ${360-2*a}, diviso tra i due angoli uguali: ${M(180-a+'°')}.`)]}});
+G('problemi',2,'barre',()=>{const[a,b,c]=three();let x,y,z;do{x=R(5,30);y=R(5,30);z=R(5,30)}while((x+y+z)%3||new Set([x,y,z]).size<3);const m=(x+y+z)/3;return{t:`${TT('LE FIGURINE')}${a} ha ${x} figurine, ${b} ne ha ${y} e ${c} ${z}. Decidono di metterle insieme e dividerle in parti uguali. Quante figurine avrà ciascuno?`,a:m,d:[x+y+z,Math.round((x+z)/2),Math.max(x,y,z)-Math.min(x,y,z),m+1,m-1],h:`Metti tutto insieme, poi dividi in 3.`,
+ st:[L(`Metto insieme tutte le figurine: ${x} + ${y} + ${z} = ${M(x+y+z)}.`,vBars([{l:a,s:[[x,x]]},{l:b,s:[[y,y]]},{l:c,s:[[z,z]]}])),L(`Divido in 3 parti uguali: ${x+y+z} : 3 = ${M(m)}.`)]}});
+
 /* ================= strategie (lezioni) ================= */
 const TOP={calcolo:'Calcolo',problemi:'Problemi',sequenze:'Sequenze',geometria:'Geometria',logica:'Logica e conteggio',numeri:'Numeri',misure:'Misure e tempo'};
 const TDESC={calcolo:'operazioni, espressioni, numero mancante',problemi:'soldi, età, divisioni, zampe e teste',sequenze:'regolarità e successioni',geometria:'perimetri, aree, figure, angoli',logica:'combinazioni, calendario, file, cifre',numeri:'valore posizionale, multipli, frazioni',misure:'orari, durate, lunghezze, pesi, soldi'};
@@ -551,7 +632,13 @@ const LES=[
 ['monete','misure','Raggruppa le monete','Conta prima le monete uguali: 3 da 20 = 60.','Metti in fila le monete uguali e moltiplica. Alla fine somma i gruppi.'],
 ['velocita','misure','Velocità a pezzi','Se in 1 ora fa 60 km, in mezz\'ora ne fa 30: spezza il tempo.','"60 km all\'ora" vuol dire 60 km ogni ora. Per tempi con la mezz\'ora conta le mezz\'ore.'],
 ['mesi','misure','Contare i giorni tra due date','Finisci il primo mese, poi aggiungi i giorni del mese dopo.','Dal 10 al 31 contando entrambi: 31 − 10 + 1 = 22. Il +1 serve perché anche il primo giorno conta.']
-].map(([id,k,ti,ric,idea])=>({id,k,ti,ric,idea}));
+,
+['proporzioni','problemi','Quante volte di più?','Trova quante volte è più grande la quantità, poi moltiplica tutto per quel numero.','Se una ricetta per 2 persone diventa per 6 persone, tutto va moltiplicato per 3. Se 5 € valgono 8 talleri, 15 € (3 volte 5 €) valgono 3 × 8.'],
+['cassetti','logica','Il caso più sfortunato','Per essere sicuro, immagina che tutto vada storto il più a lungo possibile.','Con 3 colori, i primi 3 calzini potrebbero essere tutti diversi. Il quarto però fa per forza coppia con uno di loro.'],
+['ordinare','logica','Metti in fila','Disegna una fila e sistema i nomi un indizio alla volta.','Con indizi come "più alto di" o "più basso di" costruisci la fila dal più piccolo al più grande, poi leggi la risposta.'],
+['indizi','logica','Un indizio alla volta','Ogni indizio elimina dei numeri: tieni solo quelli che vanno bene per tutti gli indizi.','Parti dall\'indizio che elimina di più (pari o dispari, somma delle cifre…). Alla fine deve restare un solo numero.'],
+['decimali','numeri','La virgola al suo posto','Incolonna le virgole: unità sotto unità, decimi sotto decimi.','Dopo la virgola vengono i decimi (0,1) e i centesimi (0,01). "Aggiungi 2 decimi" vuol dire aggiungere 0,2.'],
+['termometro','numeri','Sotto lo zero','Per andare da un numero sotto zero a uno sopra: conta fino a 0, poi vai oltre.','−4 °C sono 4 gradi sotto lo zero. Da −4 a 10 ci sono 4 gradi per arrivare a 0 e altri 10: in tutto 14 gradi.'],].map(([id,k,ti,ric,idea])=>({id,k,ti,ric,idea}));
 const LBY=Object.fromEntries(LES.map(l=>[l.id,l]));
 
 /* ================= stato ================= */
@@ -576,7 +663,7 @@ function renderHome(){
  $('modes').innerHTML=`<button class="mode ${mode==='all'?'sel':''}" data-m="all"><h3>Allenamento</h3><span>Scegli argomenti e difficoltà. Aiutini e spiegazioni con disegni dopo ogni risposta.</span></button>
  <button class="mode ${mode==='gara'?'sel':''}" data-m="gara"><h3>Simulazione finale</h3><span>Categoria ${g.cat}: ${g.n} quesiti misti in ${g.min} minuti, correzione alla fine.</span></button>`;
  $('setGara').classList.toggle('hide',mode!=='gara');$('setAll').classList.toggle('hide',mode!=='all');
- $('garaInfo').textContent=`Come nella finale d'istituto: ${g.n} quesiti in ${g.min} minuti, livello classe ${cls}ª, tutti gli argomenti mescolati. Niente aiutini, come in gara.`;
+ $('garaInfo').textContent=`Come nella prova vera: ${g.n} quesiti in ${g.min} minuti. I quesiti 1–10 sono di livello terza${cls>3?', 11–15 di quarta':''}${cls>4?', 16–20 di quinta':''}. Tanti problemi con la storia e molte risposte a scelta multipla A–E. Niente aiutini, come in gara.`;
  $('tOn').classList.toggle('sel',timed);$('tOff').classList.toggle('sel',!timed);
  $('topics').innerHTML=TK.map(k=>`<div class="topic ${sel[k].on?'':'off'}"><label><input type="checkbox" data-t="${k}" ${sel[k].on?'checked':''}><span>${TOP[k]}<small>${TDESC[k]}</small></span></label>
   <div class="seg">${LV.map((l,i)=>`<button data-k="${k}" data-l="${i}" class="${lvFor(k)===i?'sel':''}">${l}</button>`).join('')}</div></div>`).join('')+
@@ -603,7 +690,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-back]');if
 /* ================= strategie ================= */
 function renderLearn(){
  $('lchips').innerHTML=[['tutti','Tutte'],...TK.map(k=>[k,TOP[k]])].map(([k,n])=>`<button class="${lFilter===k?'sel':''}" data-f="${k}">${n}</button>`).join('');
- $('lgrid').innerHTML=LES.filter(l=>lFilter==='tutti'||l.k===lFilter).map(l=>`<button class="lcard ${seen[l.id]?'seen':''}" data-les="${l.id}"><i>${TOP[l.k]}${seen[l.id]?' · vista':''}</i><b>${l.ti}</b><small>${l.ric}</small></button>`).join('');
+ $('lgrid').innerHTML=[...LES].sort((a,b)=>TK.indexOf(a.k)-TK.indexOf(b.k)).filter(l=>lFilter==='tutti'||l.k===lFilter).map(l=>`<button class="lcard ${seen[l.id]?'seen':''}" data-les="${l.id}"><i>${TOP[l.k]}${seen[l.id]?' · vista':''}</i><b>${l.ti}</b><small>${l.ric}</small></button>`).join('');
 }
 $('learn').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.f){lFilter=b.dataset.f;renderLearn()}else if(b.dataset.les)openLesson(b.dataset.les,false)});
 function openLesson(id,fromQuiz){curLes=LBY[id];lesFromQuiz=fromQuiz;seen[id]=1;store.set('seen',seen);
@@ -615,7 +702,7 @@ function newExample(){const gs=nearest(GENS.filter(g=>g.id===curLes.id),cls-3);c
 function renderExample(){$('exQ').innerHTML=exQ.t;$('exF').innerHTML=exQ.f||'';
  $('exSteps').innerHTML=exQ.st.slice(0,exShown).map(([t,f])=>`<li class="pop">${t}${f?`<div class="fig">${f}</div>`:''}</li>`).join('');
  const done=exShown>=exQ.st.length;$('exNext').disabled=done;$('exAll').disabled=done;$('exNext').textContent=done?'Fatto!':'Mostra il passo successivo';
- $('exAns').innerHTML=done?`Risposta: <b>${exQ.a}</b>`:`Passo ${exShown} di ${exQ.st.length}. Prova a pensare al passo successivo prima di guardarlo!`}
+ $('exAns').innerHTML=done?`Risposta: <b>${showA(exQ)}</b>`:`Passo ${exShown} di ${exQ.st.length}. Prova a pensare al passo successivo prima di guardarlo!`}
 $('exNext').addEventListener('click',()=>{exShown++;renderExample()});
 $('exAll').addEventListener('click',()=>{exShown=exQ.st.length;renderExample()});
 $('exNew').addEventListener('click',newExample);
@@ -624,13 +711,19 @@ $('lBack').addEventListener('click',()=>{renderLearn();show('learn')});
 $('lToQuiz').addEventListener('click',()=>{show('quiz');renderQ()});
 
 /* ================= prova ================= */
+/* risposte a scelta multipla A–E come nelle prove ufficiali */
+function toMC(q,generic){if(q.ch)return q;let ds=q.d;if(!ds){if(!generic||typeof q.a!=='number')return q;ds=[q.a+1,q.a-1,q.a+10,q.a*2,Math.round(q.a/2),q.a+2]}
+ const f=q.fmt||(x=>x),u=q.u||'',r2=v=>Math.round(v*100)/100,vals=[q.a];
+ for(const v of ds){if(vals.length>=5)break;if(typeof v==='number'&&isFinite(v)&&v>=0&&!vals.some(w=>Math.abs(w-v)<1e-9))vals.push(r2(v))}
+ for(let t=1;vals.length<5;t++){const v=r2(q.a+(t%2?1:-1)*Math.ceil(t/2)*(q.fmt?0.1:1));if(v>=0&&!vals.some(w=>Math.abs(w-v)<1e-9))vals.push(v)}
+ vals.sort((a,b)=>a-b);q.ch=vals.map((v,i)=>`${'ABCDE'[i]}) ${f(v)}${u}`);q.a=q.ch[vals.findIndex(v=>Math.abs(v-q.a)<1e-9)];return q}
 function startFromHome(){
- if(mode==='gara'){const ks=[...TK].sort(()=>Math.random()-.5),plan=[];for(let i=0;i<GARA[cls].n;i++){const k=ks[i%ks.length];plan.push(P(GENS.filter(g=>g.k===k&&g.lv===cls-3)))}startPlan(plan,true)}
+ if(mode==='gara'){const plan=[],pick=lv=>{const k=Math.random()<.45?'problemi':P(TK);return P(GENS.filter(g=>g.k===k&&g.lv===lv))};for(let lv=0;lv<=cls-3;lv++)for(let i=0;i<(lv?5:10);i++)plan.push(pick(lv));startPlan(plan,true)}
  else{const ks=TK.filter(k=>sel[k].on);if(!ks.length){$('warn').classList.remove('hide');return}
   startPlan([...Array(qty)].map((_,i)=>{const k=ks[i%ks.length];return P(GENS.filter(g=>g.k===k&&g.lv===lvFor(k)))}),false)}}
 function startPlan(plan,isGara){gara=isGara;const orig=plan;lastPlan=()=>startPlan(orig,isGara);
- plan=[...plan].sort(()=>Math.random()-.5);const used=new Set();
- Q=plan.map(g=>{let q,t=0;do{q=g.fn();t++}while(used.has(q.t)&&t<30);used.add(q.t);Object.assign(q,{k:g.k,lv:g.lv,id:g.id,user:null,done:false,hint:false});return q});
+ if(!isGara)plan=[...plan].sort(()=>Math.random()-.5);const used=new Set();
+ Q=plan.map(g=>{let q,t=0;do{q=g.fn();t++}while(used.has(q.t)&&t<30);used.add(q.t);q=toMC(q,isGara&&Math.random()<.6);Object.assign(q,{k:g.k,lv:g.lv,id:g.id,user:null,done:false,hint:false});return q});
  cur=0;streak=0;tStart=Date.now();clearInterval(tick);
  if(gara&&timed){tEnd=tStart+GARA[cls].min*60000;tick=setInterval(updTimer,1000)}else tEnd=0;
  show('quiz');renderQ();updTimer()}
@@ -656,8 +749,9 @@ function renderQ(){const q=Q[cur];
  $('consegna').classList.toggle('hide',!gara);$('navgrid').classList.toggle('hide',!gara);
  if(gara)$('navgrid').innerHTML=Q.map((x,i)=>`<button data-n="${i}" class="${x.user!=null&&x.user!==''?'done':''} ${i===cur?'cur':''}">${i+1}</button>`).join('');
  if(!q.ch&&!locked)setTimeout(()=>$('ansIn').focus({preventScroll:true}),50)}
+const showA=q=>q.fmt&&typeof q.a==='number'?q.fmt(q.a):q.a;
 const isOk=q=>q.user!=null&&q.user!==''&&(typeof q.a==='number'?Number(String(q.user).replace(',','.').trim())===q.a:q.user===q.a);
-function fbHtml(q){const ok=isOk(q),l=LBY[q.id];return`<div class="fb ${ok?'ok':'ko'} pop"><strong>${ok?P(['Esatto!','Bravissimo!','Perfetto!','Giusto!']):'Non proprio…'}</strong>${ok?'Ecco il ragionamento:':`La risposta giusta è <b>${q.a}</b>. Vediamo insieme come si ragiona:`}${stepsHtml(q)}
+function fbHtml(q){const ok=isOk(q),l=LBY[q.id];return`<div class="fb ${ok?'ok':'ko'} pop"><strong>${ok?P(['Esatto!','Bravissimo!','Perfetto!','Giusto!']):'Non proprio…'}</strong>${ok?'Ecco il ragionamento:':`La risposta giusta è <b>${showA(q)}</b>. Vediamo insieme come si ragiona:`}${stepsHtml(q)}
  <button class="small" data-les="${l.id}" style="margin-top:6px">Rivedi la strategia: ${l.ti}</button></div>`}
 function answer(v){const q=Q[cur];if(v===''||v==null)return;q.user=v;
  if(gara){if(cur<Q.length-1)cur++;renderQ();return}
@@ -685,7 +779,7 @@ function finish(){clearInterval(tick);
  const sec=Math.round((Date.now()-tStart)/1000);
  $('resTime').textContent=`Tempo impiegato: ${Math.floor(sec/60)} min ${sec%60} s`+(gara?` su ${GARA[cls].min} min disponibili`:'');
  $('review').innerHTML=Q.map((q,i)=>{const o=isOk(q),l=LBY[q.id];return`<div class="rev"><span class="tag ${o?'r':'w'}">${i+1}. ${o?'Giusta':(q.user==null||q.user===''?'Non risposta':'Sbagliata')}</span> <span class="note">· ${TOP[q.k]}</span>
-  <p>${q.t}</p>${q.f?`<div class="fig">${q.f}</div>`:''}<p>Tua risposta: <b>${q.user??'—'}</b> · Risposta giusta: <b>${q.a}</b></p>
+  <p>${q.t}</p>${q.f?`<div class="fig">${q.f}</div>`:''}<p>Tua risposta: <b>${q.user??'—'}</b> · Risposta giusta: <b>${showA(q)}</b></p>
   ${o?`<details><summary class="note">Vedi il ragionamento</summary>${stepsHtml(q)}</details>`:stepsHtml(q)}<button class="ghost small" data-les="${l.id}">Strategia: ${l.ti}</button></div>`}).join('');
  show('res')}
 $('res').addEventListener('click',e=>{const b=e.target.closest('[data-les]');if(b)openLesson(b.dataset.les,false)});
