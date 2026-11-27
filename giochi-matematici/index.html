@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Allenamento Giochi Matematici</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: allegra e chiara per bambini di 8-10 anni, ordinata come un buon quaderno
+   IDEA: il quaderno a quadretti di matematica, con il mare del Mediterraneo in testata e i post-it "Ricorda"
+   PICTURE: la scheda del quesito e i disegni-spiegazione generati con i numeri veri del quesito
+   COLOUR: blu mare #1565c0, carta a quadretti, giallo limone #ffd23f per ciò che va ricordato, corallo per errori e salti
+   TYPE: Baloo 2 per titoli e numeri, Nunito per il testo; LAYOUT: una colonna calma, max 780px */
+:root{color-scheme:light dark;
+--bg:light-dark(#fbfdff,#0d1b2e);--grid:light-dark(#dce9f7,#17304d);--card:light-dark(#ffffff,#132840);
+--ink:light-dark(#10223a,#eaf2fb);--soft:light-dark(#51657d,#a9bdd4);--sea:light-dark(#1565c0,#5aa9ff);
+--sea2:light-dark(#0d47a1,#2f7fd9);--lemon:#ffd23f;--ok:light-dark(#1f8a4c,#4cd486);--ko:light-dark(#d6453d,#ff7b72);
+--line:light-dark(#c9d8ea,#24425f);--B:"Baloo 2",Nunito,system-ui,sans-serif}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;color:var(--ink);font:17px/1.55 Nunito,system-ui,sans-serif;overflow-x:clip;
+background:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px}
+h1,h2,h3,.num{font-family:var(--B);line-height:1.05;margin:0}
+h1{font-size:clamp(30px,6vw,46px);text-wrap:balance}h2{font-size:clamp(26px,5vw,34px);text-wrap:balance}h3{font-size:20px}
+.top{background:var(--sea);color:#fff;padding:22px max(5vw,16px) 54px;position:relative}
+.top p{margin:.4em 0 0;color:#dbeaff;max-width:46ch}
+.top svg.wave{position:absolute;left:0;bottom:-1px;width:100%;height:40px}
+.playing .top{padding-top:12px;padding-bottom:40px}.playing .top p{display:none}.playing .top h1{font-size:22px}
+.wrap{max-width:780px;margin:0 auto;padding:0 max(4vw,14px) 48px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:20px;margin:18px 0;box-shadow:0 4px 0 var(--line)}
+.label{font-weight:800;color:var(--soft);font-size:14px;margin:0 0 8px}
+.row{display:flex;flex-wrap:wrap;gap:10px}
+button{font:inherit;cursor:pointer;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;min-height:48px;padding:8px 16px;font-weight:800}
+button:focus-visible,input:focus-visible{outline:3px solid var(--lemon);outline-offset:2px}
+button:disabled{opacity:.55;cursor:default}
+button.sel{background:var(--sea);border-color:var(--sea2);color:#fff}
+button.big{font-family:var(--B);font-size:22px;flex:1 1 90px;padding:10px}
+.go{background:var(--lemon);border-color:#e0b100;color:#2a2100;font-size:19px;width:100%;min-height:56px;box-shadow:0 4px 0 #c99d00}
+.go:active{transform:translateY(2px);box-shadow:0 2px 0 #c99d00}
+.ghost{background:transparent}
+.small{min-height:40px;font-size:15px;padding:4px 12px}
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.mode{text-align:left;padding:16px;border-radius:16px;display:block;width:100%}
+.mode h3{margin-bottom:4px}.mode span{font-weight:600;color:var(--soft);font-size:15px}
+.mode.sel span{color:#dbeaff}
+.learnBtn{display:flex;gap:16px;align-items:center;text-align:left;width:100%;padding:16px;border-radius:18px;background:var(--lemon);border-color:#e0b100;color:#2a2100;box-shadow:0 4px 0 #c99d00}
+.learnBtn h3{font-size:24px}.learnBtn span{font-weight:600;font-size:15px}
+.learnBtn svg{flex:none}
+.topic{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 12px;align-items:center;padding:10px 0;border-top:1px dashed var(--line)}
+.topic:first-of-type{border-top:0}
+.topic label{display:flex;gap:10px;align-items:center;font-weight:800;cursor:pointer}
+.topic input{width:22px;height:22px;accent-color:var(--sea)}
+.topic small{display:block;font-weight:600;color:var(--soft);font-size:13px}
+.seg{display:flex;border:2px solid var(--line);border-radius:12px;overflow:hidden}
+.seg button{border:0;border-radius:0;min-height:40px;padding:4px 10px;font-size:14px}
+.seg button+button{border-left:2px solid var(--line)}
+.topic.off .seg{opacity:.35;pointer-events:none}
+@media(max-width:520px){.topic{grid-template-columns:1fr}.seg{justify-self:start}}
+.bar{height:10px;background:var(--grid);border-radius:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--sea)}
+.stat{display:grid;grid-template-columns:9em minmax(0,1fr) 4.5em;gap:10px;align-items:center;font-size:15px;padding:4px 0}
+.stat b{text-align:right;font-variant-numeric:tabular-nums}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:thin}
+.chips button{flex:none;min-height:40px;font-size:15px;border-radius:999px}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.lcard{text-align:left;padding:14px 16px;border-radius:16px;display:flex;flex-direction:column;gap:4px;font-weight:600}
+.lcard b{font-family:var(--B);font-size:19px;line-height:1.15}
+.lcard small{color:var(--soft);font-size:14px}
+.lcard i{font-style:normal;font-size:12px;font-weight:800;color:var(--sea)}
+.lcard.seen{border-color:color-mix(in srgb,var(--ok) 60%,var(--line))}
+.ricorda{background:#fff3b0;color:#3a2f00;border-radius:4px 4px 18px 4px;padding:16px 18px;margin:16px 0;box-shadow:0 6px 14px rgba(0,0,0,.12);transform:rotate(-1deg);font-weight:700;font-size:19px}
+.ricorda small{display:block;font:800 13px Nunito,sans-serif;color:#8a6d00;margin-bottom:2px}
+.steps{list-style:none;padding:0;margin:12px 0 0;counter-reset:s}
+.steps li{counter-increment:s;position:relative;padding:10px 0 10px 44px;border-top:1px dashed var(--line)}
+.steps li::before{content:counter(s);position:absolute;left:0;top:10px;width:32px;height:32px;border-radius:50%;background:var(--sea);color:#fff;font:800 17px var(--B);display:grid;place-items:center}
+.steps .fig{margin-top:8px}
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.pill{background:var(--grid);border-radius:999px;padding:4px 12px;font-weight:800;font-size:14px;white-space:nowrap}
+.timer{font-family:var(--B);font-size:24px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.timer.low{color:var(--ko)}
+.qtext{font-size:clamp(19px,3.4vw,23px);font-weight:600;margin:14px 0}
+.k{font-family:var(--B);font-weight:800;color:var(--sea);white-space:nowrap}
+mark{background:#ffe680;color:#2a2100;border-radius:4px;padding:0 3px}
+.fig{display:flex;justify-content:center;margin:8px 0;overflow-x:auto}.fig svg{max-width:100%;height:auto;flex:none}
+.ans{display:flex;gap:10px;flex-wrap:wrap}
+.ans input{font:800 26px var(--B);width:9ch;flex:1 1 140px;padding:6px 14px;border:3px solid var(--sea);border-radius:14px;background:var(--bg);color:var(--ink);min-height:56px}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.hint{background:color-mix(in srgb,var(--lemon) 30%,transparent);border:2px dashed #e0b100;border-radius:14px;padding:12px 14px;margin-top:12px;font-weight:600}
+.fb{border-radius:14px;padding:14px 16px;margin-top:14px;font-weight:600}
+.fb.ok{background:color-mix(in srgb,var(--ok) 12%,var(--card));border:2px solid var(--ok)}
+.fb.ko{background:color-mix(in srgb,var(--ko) 10%,var(--card));border:2px solid var(--ko)}
+.fb>strong{font-family:var(--B);font-size:21px;display:block}
+.nav{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px;margin-top:14px}
+.nav button{min-height:44px;padding:0;font-size:15px}
+.nav button.done{background:var(--grid)}.nav button.cur{outline:3px solid var(--lemon)}
+.score{text-align:center}.score .num{font-size:clamp(56px,14vw,88px);color:var(--sea)}
+.rev{border-top:1px dashed var(--line);padding:12px 0}.rev:first-child{border-top:0}
+.rev .tag{font-weight:800}.rev .tag.r{color:var(--ok)}.rev .tag.w{color:var(--ko)}
+.rev p{margin:.3em 0}
+.streak{font-family:var(--B);color:var(--sea);font-weight:800}
+.note{font-size:14px;color:var(--soft)}
+.hide{display:none!important}
+@media(prefers-reduced-motion:no-preference){.pop{animation:pop .35s ease}@keyframes pop{0%{transform:translateY(6px);opacity:.3}100%{transform:none;opacity:1}}}
+@media(max-width:600px){.card{padding:16px}.stat{grid-template-columns:7em minmax(0,1fr) 4em}.ricorda{font-size:17px}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap" style="padding-bottom:0">
+    <h1>Allenamento Giochi Matematici del Mediterraneo</h1>
+    <p>Impara i ragionamenti con disegni ed esempi, poi allenati o simula la finale. Per le classi 3ª, 4ª e 5ª primaria.</p>
+  </div>
+  <svg class="wave" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 22 C150 2 300 42 450 22 S750 2 900 22 1050 42 1200 22 V40 H0Z" fill="var(--bg)"/></svg>
+</header>
+
+<main class="wrap">
+  <!-- HOME -->
+  <section id="home">
+    <div class="card">
+      <p class="label">1 · In che classe sei?</p>
+      <div class="row" id="classi"></div>
+    </div>
+    <button class="learnBtn" id="goLearn">
+      <svg width="62" height="62" viewBox="0 0 62 62" aria-hidden="true"><rect x="6" y="8" width="50" height="46" rx="4" fill="#fff" stroke="#2a2100" stroke-width="2.5"/><path d="M14 20h34M14 30h34M14 40h20" stroke="#1565c0" stroke-width="3" stroke-linecap="round"/><circle cx="46" cy="42" r="9" fill="#ffd23f" stroke="#2a2100" stroke-width="2.5"/><path d="M42 42l3 3 5-6" stroke="#2a2100" stroke-width="2.5" fill="none"/></svg>
+      <span><h3>Impara le strategie</h3><span>I trucchi per ragionare, spiegati con un disegno e un esempio passo passo</span></span>
+    </button>
+    <div class="card">
+      <p class="label">2 · Oppure mettiti alla prova</p>
+      <div class="modes" id="modes"></div>
+    </div>
+    <div class="card" id="setGara">
+      <p class="label">3 · Impostazioni della simulazione</p>
+      <p id="garaInfo" style="margin:0 0 12px"></p>
+      <div class="row"><button id="tOn" class="sel">Con cronometro</button><button id="tOff">Senza tempo</button></div>
+    </div>
+    <div class="card hide" id="setAll">
+      <p class="label">3 · Scegli argomenti e difficoltà</p>
+      <div id="topics"></div>
+      <p class="label" style="margin-top:14px">Quanti quesiti?</p>
+      <div class="row" id="quanti"></div>
+    </div>
+    <p id="warn" style="color:var(--ko);font-weight:800;margin:0 0 10px" class="hide">Scegli almeno un argomento.</p>
+    <button class="go" id="start">Inizia!</button>
+    <div class="card" id="progressi"></div>
+  </section>
+
+  <!-- ELENCO STRATEGIE -->
+  <section id="learn" class="hide">
+    <div class="row" style="margin-top:18px"><button class="ghost small" data-back="home">‹ Home</button></div>
+    <h2 style="margin:14px 0 6px">Le strategie</h2>
+    <p style="margin:0 0 10px">Ogni scheda spiega un modo di ragionare che serve nei giochi matematici. Leggi il post-it giallo, guarda il disegno e segui l'esempio passo passo.</p>
+    <div class="chips" id="lchips"></div>
+    <div class="lgrid" id="lgrid"></div>
+  </section>
+
+  <!-- SINGOLA STRATEGIA -->
+  <section id="lesson" class="hide">
+    <div class="row" style="margin-top:18px"><button class="ghost small" id="lBack">‹ Strategie</button><button class="ghost small hide" id="lToQuiz">‹ Torna al quesito</button></div>
+    <div class="card pop" id="lcard">
+      <span class="pill" id="lTopic"></span>
+      <h2 id="lTitle" style="margin-top:12px"></h2>
+      <div class="ricorda" id="lRic"></div>
+      <p id="lIdea" style="margin:0"></p>
+    </div>
+    <div class="card">
+      <p class="label">Esempio</p>
+      <div class="qtext" id="exQ" style="margin-top:0"></div>
+      <div class="fig" id="exF"></div>
+      <ol class="steps" id="exSteps"></ol>
+      <div class="row" style="margin-top:12px">
+        <button class="go" id="exNext" style="flex:2 1 200px;width:auto">Mostra il passo successivo</button>
+        <button id="exAll" class="small" style="flex:1 1 120px">Mostra tutto</button>
+      </div>
+      <p class="note" id="exAns" style="margin:10px 0 0"></p>
+    </div>
+    <div class="row"><button id="exNew" style="flex:1">Un altro esempio</button><button class="sel" id="exTry" style="flex:1">Prova tu: 5 quesiti</button></div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="hide">
+    <div class="card pop" id="qcard">
+      <div class="qhead">
+        <span class="pill" id="qnum"></span>
+        <span class="pill" id="qtopic"></span>
+        <span class="timer" id="timer"></span>
+        <span class="streak" id="streak"></span>
+      </div>
+      <div class="qtext" id="qtext"></div>
+      <div class="fig" id="qfig"></div>
+      <form class="ans" id="ansForm" autocomplete="off">
+        <input id="ansIn" inputmode="numeric" placeholder="Risposta" aria-label="La tua risposta">
+        <button class="go" style="width:auto;flex:1 1 140px" id="ansBtn">Controlla</button>
+      </form>
+      <div class="choices" id="choices"></div>
+      <button class="ghost small" id="hintBtn" style="margin-top:12px">Mi serve un aiutino</button>
+      <div id="hint"></div>
+      <div id="fb"></div>
+      <div class="row" style="margin-top:14px">
+        <button id="prev" class="ghost">‹ Indietro</button>
+        <button id="next" style="flex:1">Avanti ›</button>
+      </div>
+      <div class="nav" id="navgrid"></div>
+    </div>
+    <div class="row"><button class="ghost" id="stop">Esci</button><button id="consegna" class="sel" style="flex:1">Consegna la prova</button></div>
+  </section>
+
+  <!-- RISULTATI -->
+  <section id="res" class="hide">
+    <div class="card score pop">
+      <p class="label" id="resTitle"></p>
+      <div class="num" id="resNum"></div>
+      <p id="resMsg" style="font-weight:800;font-size:19px;margin:.2em 0 0"></p>
+      <p class="note" id="resTime"></p>
+    </div>
+    <div class="row"><button class="go" id="again" style="flex:1">Gioca ancora</button><button data-back="home">Home</button></div>
+    <div class="card"><h3 style="margin-bottom:6px">Correzione con le spiegazioni</h3><div id="review"></div></div>
+  </section>
+  <p class="note">Quesiti generati in modo casuale nello stile delle gare (risposta numerica, niente calcolatrice): non sono i testi ufficiali. Usa un foglio per i calcoli come in gara. I progressi restano solo su questo dispositivo.</p>
+</main>
+
+<script>
+{
+/* ================= utilità ================= */
+const R=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const P=a=>a[R(0,a.length-1)];
+const K=x=>`<span class="k">${x}</span>`;
+const M=x=>`<mark>${x}</mark>`;
+const NOMI=['Luca','Anna','Marco','Sofia','Giulia','Matteo','Chiara','Davide','Elena','Paolo','Rosa','Nicola'];
+const GIORNI=['lunedì','martedì','mercoledì','giovedì','venerdì','sabato','domenica'];
+const AB=['lun','mar','mer','gio','ven','sab','dom'];
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+const hm=m=>`${Math.floor(m/60)}:${String(m%60).padStart(2,'0')}`;
+
+/* ================= disegni (SVG con i numeri del quesito) ================= */
+const C={sea:'var(--sea)',ko:'var(--ko)',soft:'var(--soft)',ink:'var(--ink)',fill:'color-mix(in srgb,var(--sea) 16%,transparent)',lem:'#ffd23f',lemS:'#c99d00',lemF:'color-mix(in srgb,#ffd23f 55%,transparent)'};
+const COL=['#e4572e','#29a3a3','#ffd23f','#7b5ea7','#3d8b37','#f28e2b'];
+const sv=(W,H,s)=>`<svg viewBox="0 0 ${Math.ceil(W)} ${Math.ceil(H)}" width="${Math.ceil(W)}" role="img">${s}</svg>`;
+const tx=(x,y,s,o={})=>`<text x="${(+x).toFixed(1)}" y="${(+y).toFixed(1)}" text-anchor="${o.a||'middle'}" font-size="${(o.s||16)<14?14:(o.s||16)}" font-weight="${o.w||700}" fill="${o.c||C.ink}" font-family="Baloo 2,Nunito,sans-serif">${s}</text>`;
+const rc=(x,y,w,h,f,s=C.sea,r=6)=>`<rect x="${x}" y="${y}" width="${Math.max(0,w)}" height="${h}" rx="${r}" fill="${f}" stroke="${s}" stroke-width="2"/>`;
+const ci=(x,y,r,f,s=C.sea)=>`<circle cx="${(+x).toFixed(1)}" cy="${(+y).toFixed(1)}" r="${r}" fill="${f}" stroke="${s}" stroke-width="2"/>`;
+const ln=(x1,y1,x2,y2,s=C.sea,w=2,d='')=>`<line x1="${(+x1).toFixed(1)}" y1="${(+y1).toFixed(1)}" x2="${(+x2).toFixed(1)}" y2="${(+y2).toFixed(1)}" stroke="${s}" stroke-width="${w}" stroke-linecap="round"${d?` stroke-dasharray="${d}"`:''}/>`;
+const ar=(x1,y1,x2,y2,c=C.sea)=>{const a=Math.atan2(y2-y1,x2-x1),L=9,p=t=>`${(x2-L*Math.cos(a+t)).toFixed(1)},${(y2-L*Math.sin(a+t)).toFixed(1)}`;return ln(x1,y1,x2,y2,c,2.5)+`<polygon points="${x2},${y2} ${p(.45)} ${p(-.45)}" fill="${c}"/>`};
+const hop=(x1,x2,y,lab,c=C.ko,top)=>{const m=(x1+x2)/2;return `<path d="M${x1.toFixed(1)} ${y} Q${m.toFixed(1)} ${top} ${x2.toFixed(1)} ${y}" fill="none" stroke="${c}" stroke-width="2"/>`+tx(m,(y+2*top+y)/4-6,lab,{s:13,c})};
+
+/* salti sulla linea dei numeri */
+const vJumps=(a,ds)=>{const pts=[a];ds.forEach(d=>pts.push(pts[pts.length-1]+d));const mn=Math.min(...pts),mx=Math.max(...pts),X=v=>26+(v-mn)/(mx-mn||1)*280;let s=ln(12,70,320,70,C.soft,2),last=-99;
+ pts.forEach((p,i)=>{s+=ln(X(p),63,X(p),77,C.sea,2.5);if(i===0||i===pts.length-1||X(p)-last>36){s+=tx(X(p),96,p,{s:14,c:i===pts.length-1?C.ko:C.ink});last=X(p)}});
+ ds.forEach((d,i)=>{const x1=X(pts[i]),x2=X(pts[i+1]);s+=hop(x1,x2,63,(d>0?'+':'−')+Math.abs(d),C.ko,Math.abs(x2-x1)<40?40:18)});return sv(334,104,s)};
+/* schieramento a righe e colonne */
+const vArray=(a,b)=>{let s='';for(let i=0;i<a;i++)for(let j=0;j<b;j++)s+=ci(20+j*22,18+i*22,7,i%2?C.fill:C.lemF,i%2?C.sea:C.lemS);return sv(b*22+120,a*22+10,s+tx(b*22+22,a*11+14,`${a} righe da ${b}`,{a:'start',s:14}))};
+/* distribuire in gruppi, con resto */
+const vGroups=(N,k)=>{const q=Math.floor(N/k),r=N%k,dx=Math.min(14,260/Math.max(q,1));let s='';for(let i=0;i<k;i++){const y=14+i*24;s+=tx(14,y+5,i+1,{s:12,c:C.soft});for(let j=0;j<q;j++)s+=ci(36+j*dx,y,Math.min(5,dx/2-1),C.fill)}
+ if(r){const y=14+k*24;s+=tx(4,y+5,'resto',{a:'start',s:12,c:C.ko});for(let j=0;j<r;j++)s+=ci(54+j*14,y,5,C.lem,C.ko)}return sv(Math.max(36+q*dx,60+r*14)+10,14+(k+(r?1:0))*24-6,s)};
+/* scatole da 6 */
+const vEggs=N=>{const c=Math.ceil(N/6);let s='';for(let b=0;b<c;b++){const X=6+(b%6)*66,Y=6+Math.floor(b/6)*48,part=b===c-1&&N%6;s+=rc(X,Y,60,40,'none',part?C.ko:C.sea);for(let e=0;e<6;e++){const has=b*6+e<N;s+=ci(X+12+(e%3)*18,Y+12+Math.floor(e/3)*16,6,has?C.lem:'none',has?C.lemS:C.soft)}}return sv(Math.min(c,6)*66+8,Math.ceil(c/6)*48+6,s)};
+/* catena di operazioni, con il ritorno all'indietro */
+const vChain=(vals,ops,inv,hi=0)=>{const bw=58,aw=72,n=ops.length,X=i=>6+i*(bw+aw);let s='';
+ vals.forEach((v,i)=>{s+=rc(X(i),14,bw,36,i===hi?C.lem:C.fill,i===hi?C.lemS:C.sea,10)+tx(X(i)+bw/2,38,v,{s:String(v).length>5?13:16})});
+ ops.forEach((o,i)=>{s+=ar(X(i)+bw+5,32,X(i+1)-5,32)+tx(X(i)+bw+aw/2,24,o,{s:14,c:C.sea})});
+ if(inv)inv.forEach((o,i)=>{s+=ar(X(i+1)-5,70,X(i)+bw+5,70,C.ko)+tx(X(i)+bw+aw/2,92,o,{s:14,c:C.ko})});return sv(X(n)+bw+8,inv?100:56,s)};
+/* galline e conigli */
+const vAnimals=(T,c)=>{const dx=Math.min(30,330/T),W=Math.max(T*dx+30,260);let s='';for(let i=0;i<T;i++){const x=16+i*dx,rab=i>=T-c;s+=ln(x-4,24,x-6,46)+ln(x+4,24,x+6,46);if(rab)s+=ln(x-7,24,x-13,46,C.ko,2.5)+ln(x+7,24,x+13,46,C.ko,2.5);s+=ci(x,16,Math.min(8,dx/2-1),rab?C.lemF:C.fill,rab?C.lemS:C.sea)}
+ return sv(W,104,s+tx(6,72,`${T} teste × 2 = ${2*T} zampe`,{a:'start',s:15})+tx(6,96,`+ ${2*c} zampe rosse dei conigli`,{a:'start',s:15,c:C.ko}))};
+/* metodo delle barre */
+const vBars=(rows,tot)=>{const max=tot||Math.max(...rows.map(r=>r.s.reduce((a,b)=>a+b[0],0)));const u=240/max,lw=Math.max(...rows.map(r=>String(r.l).length))*8+10,hasN=rows.some(r=>r.n);let s='';
+ rows.forEach((r,i)=>{const y=6+i*46;s+=tx(lw-6,y+23,r.l,{a:'end',s:15});let x=lw;r.s.forEach(([v,lab,col])=>{const w=v*u;s+=rc(x,y,w,34,col||C.fill,C.sea,4)+(w>String(lab).length*8+4?tx(x+w/2,y+23,lab,{s:15}):'');x+=w});if(r.n)s+=tx(x+6,y+23,r.n,{a:'start',s:14,c:C.ko})});
+ return sv(lw+240+(hasN?96:8),rows.length*46+8,s)};
+/* frazione */
+const vFraction=(n,d,b)=>{const w=320/d;let s=tx(170,16,`tutto = ${b}`,{s:14});for(let i=0;i<d;i++)s+=rc(10+i*w,26,w,38,i<n?C.lemF:C.fill,C.sea,2)+tx(10+i*w+w/2,51,b/d,{s:14});return sv(340,90,s+tx(170,84,`prendo ${n} parti su ${d}`,{s:13,c:C.ko}))};
+/* sequenza con i salti */
+const vSeq=(vals,labs,hi)=>{const dx=60,X=i=>30+i*dx;let s='';labs.forEach((l,i)=>{if(l!=null&&i<vals.length-1)s+=hop(X(i)+8,X(i+1)-8,40,l,C.ko,4)});
+ vals.forEach((v,i)=>{s+=ci(X(i),62,22,i===hi?C.lem:C.fill,i===hi?C.lemS:C.sea)+tx(X(i),68,v,{s:String(v).length>3?13:16})});return sv(vals.length*dx,92,s)};
+/* fila di bambini */
+const vFila=(k,j)=>{const n=k+j-1,dx=Math.min(28,520/n),X=i=>20+i*dx,W=Math.max(X(n-1)+24,300);let s='';
+ for(let i=0;i<n;i++)s+=ci(X(i),52,Math.min(9,dx/2-2),i===k-1?C.lem:C.fill,i===k-1?C.lemS:C.sea);
+ s+=`<path d="M${X(0)-8} 68 V76 H${X(k-1)+8} V68" fill="none" stroke="${C.sea}" stroke-width="2"/>`+tx(Math.max(60,(X(0)+X(k-1))/2),96,`${k}° da sinistra`,{s:13,c:C.sea});
+ s+=`<path d="M${X(k-1)-8} 36 V28 H${X(n-1)+8} V36" fill="none" stroke="${C.ko}" stroke-width="2"/>`+tx(Math.min(W-60,(X(k-1)+X(n-1))/2),18,`${j}° da destra`,{s:13,c:C.ko});return sv(W,104,s)};
+/* pali e spazi */
+const vPosts=(n,d)=>{const dx=Math.min(44,520/n);let s=ln(14,40,14+n*dx,40,C.soft,3);for(let i=0;i<n;i++)s+=tx(14+i*dx+dx/2,76,d+' m',{s:11,c:C.soft});for(let i=0;i<=n;i++)s+=rc(14+i*dx-4,20,8,36,i===0||i===n?C.lem:C.fill,i===0||i===n?C.lemS:C.sea,2);return sv(n*dx+30,84,s)};
+/* strette di mano */
+const vHand=n=>{const cx=110,cy=104,r=82,Pt=[...Array(n)].map((_,i)=>[cx+r*Math.sin(2*Math.PI*i/n),cy-r*Math.cos(2*Math.PI*i/n)]);let s='';for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)s+=ln(...Pt[i],...Pt[j],i===0?C.ko:C.sea,i===0?2.5:1.3);Pt.forEach((p,i)=>s+=ci(p[0],p[1],9,i===0?C.lem:C.fill,i===0?C.lemS:C.sea));return sv(220,208,s)};
+/* vestiti */
+const vOutfit=(m,p)=>{let s='';for(let i=0;i<m;i++)s+=`<path d="M${70+i*44} 16 l8 -7 h12 l8 7 l-5 6 v20 h-18 v-20 z" fill="${COL[i]}" stroke="#10223a" stroke-width="1.2"/>`;
+ for(let j=0;j<p;j++){const y=54+j*36;s+=`<path d="M22 ${y} h22 v28 h-8 l-3 -16 l-3 16 h-8 z" fill="${COL[(j+3)%6]}" stroke="#10223a" stroke-width="1.2"/>`;for(let i=0;i<m;i++)s+=ci(84+i*44,y+14,8,C.lemF,C.lemS)}
+ return sv(70+m*44,54+p*36,s)};
+/* ruota dei giorni */
+const vWeek=(i,n)=>{const e=(i+n)%7;let s='';for(let d=0;d<7;d++){const a=2*Math.PI*d/7-Math.PI/2,x=110+76*Math.cos(a),y=102+76*Math.sin(a);s+=ci(x,y,22,d===i?C.fill:d===e?C.lem:'none',d===e?C.lemS:C.sea)+tx(x,y+5,AB[d],{s:14})}
+ return sv(220,204,s+tx(110,98,`+${n}`,{s:22,c:C.ko})+tx(110,120,n>=7?`${Math.floor(n/7)} giri e ${n%7}`:'giorni',{s:13,c:C.soft}))};
+/* linea del tempo */
+const vTime=(st,en)=>{const pts=[st];let h=Math.ceil(st/60)*60;if(h===st)h+=60;while(h<en){pts.push(h);h+=60}pts.push(en);const W=290,X=m=>20+(m-st)/(en-st)*W;let s=ln(20,46,20+W,46,C.soft,3),last=-99;
+ pts.forEach((p,i)=>{s+=ln(X(p),38,X(p),54,i===pts.length-1?C.ko:C.sea,3);if(i===pts.length-1||X(p)-last>42){s+=tx(X(p),76,hm(p),{s:13,c:i===pts.length-1?C.ko:C.ink});last=X(p)}if(i&&X(p)-X(pts[i-1])>44)s+=tx((X(p)+X(pts[i-1]))/2,30,`${p-pts[i-1]} min`,{s:12,c:C.ko})});return sv(330,84,s)};
+const pieces=(st,en)=>{const p=[st];let h=Math.ceil(st/60)*60;if(h===st)h+=60;while(h<en){p.push(h);h+=60}p.push(en);return p.slice(1).map((x,i)=>x-p[i]).join(' + ')};
+/* Gauss */
+const vGauss=N=>{const L=N<=9?[...Array(N)].map((_,i)=>i+1):[1,2,3,'…',N-2,N-1,N],dx=46;let s='';L.forEach((v,i)=>{const x=24+i*dx;s+=tx(x,26,v,{s:16})+tx(x,52,v==='…'?'…':N+1-v,{s:16,c:C.ko});if(v!=='…')s+=ln(x-15,60,x+15,60,C.soft,1.5)+tx(x,82,N+1,{s:16,c:C.sea})});return sv(L.length*dx+8,92,s)};
+/* abaco */
+const vAbaco=(c,d,u)=>{let s=rc(10,150,240,12,C.soft,C.soft,3);[[c,'h'],[d,'da'],[u,'u']].forEach(([v,l],i)=>{const x=50+i*80;s+=ln(x,20,x,150,C.ink,3)+tx(x,184,l,{s:15});for(let b=0;b<v;b++)s+=`<ellipse cx="${x}" cy="${142-b*13}" rx="17" ry="6" fill="${['#e4572e','#29a3a3','#ffd23f'][i]}" stroke="#10223a" stroke-width="1"/>`});return sv(260,192,s)};
+/* bottiglie */
+const bottle=(x,f,lab)=>`<rect x="${x+3}" y="${(145-100*f).toFixed(1)}" width="54" height="${(100*f).toFixed(1)}" fill="color-mix(in srgb,var(--sea) 40%,transparent)"/><path d="M${x+20} 10 h20 v16 l20 16 v100 a6 6 0 0 1 -6 6 h-48 a6 6 0 0 1 -6 -6 v-100 l20 -16 z" fill="none" stroke="${C.sea}" stroke-width="2.5"/>`+tx(x+30,172,lab,{s:15});
+const vBottle=(b,w)=>sv(280,182,bottle(30,1,`${b+w} g`)+bottle(190,.5,`${b+w/2} g`)+tx(140,96,'−',{s:30,c:C.ko})+tx(140,120,`${w/2} g`,{s:14,c:C.ko}));
+/* quadrati nascosti */
+const vGridSizes=n=>{const s0=Math.min(22,88/n),pw=n*s0+34;let s='';for(let k=1;k<=n;k++){const ox=10+(k-1)*pw;for(let i=0;i<=n;i++)s+=ln(ox,10+i*s0,ox+n*s0,10+i*s0,C.soft,1.5)+ln(ox+i*s0,10,ox+i*s0,10+n*s0,C.soft,1.5);s+=`<rect x="${ox}" y="10" width="${k*s0}" height="${k*s0}" fill="${C.lemF}" stroke="${C.lemS}" stroke-width="3"/>`+tx(ox+n*s0/2,n*s0+32,`${(n-k+1)**2} da ${k}×${k}`,{s:13})}return sv(n*pw+4,n*s0+40,s)};
+const vGrid=n=>{const s0=Math.min(36,150/n);let g='';for(let i=0;i<=n;i++)g+=ln(10,10+i*s0,10+n*s0,10+i*s0,C.sea,2.5)+ln(10+i*s0,10,10+i*s0,10+n*s0,C.sea,2.5);return sv(n*s0+20,n*s0+20,g)};
+/* rettangolo con i lati colorati / con le piastrelle */
+const vPerim=(b,h)=>{const s0=Math.min(220/b,120/h,24),W=b*s0,H=h*s0,x=50,y=30;return sv(W+100,H+62,`<rect x="${x}" y="${y}" width="${W}" height="${H}" fill="${C.fill}"/>`+ln(x,y,x+W,y,COL[0],4)+ln(x+W,y,x+W,y+H,COL[1],4)+ln(x+W,y+H,x,y+H,COL[0],4)+ln(x,y+H,x,y,COL[1],4)+tx(x+W/2,y-8,b,{s:15})+tx(x+W/2,y+H+22,b,{s:15})+tx(x-8,y+H/2+5,h,{a:'end',s:15})+tx(x+W+8,y+H/2+5,h,{a:'start',s:15})+ci(x,y,6,C.lem,C.lemS))};
+const vTiles=(b,h)=>{const s0=Math.min(240/b,150/h,24),x=40,y=10;let s=`<rect x="${x}" y="${y}" width="${b*s0}" height="${h*s0}" fill="${C.fill}" stroke="${C.sea}" stroke-width="2.5"/>`;for(let i=1;i<b;i++)s+=ln(x+i*s0,y,x+i*s0,y+h*s0,C.sea,1);for(let j=1;j<h;j++)s+=ln(x,y+j*s0,x+b*s0,y+j*s0,C.sea,1);return sv(b*s0+60,h*s0+40,s+tx(x+b*s0/2,y+h*s0+24,`${b} quadretti`,{s:13})+tx(x-6,y+h*s0/2+5,h,{a:'end',s:14}))};
+/* figura a L */
+function lSvg(W,H,w,h,per){const s0=Math.min(200/W,130/H,20),X=W*s0,Y=H*s0,x=w*s0,y=h*s0,o=56;let s=`<path d="M${o} 10 H${o+X-x} V${10+y} H${o+X} V${10+Y} H${o} Z" fill="${C.fill}" stroke="${C.sea}" stroke-width="3"/><path d="M${o+X-x} 10 H${o+X} V${10+y}" fill="none" stroke="${C.soft}" stroke-dasharray="5 4" stroke-width="2"/>`+tx(o+X/2,Y+34,W+' cm')+tx(o-6,10+Y/2+6,H+' cm',{a:'end'});
+ s+=per?ar(o+X-x/2,10+y,o+X-x/2,16,C.ko)+ar(o+X-x,10+y/2,o+X-6,10+y/2,C.ko):tx(o+X-x/2,10+y/2+6,w+'×'+h,{s:14,c:C.soft});return sv(X+o+20,Y+44,s)}
+/* angoli: mezzo giro */
+const vAngles=(a,b,show)=>{const c=180-a-b,cx=130,cy=112,r=94;let s='',st=180;[[a,'#29a3a3',a+'°'],[b,'#ffd23f',b+'°'],[c,'#e4572e',show?c+'°':'?']].forEach(([v,col,lab])=>{const a1=st*Math.PI/180,a2=(st-v)*Math.PI/180,p=t=>`${(cx+r*Math.cos(t)).toFixed(1)},${(cy-r*Math.sin(t)).toFixed(1)}`;s+=`<path d="M${cx} ${cy} L${p(a1)} A${r} ${r} 0 0 1 ${p(a2)} Z" fill="${col}" stroke="var(--card)" stroke-width="2"/>`;const m=(st-v/2)*Math.PI/180;s+=tx(cx+r*.64*Math.cos(m),cy-r*.64*Math.sin(m)+5,lab,{s:v<25?11:15,c:'#10223a'});st-=v});return sv(260,134,s+ln(26,cy,234,cy,C.ink,2)+tx(130,130,'tutti insieme: 180°',{s:12,c:C.soft}))};
+/* gettoni numerati */
+const vChips=items=>{const per=10,cw=40;let s='';items.forEach(([l,k],i)=>{const x=4+(i%per)*cw,y=4+Math.floor(i/per)*30;s+=rc(x,y,cw-5,24,k===2?C.lem:k===1?C.fill:'none',k===0?C.soft:k===2?C.lemS:C.sea,6)+tx(x+(cw-5)/2,y+17,l,{s:13,c:k===0?C.soft:C.ink})});return sv(Math.min(items.length,per)*cw+4,Math.ceil(items.length/per)*30+4,s)};
+/* arcobaleno dei divisori */
+const vRainbow=N=>{const d=[];for(let i=1;i<=N;i++)if(N%i===0)d.push(i);const dx=40,X=i=>24+i*dx,base=(d.length-1)*20+22;let s='';d.forEach((v,i)=>{const j=d.length-1-i;if(i<j){const r=(X(j)-X(i))/2;s+=`<path d="M${X(i)} ${base} A${r} ${r} 0 0 1 ${X(j)} ${base}" fill="none" stroke="${COL[i%6]}" stroke-width="3"/>`}});d.forEach((v,i)=>s+=ci(X(i),base+12,16,i===(d.length-1)/2?C.lem:C.fill)+tx(X(i),base+17,v,{s:14}));return sv(d.length*dx+8,base+34,s)};
+/* monete, strada, carte */
+const vCoins=(list,end)=>{let s='',x=6;list.forEach(([v,n])=>{for(let i=0;i<n;i++){const r=v>=50?20:v>=25?18:v>=20?17:15;s+=ci(x+r,30,r,v>=50?'#e8c64a':'#d9a441','#a07a1e')+tx(x+r,35,v,{s:13,c:'#3a2a00'});x+=2*r+5}x+=12});if(end)s+=tx(x,36,end,{a:'start',s:16,c:C.ko});return sv(x+(end?90:0),62,s)};
+const vRoad=(v,n)=>{const w=Math.min(80,440/n);let s=tx(10,18,`ogni mezz'ora: ${v/2} km`,{a:'start',s:13,c:C.ko});for(let i=0;i<n;i++)s+=rc(10+i*w,28,w,28,i%2?C.fill:C.lemF,C.sea,0)+tx(10+i*w+w/2,47,v/2,{s:13})+tx(10+i*w+w/2,74,'½ ora',{s:11,c:C.soft});return sv(n*w+20,82,s)};
+const vCards=d=>{let s='';d.forEach((v,i)=>s+=rc(10+i*54,10,46,58,i===0?C.lem:C.fill,i===0?C.lemS:C.sea,8)+tx(33+i*54,48,v,{s:26})+tx(33+i*54,88,['centinaia','decine','unità'][i]||'',{s:11,c:C.soft}));return sv(d.length*54+16,96,s)};
+const poly=(cx,cy,n,r)=>[...Array(n)].map((_,i)=>{const a=2*Math.PI*i/n-Math.PI/2+(n===4?Math.PI/4:0);return `${(cx+r*Math.cos(a)).toFixed(1)},${(cy+r*Math.sin(a)).toFixed(1)}`}).join(' ');
+const vShapes=arr=>{let s='',x=10;arr.forEach(([n,c])=>{if(!c)return;s+=`<polygon points="${poly(x+34,36,n,26)}" fill="${C.fill}" stroke="${C.sea}" stroke-width="2.5"/>`+tx(x+34,42,n,{s:16})+tx(x+34,88,`${c} × ${n} = ${n*c}`,{s:14,c:C.ko});x+=100});return sv(x,98,s)};
+/* moltiplicazione a pezzi (modello dell'area) */
+const vSplit=(a,b)=>{const sp=x=>x>=10&&x%10?[x-x%10,x%10]:[x],A=sp(a),B=sp(b),wA=A.map(v=>v>=10?150:64),hB=B.map(v=>v>=10?84:46);let s='',x=44;
+ A.forEach((av,i)=>{let y=30;s+=tx(x+wA[i]/2,22,av,{s:15,c:C.sea});B.forEach((bv,j)=>{if(i===0)s+=tx(36,y+hB[j]/2+5,bv,{a:'end',s:15,c:C.ko});s+=rc(x,y,wA[i],hB[j],(i+j)%2?C.lemF:C.fill,C.sea,2)+tx(x+wA[i]/2,y+hB[j]/2+5,`${av}×${bv}=${av*bv}`,{s:13});y+=hB[j]});x+=wA[i]});return sv(x+8,30+hB.reduce((p,q)=>p+q,0)+6,s)};
+
+/* ================= generatori dei quesiti =================
+   ogni quesito: t testo, a risposta, h aiutino, st passi [testo, disegno], f figura nel testo, ch scelte */
+const GENS=[];const G=(k,lv,id,fn)=>GENS.push({k,lv,id,fn});
+const L=(s,f)=>f?[s,f]:[s];
+
+/* ---- CALCOLO ---- */
+G('calcolo',0,'salti',()=>{const a=R(12,60),b=R(11,39),t=b-b%10,u=b%10;return{t:`Quanto fa ${K(a+' + '+b)}?`,a:a+b,h:`Spezza ${b} in decine e unità: prima aggiungi ${t}, poi ${u||'niente'}.`,
+ st:[L(`Spezza ${b}: ${M(t+' + '+u)}.`),L(`Salto grande: ${a} + ${t} = ${a+t}. Salto piccolo: ${a+t} + ${u} = ${M(a+b)}.`,vJumps(a,u?[t,u]:[t]))]}});
+G('calcolo',0,'salti',()=>{const a=R(40,99),b=R(11,a-5),t=b-b%10,u=b%10;return{t:`Quanto fa ${K(a+' − '+b)}?`,a:a-b,h:`Togli prima le decine (${t}), poi le unità (${u}).`,
+ st:[L(`Spezza ${b}: ${M(t+' + '+u)}.`),L(`Indietro di ${t}: ${a-t}. Indietro di ${u}: ${M(a-b)}.`,vJumps(a,u?[-t,-u]:[-t]))]}});
+G('calcolo',0,'gruppi',()=>{const a=R(2,8),b=R(3,9);return{t:`Quanto fa ${K(a+' × '+b)}?`,a:a*b,h:`${a} × ${b} vuol dire ${a} gruppi da ${b}: conta di ${b} in ${b}.`,
+ st:[L(`${a} × ${b} vuol dire ${M(a+' gruppi da '+b)}.`,vArray(a,b)),L(`Conta di ${b} in ${b}: ${[...Array(a)].map((_,i)=>(i+1)*b).join(', ')}. Risultato ${M(a*b)}.`)]}});
+G('calcolo',0,'inverso',()=>{const b=R(10,40),c=b+R(5,50);return{t:`Quale numero va nel quadratino? ${K('□ + '+b+' = '+c)}`,a:c-b,h:`Torna indietro: se aggiungendo ${b} arrivi a ${c}, che operazione fai per tornare?`,
+ st:[L(`Al numero nascosto si aggiunge ${b} e si arriva a ${c}.`),L(`Per tornare indietro faccio l'opposto di +${b}, cioè −${b}: ${c} − ${b} = ${M(c-b)}.`,vChain([c-b,c],['+'+b],['−'+b]))]}});
+G('calcolo',1,'salti',()=>{const a=R(120,599),b=R(110,399),hh=b-b%100,t=b%100-b%10,u=b%10,ds=[hh,t,u].filter(x=>x);return{t:`Quanto fa ${K(a+' + '+b)}?`,a:a+b,h:`Aggiungi un pezzo alla volta: ${hh}, poi ${t}, poi ${u}.`,
+ st:[L(`Spezza ${b} in ${M(ds.join(' + '))}.`),L(`${a} → ${ds.map((d,i)=>a+ds.slice(0,i+1).reduce((p,q)=>p+q,0)).join(' → ')}. Risultato ${M(a+b)}.`,vJumps(a,ds))]}});
+G('calcolo',1,'salti',()=>{const a=R(300,999),b=R(101,a-50),hh=b-b%100,t=b%100-b%10,u=b%10,ds=[hh,t,u].filter(x=>x);return{t:`Quanto fa ${K(a+' − '+b)}?`,a:a-b,h:`Togli un pezzo alla volta: ${hh}, poi ${t}, poi ${u}.`,
+ st:[L(`Spezza ${b} in ${M(ds.join(' + '))}.`),L(`${a} → ${ds.map((d,i)=>a-ds.slice(0,i+1).reduce((p,q)=>p+q,0)).join(' → ')}. Risultato ${M(a-b)}.`,vJumps(a,ds.map(d=>-d)))]}});
+G('calcolo',1,'pezzi',()=>{const a=R(12,49),b=R(3,9),t=a-a%10,u=a%10;return{t:`Quanto fa ${K(a+' × '+b)}?`,a:a*b,h:`Spezza ${a} in ${t} + ${u} e moltiplica i due pezzi per ${b}.`,
+ st:[L(`Spezza ${a} = ${M(t+' + '+u)}.`,vSplit(a,b)),L(`${t}×${b} = ${t*b} e ${u}×${b} = ${u*b}. Sommo: ${M(a*b)}.`)]}});
+G('calcolo',1,'gruppi',()=>{const b=R(3,7),q=R(4,12);return{t:`Quanto fa ${K(b*q+' : '+b)}?`,a:q,h:`Distribuisci ${b*q} in ${b} gruppi uguali, oppure chiediti: ${b} per quanto fa ${b*q}?`,
+ st:[L(`Divido ${b*q} in ${M(b+' gruppi uguali')}.`,vGroups(b*q,b)),L(`In ogni gruppo ce ne sono ${M(q)}. Prova: ${q} × ${b} = ${b*q}.`)]}});
+G('calcolo',1,'ordine',()=>{const a=R(2,20),b=R(2,9),c=R(2,9);return{t:`Quanto fa ${K(a+' + '+b+' × '+c)}?`,a:a+b*c,h:`Attenzione: la moltiplicazione va fatta prima dell'addizione!`,
+ st:[L(`Prima la moltiplicazione: ${a} + ${M(b+' × '+c)} → ${a} + ${b*c}.`),L(`Poi l'addizione: ${a} + ${b*c} = ${M(a+b*c)}. (Se avessi fatto prima ${a} + ${b} avrei sbagliato: ${(a+b)*c}.)`)]}});
+G('calcolo',2,'ordine',()=>{const a=R(3,15),b=R(2,10),c=R(2,6),d=R(1,(a+b)*c-1);return{t:`Quanto fa ${K('('+a+' + '+b+') × '+c+' − '+d)}?`,a:(a+b)*c-d,h:`Prima la parentesi, poi la moltiplicazione, per ultima la sottrazione.`,
+ st:[L(`Parentesi: ${M('('+a+' + '+b+')')} = ${a+b}.`),L(`Moltiplicazione: ${M(a+b+' × '+c)} = ${(a+b)*c}.`),L(`Sottrazione: ${(a+b)*c} − ${d} = ${M((a+b)*c-d)}.`)]}});
+G('calcolo',2,'pezzi',()=>{const a=R(12,35),b=R(11,25);return{t:`Quanto fa ${K(a+' × '+b)}?`,a:a*b,h:`Spezza tutti e due i numeri in decine e unità: ottieni 4 pezzi da sommare.`,
+ st:[L(`Spezzo ${a} e ${b} in decine e unità e disegno il rettangolo diviso in pezzi.`,vSplit(a,b)),L(`Sommo i pezzi: ${M(a*b)}.`)]}});
+G('calcolo',2,'coppie',()=>{const k=R(3,19);return{t:`Calcola a mente: ${K('25 × '+k+' × 4')}`,a:100*k,h:`Cerca una coppia amica che fa 100…`,
+ st:[L(`Si possono cambiare di posto i numeri di una moltiplicazione: ${M('25 × 4')} × ${k}.`),L(`4 monete da 25 centesimi fanno 1 euro = 100 centesimi.`,vCoins([[25,4]],'= 100')),L(`100 × ${k} = ${M(100*k)}.`)]}});
+G('calcolo',2,'pezzi',()=>{const b=R(3,9),q=R(25,99),q1=q-q%10,q2=q%10;return{t:`Quanto fa ${K(b*q+' : '+b)}?`,a:q,h:`Spezza ${b*q} in due pezzi facili da dividere per ${b}: ${b*q1} e ${b*q2}.`,
+ st:[L(`Spezzo ${b*q} = ${M(b*q1+' + '+b*q2)} (tutti e due si dividono bene per ${b}).`),L(`${b*q1} : ${b} = ${q1} e ${b*q2} : ${b} = ${q2}.`),L(`Sommo: ${q1} + ${q2} = ${M(q)}. Prova: ${q} × ${b} = ${b*q}.`)]}});
+G('calcolo',2,'inverso',()=>{const x=R(3,15),b=R(3,9),c=R(2,20);return{t:`Quale numero va nel quadratino? ${K('□ × '+b+' + '+c+' = '+(x*b+c))}`,a:x,h:`Parti dalla fine e torna indietro con le operazioni opposte.`,
+ st:[L(`Il numero nascosto viene ×${b}, poi +${c}, e diventa ${x*b+c}.`),L(`Indietro: ${x*b+c} − ${c} = ${x*b}, poi ${x*b} : ${b} = ${M(x)}.`,vChain([x,x*b,x*b+c],['×'+b,'+'+c],[':'+b,'−'+c]))]}});
+
+/* ---- PROBLEMI ---- */
+G('problemi',0,'barre',()=>{const n=P(NOMI),m=R(10,30),k=R(2,4),p=R(1,Math.floor(m/k));return{t:`${n} ha ${m} euro e compra ${k} quaderni da ${p} euro l'uno. Quanti euro rimangono a ${n}?`,a:m-k*p,h:`Prima calcola quanto spende in tutto, poi toglilo dai soldi che ha.`,
+ st:[L(`Spesa: ${k} × ${p} = ${M(k*p)} euro.`),L(`Rimangono ${m} − ${k*p} = ${M(m-k*p)} euro.`,vBars([{l:'soldi',s:[[m,m+' €']]},{l:'spesa+resto',s:[[k*p,k*p+' €'],[m-k*p,(m-k*p)+' €',C.lemF]],n:'← resto'}]))]}});
+G('problemi',0,'galline',()=>{const g=R(2,8),c=R(2,6);return{t:`In un cortile ci sono ${g} galline e ${c} conigli. Quante zampe ci sono in tutto?`,a:2*g+4*c,h:`Le galline hanno 2 zampe, i conigli 4.`,
+ st:[L(`Ogni animale ha almeno 2 zampe; i conigli ne hanno 2 in più (in rosso).`,vAnimals(g+c,c)),L(`Galline ${g} × 2 = ${2*g}; conigli ${c} × 4 = ${4*c}. Totale ${M(2*g+4*c)}.`)]}});
+G('problemi',0,'gruppi',()=>{const k=R(2,6),q=R(3,9);return{t:`${k*q} caramelle vengono divise in parti uguali tra ${k} bambini. Quante caramelle riceve ciascuno?`,a:q,h:`Distribuisci una caramella a testa finché non finiscono.`,
+ st:[L(`Distribuisco ${k*q} caramelle in ${k} gruppi uguali.`,vGroups(k*q,k)),L(`${k*q} : ${k} = ${M(q)}.`)]}});
+G('problemi',0,'catena',()=>{const A=R(15,30),B=R(3,A-5),C2=R(2,12);return{t:`Su un autobus ci sono ${A} persone. Alla fermata ne scendono ${B} e ne salgono ${C2}. Quante persone ci sono ora?`,a:A-B+C2,h:`Segui la storia: prima scendono, poi salgono.`,
+ st:[L(`Seguo la storia un pezzo alla volta.`,vChain([A,A-B,A-B+C2],['−'+B,'+'+C2],null,2)),L(`${A} − ${B} = ${A-B}; ${A-B} + ${C2} = ${M(A-B+C2)}.`)]}});
+G('problemi',1,'gruppi',()=>{const k=R(3,7),q=R(3,8),r=R(1,k-1),N=k*q+r;return{t:`${N} figurine vengono divise in parti uguali tra ${k} amici, dandone a ciascuno il più possibile. Quante figurine avanzano?`,a:r,h:`Quante ne puoi dare a ciascuno? Quelle che non bastano per un altro giro avanzano.`,
+ st:[L(`Distribuisco a giri: ogni amico ne riceve ${q} (${k} × ${q} = ${k*q}).`,vGroups(N,k)),L(`Quelle che non bastano per un altro giro avanzano: ${N} − ${k*q} = ${M(r)}.`)]}});
+G('problemi',1,'barre',()=>{const n=P(NOMI),a=R(6,10),d=R(2,6),f=R(2,8);return{t:`${n} ha ${a} anni e suo fratello ne ha ${d} in più. Fra ${f} anni, quanti anni avranno in tutto i due fratelli?`,a:2*a+d+2*f,h:`Fra ${f} anni OGNUNO dei due avrà ${f} anni in più.`,
+ st:[L(`Oggi: ${n} ${a}, il fratello ${a+d}. Fra ${f} anni ognuno cresce di ${f} (pezzo giallo).`,vBars([{l:n,s:[[a,a],[f,'+'+f,C.lemF]]},{l:'fratello',s:[[a+d,a+d],[f,'+'+f,C.lemF]]}])),L(`${a+f} + ${a+d+f} = ${M(2*a+d+2*f)}.`)]}});
+G('problemi',1,'scatole',()=>{const N=R(20,70),c=Math.ceil(N/6);return{t:`Le uova si vendono in confezioni da 6. Quante confezioni servono, come minimo, per avere ${N} uova?`,a:c,h:`Se avanza anche un solo uovo, serve un'altra confezione.`,
+ st:[L(`${N} : 6 = ${Math.floor(N/6)}${N%6?` con resto ${N%6}`:''}.`,vEggs(N)),L(N%6?`Le ${N%6} uova che avanzano hanno bisogno di un'altra confezione: ${M(c)}.`:`Non avanza niente: servono ${M(c)} confezioni.`)]}});
+G('problemi',1,'barre',()=>{const X=R(8,25),Y=R(1,6),n=P(NOMI);return{t:`${n} compra un libro da ${X} euro e una penna da ${Y} euro e paga con una banconota da 50 euro. Quanti euro di resto riceve?`,a:50-X-Y,h:`Prima somma le spese, poi togli da 50.`,
+ st:[L(`La barra da 50 € si divide in libro, penna e resto.`,vBars([{l:'50 €',s:[[X,X+' €'],[Y,Y+'€'],[50-X-Y,(50-X-Y)+' €',C.lemF]],n:'← resto'}])),L(`${X} + ${Y} = ${X+Y}; 50 − ${X+Y} = ${M(50-X-Y)}.`)]}});
+G('problemi',2,'galline',()=>{const c=R(2,9),g=R(2,12),T=c+g,Z=2*g+4*c;return{t:`In una fattoria ci sono galline e conigli: in tutto ${T} teste e ${Z} zampe. Quanti sono i conigli?`,a:c,h:`Fai finta che siano tutte galline: quante zampe ci sarebbero? Quante ne mancano?`,
+ st:[L(`Se fossero tutte galline: ${T} × 2 = ${M(2*T)} zampe.`),L(`Ma le zampe sono ${Z}: ne mancano ${Z-2*T}. Ogni coniglio porta 2 zampe in più (in rosso).`,vAnimals(T,c)),L(`${Z-2*T} : 2 = ${M(c)} conigli.`)]}});
+G('problemi',2,'bottiglia',()=>{const b=R(2,8)*50,w=R(4,12)*100;return{t:`Una bottiglia piena d'acqua pesa ${b+w} g. Riempita a metà pesa ${b+w/2} g. Quanto pesa la bottiglia vuota?`,a:b,h:`Che cosa cambia tra la bottiglia piena e quella a metà? Solo l'acqua!`,
+ st:[L(`La differenza tra le due è metà dell'acqua: ${b+w} − ${b+w/2} = ${M(w/2+' g')}.`,vBottle(b,w)),L(`Tutta l'acqua pesa ${w/2} × 2 = ${w} g.`),L(`Bottiglia vuota: ${b+w} − ${w} = ${M(b+' g')}.`)]}});
+G('problemi',2,'barre',()=>{const x=R(5,30),D=R(2,15),a=P(NOMI),b=P(NOMI.filter(z=>z!==a));return{t:`${a} e ${b} hanno insieme ${2*x+D} biglie. ${a} ne ha ${D} più di ${b}. Quante biglie ha ${b}?`,a:x,h:`Disegna due barre: una è più lunga di ${D}. Togli il pezzo in più e rimangono due barre uguali.`,
+ st:[L(`Disegno le barre: ${a} ha un pezzo in più di ${D}.`,vBars([{l:a,s:[[x,'?'],[D,D,C.lemF]]},{l:b,s:[[x,'?']]}])),L(`Tolgo il pezzo in più: ${2*x+D} − ${D} = ${2*x}.`),L(`Due barre uguali: ${2*x} : 2 = ${M(x)}.`)]}});
+G('problemi',2,'pali',()=>{const d=R(2,5),n=R(4,12);return{t:`Una staccionata dritta lunga ${d*n} metri ha un paletto ogni ${d} metri, compresi i due alle estremità. Quanti paletti ci sono?`,a:n+1,h:`Conta prima gli spazi tra i paletti. I paletti sono uno di più!`,
+ st:[L(`Spazi: ${d*n} : ${d} = ${M(n)}.`),L(`Ogni spazio ha un paletto all'inizio, più quello finale: ${n} + 1 = ${M(n+1)}.`,vPosts(n,d))]}});
+
+/* ---- SEQUENZE ---- */
+G('sequenze',0,'salti_seq',()=>{const s=R(1,20),d=R(2,10),v=[0,1,2,3,4].map(i=>s+i*d);return{t:`Qual è il numero che continua la sequenza? ${K(v.join(', ')+', …')}`,a:s+5*d,h:`Di quanto aumenta da un numero al successivo?`,
+ st:[L(`Scrivo i salti: sempre ${M('+'+d)}.`,vSeq([...v,s+5*d],v.map(()=>'+'+d),5)),L(`${v[4]} + ${d} = ${M(s+5*d)}.`)]}});
+G('sequenze',0,'salti_seq',()=>{const s=R(60,100),d=R(3,9),v=[0,1,2,3].map(i=>s-i*d);return{t:`Qual è il numero che continua la sequenza? ${K(v.join(', ')+', …')}`,a:s-4*d,h:`I numeri diminuiscono: di quanto ogni volta?`,
+ st:[L(`Salti: sempre ${M('−'+d)}.`,vSeq([...v,s-4*d],v.map(()=>'−'+d),4)),L(`${v[3]} − ${d} = ${M(s-4*d)}.`)]}});
+G('sequenze',1,'salti_seq',()=>{const s=R(5,20),a=R(4,9),b=R(1,a-1),v=[s];for(let i=1;i<7;i++)v.push(v[i-1]+(i%2?a:-b));return{t:`Qual è il numero che continua la sequenza? ${K(v.slice(0,6).join(', ')+', …')}`,a:v[6],h:`I salti non sono tutti uguali: guardali a due a due.`,
+ st:[L(`I salti si alternano: ${M('+'+a)} e ${M('−'+b)}.`,vSeq(v,v.slice(1).map((_,i)=>i%2?'−'+b:'+'+a),6)),L(`Dopo un −${b} tocca a +${a}: ${v[5]} + ${a} = ${M(v[6])}.`)]}});
+G('sequenze',1,'moltiplica',()=>{const s=R(1,5),v=[0,1,2,3,4,5].map(i=>s*2**i);return{t:`Qual è il numero che continua la sequenza? ${K(v.slice(0,5).join(', ')+', …')}`,a:v[5],h:`I salti diventano sempre più grandi: prova a moltiplicare.`,
+ st:[L(`Ogni numero è il ${M('doppio')} del precedente.`,vSeq(v,v.map(()=>'×2'),5)),L(`${v[4]} × 2 = ${M(v[5])}.`)]}});
+G('sequenze',1,'salti_seq',()=>{const s=R(3,30),d=R(4,12),v=[0,1,2,3,4].map(i=>s+i*d);return{t:`Quale numero manca? ${K(v[0]+', '+v[1]+', □, '+v[3]+', '+v[4])}`,a:v[2],h:`Guarda il salto tra i primi due numeri e quello tra gli ultimi due.`,
+ st:[L(`Da ${v[0]} a ${v[1]} il salto è +${d}, da ${v[3]} a ${v[4]} anche.`,vSeq(v,v.map(()=>'+'+d),2)),L(`${v[1]} + ${d} = ${M(v[2])} (prova: ${v[2]} + ${d} = ${v[3]}).`)]}});
+G('sequenze',2,'salti_seq',()=>{const s=R(1,10),v=[s];for(let i=1;i<6;i++)v.push(v[i-1]+i);return{t:`Qual è il numero che continua la sequenza? ${K(v.slice(0,5).join(', ')+', …')}`,a:v[5],h:`Scrivi i salti: anche loro seguono una regola!`,
+ st:[L(`I salti crescono di 1: +1, +2, +3, +4…`,vSeq(v,[1,2,3,4,5].map(x=>'+'+x),5)),L(`Il prossimo salto è +5: ${v[4]} + 5 = ${M(v[5])}.`)]}});
+G('sequenze',2,'moltiplica',()=>{const k=R(1,4),v=[0,1,2,3,4,5].map(i=>(k+i)**2);return{t:`Qual è il numero che continua la sequenza? ${K(v.slice(0,5).join(', ')+', …')}`,a:v[5],h:`Prova a scrivere ogni numero come un numero moltiplicato per sé stesso.`,
+ st:[L(`Sono i quadrati: ${[0,1,2,3,4].map(i=>`${k+i}×${k+i}`).join(', ')}. I salti sono i numeri dispari!`,vSeq(v,v.slice(1).map((x,i)=>'+'+(x-v[i])),5)),L(`Il prossimo è ${k+5}×${k+5} = ${M(v[5])}.`)]}});
+G('sequenze',2,'ennesimo',()=>{const s=R(2,9),d=R(3,7),n=R(15,30);return{t:`La sequenza ${K(s+', '+(s+d)+', '+(s+2*d)+', '+(s+3*d)+', …')} continua sempre allo stesso modo. Qual è il ${n}° numero?`,a:s+(n-1)*d,h:`Per andare dal 1° al ${n}° numero, quanti salti fai?`,
+ st:[L(`Ogni salto è +${d}. Dal 1° al 4° numero ci sono 3 salti: ${M('uno in meno')}.`,vSeq([s,s+d,s+2*d,s+3*d],['+'+d,'+'+d,'+'+d])),L(`Dal 1° al ${n}° ci sono ${n-1} salti: ${n-1} × ${d} = ${(n-1)*d}.`),L(`${s} + ${(n-1)*d} = ${M(s+(n-1)*d)}.`)]}});
+G('sequenze',2,'fibonacci',()=>{const a=R(1,5),b=R(1,6),v=[a,b];for(let i=2;i<7;i++)v.push(v[i-1]+v[i-2]);return{t:`Ogni numero è la somma dei due precedenti. Qual è il numero che continua? ${K(v.slice(0,6).join(', ')+', …')}`,a:v[6],h:`Somma gli ultimi due numeri.`,
+ st:[L(`Controllo la regola: ${v[0]} + ${v[1]} = ${v[2]}, ${v[1]} + ${v[2]} = ${v[3]}…`,vSeq(v,[null,...v.slice(2).map((x,i)=>`${v[i]}+${v[i+1]}`)],6)),L(`${v[4]} + ${v[5]} = ${M(v[6])}.`)]}});
+
+/* ---- GEOMETRIA ---- */
+G('geometria',0,'perimetro',()=>{const b=R(4,15),h=R(2,10);return{t:`Qual è il perimetro di questo rettangolo (in cm)?`,f:vPerim(b,h),a:2*(b+h),h:`Fai il giro con il dito: i lati sono 4, uguali a due a due.`,
+ st:[L(`Una formica parte dal pallino giallo e fa il giro: ${b} + ${h} + ${b} + ${h}.`),L(`= ${M(2*(b+h)+' cm')}. Trucco: (${b} + ${h}) × 2.`)]}});
+G('geometria',0,'perimetro',()=>{const l=R(2,12);return{t:`Un quadrato ha il lato di ${l} cm. Qual è il suo perimetro in cm?`,a:4*l,h:`Il quadrato ha 4 lati tutti uguali.`,
+ st:[L(`Il giro del quadrato passa per 4 lati uguali.`,vPerim(l,l)),L(`${l} × 4 = ${M(4*l+' cm')}.`)]}});
+G('geometria',0,'figure',()=>{const t=R(1,5),q=R(1,5),p=R(0,3);return{t:`Sul tavolo ci sono ${t} triangoli, ${q} quadrati${p?' e '+p+' pentagoni':''}. Quanti lati ci sono in tutto?`,a:3*t+4*q+5*p,h:`Triangolo 3 lati, quadrato 4, pentagono 5.`,
+ st:[L(`Conto i lati di ogni tipo di figura.`,vShapes([[3,t],[4,q],[5,p]])),L(`${3*t} + ${4*q}${p?' + '+5*p:''} = ${M(3*t+4*q+5*p)}.`)]}});
+G('geometria',1,'area',()=>{const b=R(3,12),h=R(2,8);return{t:`Qual è l'area di questo rettangolo (in cm²)? Ogni quadretto è 1 cm².`,f:vTiles(b,h),a:b*h,h:`Quante righe di quadretti ci sono? Quanti quadretti in ogni riga?`,
+ st:[L(`Ci sono ${h} righe, ognuna con ${b} quadretti.`),L(`${h} × ${b} = ${M(b*h+' cm²')}: base × altezza.`)]}});
+G('geometria',1,'perimetro',()=>{const l=R(3,20);return{t:`Il perimetro di un quadrato è ${4*l} cm. Quanto misura il lato in cm?`,a:l,h:`Il giro è fatto di 4 lati uguali: dividi.`,
+ st:[L(`Il perimetro è 4 lati uguali.`,vPerim(l,l)),L(`${4*l} : 4 = ${M(l+' cm')}.`)]}});
+G('geometria',1,'perimetro',()=>{const b=R(4,15),h=R(2,10);return{t:`Un rettangolo ha la base di ${b} cm e il perimetro di ${2*(b+h)} cm. Quanto misura l'altezza in cm?`,a:h,h:`Metà del giro è fatta da una base e un'altezza.`,
+ st:[L(`Metà perimetro = base + altezza: ${2*(b+h)} : 2 = ${M(b+h)}.`,vPerim(b,h)),L(`Altezza: ${b+h} − ${b} = ${M(h+' cm')}.`)]}});
+G('geometria',2,'forma_l',()=>{const W=R(6,12),H=R(5,10),w=R(2,W-3),h=R(2,H-3);return{t:`Da un rettangolo di ${W} cm × ${H} cm si taglia via un angolo di ${w} cm × ${h} cm. Qual è l'area della figura rimasta in cm²?`,f:lSvg(W,H,w,h),a:W*H-w*h,h:`Calcola l'area del rettangolo intero e togli il pezzo tagliato.`,
+ st:[L(`Rettangolo intero: ${W} × ${H} = ${W*H}.`),L(`Pezzo tolto: ${w} × ${h} = ${w*h}.`),L(`${W*H} − ${w*h} = ${M(W*H-w*h+' cm²')}.`)]}});
+G('geometria',2,'forma_l',()=>{const W=R(6,12),H=R(5,10),w=R(2,W-3),h=R(2,H-3);return{t:`Da un rettangolo di ${W} cm × ${H} cm si taglia via un angolo di ${w} cm × ${h} cm. Qual è il perimetro della figura rimasta in cm?`,f:lSvg(W,H,w,h),a:2*(W+H),h:`Prova a "spingere fuori" i due lati rientrati: che figura ottieni?`,
+ st:[L(`Spingo i due lati rientrati verso fuori (frecce rosse): ricompongono il rettangolo intero.`,lSvg(W,H,w,h,1)),L(`Quindi il perimetro è quello del rettangolo: 2 × (${W} + ${H}) = ${M(2*(W+H)+' cm')}.`)]}});
+G('geometria',2,'quadrati',()=>{const n=R(2,4);let s=0;for(let k=1;k<=n;k++)s+=k*k;return{t:`Quanti quadrati di qualsiasi grandezza vedi in questa griglia ${n}×${n}?`,f:vGrid(n),a:s,h:`Conta separatamente i quadrati piccoli, quelli medi e quelli grandi.`,
+ st:[L(`Conto per grandezza: in giallo un esempio per ogni grandezza.`,vGridSizes(n)),L(`${Array.from({length:n},(_,i)=>(n-i)**2).join(' + ')} = ${M(s)}.`)]}});
+G('geometria',2,'angoli',()=>{const a=R(30,90),b=R(20,170-a);return{t:`In un triangolo due angoli misurano ${a}° e ${b}°. Quanti gradi misura il terzo angolo?`,a:180-a-b,h:`I tre angoli di un triangolo, messi insieme, fanno mezzo giro.`,
+ st:[L(`Se strappo i tre angoli e li metto vicini formano mezzo giro: ${M('180°')}.`,vAngles(a,b,true)),L(`180 − ${a} − ${b} = ${M(180-a-b+'°')}.`)]}});
+
+/* ---- LOGICA ---- */
+G('logica',0,'combinazioni',()=>{const m=R(2,5),p=R(2,4);return{t:`Hai ${m} magliette e ${p} pantaloni diversi. In quanti modi diversi puoi vestirti con una maglietta e un pantalone?`,a:m*p,h:`Fai una tabella: magliette in alto, pantaloni a sinistra.`,
+ st:[L(`Ogni pallino giallo è un modo di vestirsi.`,vOutfit(m,p)),L(`${p} righe da ${m}: ${m} × ${p} = ${M(m*p)}.`)]}});
+G('logica',0,'calendario',()=>{const i=R(0,6),n=R(2,6);return{t:`Oggi è ${GIORNI[i]}. Che giorno sarà fra ${n} giorni?`,ch:GIORNI,a:GIORNI[(i+n)%7],h:`Conta sulle dita partendo da domani.`,
+ st:[L(`Parto da ${GIORNI[i]} e faccio ${n} passi sulla ruota.`,vWeek(i,n)),L(`Arrivo a ${M(GIORNI[(i+n)%7])}.`)]}});
+G('logica',0,'fila',()=>{const n=P(NOMI),k=R(2,8),j=R(2,8);return{t:`In una fila ${n} è il ${k}° da sinistra e il ${j}° da destra. Quanti bambini ci sono nella fila?`,a:k+j-1,h:`Attento: ${n} viene contato due volte!`,
+ st:[L(`Disegno la fila: ${n} è il pallino giallo.`,vFila(k,j)),L(`${k} + ${j} conta ${n} due volte, quindi tolgo 1: ${M(k+j-1)}.`)]}});
+G('logica',1,'strette',()=>{const n=R(4,8);return{t:`${n} amici si salutano stringendosi la mano, ognuno una volta con ciascuno degli altri. Quante strette di mano ci sono?`,a:n*(n-1)/2,h:`Ogni amico stringe la mano a tutti gli altri. Ma una stretta riguarda due persone…`,
+ st:[L(`Ogni linea è una stretta di mano. L'amico giallo ne fa ${n-1} (linee rosse).`,vHand(n)),L(`${n} amici × ${n-1} = ${n*(n-1)}, ma così ogni stretta è contata due volte.`),L(`${n*(n-1)} : 2 = ${M(n*(n-1)/2)}.`)]}});
+G('logica',1,'calendario',()=>{const i=R(0,6),n=R(10,40);return{t:`Oggi è ${GIORNI[i]}. Che giorno sarà fra ${n} giorni?`,ch:GIORNI,a:GIORNI[(i+n)%7],h:`Ogni 7 giorni si torna allo stesso giorno della settimana.`,
+ st:[L(`${n} = 7 × ${Math.floor(n/7)} + ${M(n%7)}: i giri interi della ruota non cambiano il giorno.`),L(n%7?`Conto solo ${n%7} pass${n%7>1?'i':'o'} da ${GIORNI[i]}: ${M(GIORNI[(i+n)%7])}.`:`Il resto è 0: si torna proprio a ${M(GIORNI[i])}!`,vWeek(i,n))]}});
+G('logica',1,'cifre',()=>{const N=R(20,99);return{t:`Quante cifre servono per scrivere tutti i numeri da 1 a ${N}?`,a:9+2*(N-9),h:`I numeri da 1 a 9 hanno 1 cifra, quelli da 10 in su ne hanno 2.`,
+ st:[L(`Divido in blocchi: 1–9 e 10–${N}.`,vBars([{l:'1–9',s:[[9,'9×1']]},{l:'10–'+N,s:[[2*(N-9),`${N-9}×2`]]}])),L(`Da 1 a 9: 9 cifre. Da 10 a ${N}: ${N-9} numeri × 2 = ${2*(N-9)}.`),L(`9 + ${2*(N-9)} = ${M(9+2*(N-9))}.`)]}});
+G('logica',1,'fila',()=>{const n=P(NOMI),k=R(5,12),j=R(5,12);return{t:`In una fila ${n} è il ${k}° partendo dall'inizio e il ${j}° partendo dalla fine. Quante persone ci sono nella fila?`,a:k+j-1,h:`${n} rientra in tutti e due i conteggi.`,
+ st:[L(`${n} è il pallino giallo.`,vFila(k,j)),L(`${k} + ${j} − 1 = ${M(k+j-1)}.`)]}});
+G('logica',2,'combinazioni',()=>{const m=R(2,5),p=R(2,4),s=R(2,3);return{t:`Hai ${m} magliette, ${p} pantaloni e ${s} paia di scarpe. In quanti modi diversi puoi vestirti?`,a:m*p*s,h:`Prima magliette con pantaloni, poi ogni combinazione si moltiplica per le scarpe.`,
+ st:[L(`Magliette e pantaloni: ${m} × ${p} = ${m*p}.`,vOutfit(m,p)),L(`Ognuno di questi ${m*p} modi va con ${s} paia di scarpe: ${m*p} × ${s} = ${M(m*p*s)}.`)]}});
+G('logica',2,'multipli',()=>{const A=R(10,40),k=R(4,9),B=A+R(25,60),c=Math.floor(B/k)-Math.floor((A-1)/k),items=[];for(let v=k;v<=B;v+=k)items.push([v,v>=A?2:0]);return{t:`Quanti numeri tra ${A} e ${B} (compresi) sono multipli di ${k}?`,a:c,h:`Conta i multipli di ${k} fino a ${B}, poi togli quelli che vengono prima di ${A}.`,
+ st:[L(`Multipli di ${k} fino a ${B}: ${B} : ${k} → ${Math.floor(B/k)}. Fino a ${A-1}: ${Math.floor((A-1)/k)} (in grigio).`,vChips(items)),L(`${Math.floor(B/k)} − ${Math.floor((A-1)/k)} = ${M(c)}.`)]}});
+G('logica',2,'barre',()=>{const f=R(8,14);return{t:`Il papà ha il triplo degli anni di suo figlio. Tra loro ci sono ${2*f} anni di differenza. Quanti anni ha il figlio?`,a:f,h:`Disegna il figlio come una barra e il papà come tre barre uguali.`,
+ st:[L(`Il figlio è 1 barra, il papà 3 barre. La differenza sono 2 barre (in giallo).`,vBars([{l:'figlio',s:[[f,'?']]},{l:'papà',s:[[f,'?'],[f,'?',C.lemF],[f,'?',C.lemF]],n:`← ${2*f} anni`}])),L(`2 barre = ${2*f}, quindi 1 barra = ${2*f} : 2 = ${M(f)}.`)]}});
+G('logica',2,'cifre',()=>{const N=R(100,300);return{t:`Per numerare le pagine di un libro da 1 a ${N} quante cifre si scrivono?`,a:189+3*(N-99),h:`Dividi in tre blocchi: 1–9, 10–99, 100–${N}.`,
+ st:[L(`Tre blocchi, con 1, 2 e 3 cifre per numero.`,vBars([{l:'1–9',s:[[9,'9']]},{l:'10–99',s:[[180,'90×2']]},{l:'100–'+N,s:[[3*(N-99),`${N-99}×3`]]}])),L(`9 + 180 + ${3*(N-99)} = ${M(189+3*(N-99))}.`)]}});
+G('logica',2,'elenco',()=>{const s=R(3,12),list=[];for(let t=1;t<=9;t++){const u=s-t;if(u>=0&&u<=9)list.push(10*t+u)}return{t:`Quanti numeri di due cifre hanno la somma delle cifre uguale a ${s}?`,a:list.length,h:`Scrivili in ordine partendo dalla decina 1: 1?, 2?, 3?…`,
+ st:[L(`Per ogni decina da 1 a 9 cerco l'unità che fa somma ${s} (deve essere tra 0 e 9).`),L(`Elenco ordinato:`,vChips(list.map(v=>[v,1]))),L(`Sono ${M(list.length)}.`)]}});
+
+/* ---- NUMERI ---- */
+G('numeri',0,'abaco',()=>{const c=R(1,9),d=R(0,9),u=R(0,9);return{t:`Quale numero ha ${c} centinaia, ${d} decine e ${u} unità?`,a:100*c+10*d+u,h:`Metti le palline sull'abaco: centinaia, decine, unità.`,
+ st:[L(`Sull'abaco: ${c} palline nelle h, ${d} nelle da, ${u} nelle u.`,vAbaco(c,d,u)),L(`${c*100} + ${d*10} + ${u} = ${M(100*c+10*d+u)}.`)]}});
+G('numeri',0,'multipli',()=>{const N=R(10,30);return{t:`Quanti numeri pari ci sono da 1 a ${N}?`,a:Math.floor(N/2),h:`Pari e dispari si alternano: uno sì e uno no.`,
+ st:[L(`Pari e dispari si alternano (pari in giallo).`,vChips([...Array(N)].map((_,i)=>[i+1,(i+1)%2?1:2]))),L(`Uno ogni due: ${N} : 2 = ${M(Math.floor(N/2))}${N%2?' (il resto è un dispari)':''}.`)]}});
+G('numeri',0,'catena',()=>{const x=R(5,30),y=2*R(3,20);return{t:`Quanto fa il doppio di ${x} più la metà di ${y}?`,a:2*x+y/2,h:`Doppio = × 2. Metà = : 2.`,
+ st:[L(`Doppio di ${x}: ${x} × 2 = ${M(2*x)}.`),L(`Metà di ${y}: ${y} : 2 = ${M(y/2)}.`),L(`${2*x} + ${y/2} = ${M(2*x+y/2)}.`)]}});
+G('numeri',0,'abaco',()=>{const N=R(100,900),c=Math.floor(N/100),d=Math.floor(N/10)%10,u=N%10;return{t:`Quante decine intere ci sono nel numero ${N}?`,a:Math.floor(N/10),h:`Ogni centinaio contiene 10 decine!`,
+ st:[L(`${N} ha ${c} centinaia, ${d} decine e ${u} unità.`,vAbaco(c,d,u)),L(`Ogni centinaio = 10 decine: ${c} × 10 + ${d} = ${M(Math.floor(N/10))} decine.`)]}});
+G('numeri',1,'abaco',()=>{const N=R(1000,9999),ds=String(N).split('').map(Number),s=ds.reduce((a,b)=>a+b,0);return{t:`Qual è la somma delle cifre del numero ${N}?`,a:s,h:`Somma ogni cifra, non il valore che ha nel numero.`,
+ st:[L(`Separo le cifre: ${ds.join(' | ')}.`),L(`${ds.join(' + ')} = ${M(s)}.`)]}});
+G('numeri',1,'cifre_max',()=>{let d=[];while(d.length<3){const x=R(1,9);if(!d.includes(x))d.push(x)}const srt=[...d].sort((a,b)=>b-a),big=+srt.join('');return{t:`Con le cifre ${d.join(', ')}, usate una volta sola, qual è il numero più grande che puoi scrivere?`,a:big,h:`Dove una cifra vale di più: a sinistra o a destra?`,
+ st:[L(`A sinistra (centinaia) una cifra vale di più: ci metto la più grande.`,vCards(srt)),L(`Dalla più grande alla più piccola: ${M(big)}.`)]}});
+G('numeri',1,'multipli',()=>{const k=R(3,9),N=R(30,90),c=Math.floor((N-1)/k);return{t:`Quanti multipli di ${k} ci sono tra 1 e ${N-1}?`,a:c,h:`Quante volte ${k} sta in ${N-1}?`,
+ st:[L(`I multipli di ${k}: ${k}, ${2*k}, ${3*k}… uno ogni ${k} numeri.`,vChips([...Array(c)].map((_,i)=>[(i+1)*k,1]))),L(`${N-1} : ${k} = ${M(c)}${(N-1)%k?' (con resto, che non conta)':''}.`)]}});
+G('numeri',1,'inverso',()=>{const x=R(3,20),m=R(2,5),p=R(1,15);return{t:`Penso un numero, lo moltiplico per ${m} e aggiungo ${p}: ottengo ${x*m+p}. Che numero ho pensato?`,a:x,h:`Parti da ${x*m+p} e fai le operazioni al contrario.`,
+ st:[L(`Disegno la catena e torno indietro con le operazioni opposte (in rosso).`,vChain([x,x*m,x*m+p],['×'+m,'+'+p],[':'+m,'−'+p])),L(`${x*m+p} − ${p} = ${x*m}; ${x*m} : ${m} = ${M(x)}.`)]}});
+G('numeri',2,'frazioni',()=>{const d=P([2,3,4,5,6,10]),n=R(1,d-1),b=d*R(4,15);return{t:`Quanto vale ${K(n+'/'+d)} di ${b}?`,a:b/d*n,h:`Dividi ${b} in ${d} parti uguali e prendine ${n}.`,
+ st:[L(`Divido ${b} in ${d} parti: ogni parte vale ${b} : ${d} = ${M(b/d)}.`,vFraction(n,d,b)),L(`Prendo ${n} parti: ${b/d} × ${n} = ${M(b/d*n)}.`)]}});
+G('numeri',2,'divisori',()=>{const N=P([12,18,20,24,28,30,36,40,45,48]),dv=[];for(let i=1;i<=N;i++)if(N%i===0)dv.push(i);const pr=dv.filter(v=>v*v<=N).map(v=>`${v}×${N/v}`);return{t:`Quanti divisori ha il numero ${N}?`,a:dv.length,h:`Cerca le coppie di numeri che moltiplicati danno ${N}: 1 × ${N}, 2 × …`,
+ st:[L(`Cerco le coppie: ${pr.join(', ')}.`),L(`L'arcobaleno collega ogni coppia.`,vRainbow(N)),L(`In tutto ${M(dv.length)} divisori.`)]}});
+G('numeri',2,'mcm',()=>{let a=R(2,9),b=R(2,9);while(b===a)b=R(2,9);const l=a*b/gcd(a,b),N=R(20,50),x=(Math.floor(N/l)+1)*l,big=Math.max(a,b),small=Math.min(a,b),items=[];for(let v=big*Math.max(1,Math.floor((N-big*4)/big));v<=x;v+=big)items.push([v,v<=N?0:v%small===0?2:1]);return{t:`Qual è il più piccolo numero maggiore di ${N} che si può dividere esattamente sia per ${a} sia per ${b}?`,a:x,h:`Scrivi i multipli di ${big} dopo ${N} e controlla quale si divide anche per ${small}.`,
+ st:[L(`Scrivo i multipli di ${big} (il più grande) e cerco il primo dopo ${N} che si divide anche per ${small}.`,vChips(items)),L(`Il primo è ${M(x)}: ${x} : ${a} = ${x/a} e ${x} : ${b} = ${x/b}.`)]}});
+G('numeri',2,'gauss',()=>{const N=R(10,30);return{t:`Quanto fa la somma di tutti i numeri da 1 a ${N}?`,a:N*(N+1)/2,h:`Accoppia il primo con l'ultimo, il secondo con il penultimo…`,
+ st:[L(`Scrivo i numeri due volte, una al contrario: ogni colonna fa ${M(N+1)}.`,vGauss(N)),L(`${N} colonne × ${N+1} = ${N*(N+1)}: ma ho contato tutto due volte.`),L(`${N*(N+1)} : 2 = ${M(N*(N+1)/2)}.`)]}});
+G('numeri',2,'inverso',()=>{const x=R(12,30),p=R(2,10),m=R(2,4);return{t:`Penso un numero, tolgo ${p} e moltiplico il risultato per ${m}: ottengo ${(x-p)*m}. Che numero ho pensato?`,a:x,h:`Parti dalla fine: l'ultima operazione è la prima da disfare.`,
+ st:[L(`Catena avanti (blu) e indietro (rosso).`,vChain([x,x-p,(x-p)*m],['−'+p,'×'+m],['+'+p,':'+m])),L(`${(x-p)*m} : ${m} = ${x-p}; ${x-p} + ${p} = ${M(x)}.`)]}});
+
+/* ---- MISURE E TEMPO ---- */
+G('misure',0,'scala',()=>{const x=R(2,9);return{t:`Quanti centimetri sono ${x} metri?`,a:100*x,h:`In 1 metro ci sono 100 centimetri.`,
+ st:[L(`Da metri a centimetri si fa ${M('× 100')}.`,vChain([x+' m',100*x+' cm'],['×100'],null,1)),L(`${x} × 100 = ${M(100*x)}.`)]}});
+G('misure',0,'scala',()=>{const h=R(1,3),m=P([15,30,45]);return{t:`Quanti minuti sono ${h} or${h>1?'e':'a'} e ${m} minuti?`,a:60*h+m,h:`Ogni ora è fatta di 60 minuti.`,
+ st:[L(`Ogni ora è un blocco da 60 minuti.`,vBars([{l:'minuti',s:[...Array(h)].map(()=>[60,'60']).concat([[m,m,C.lemF]])}],180+45)),L(`${h} × 60 + ${m} = ${M(60*h+m)}.`)]}});
+G('misure',0,'monete',()=>{const a=R(1,4),b=R(1,4),c=R(0,4);return{t:`Nel salvadanaio ci sono ${a} monete da 50 centesimi, ${b} da 20 centesimi${c?' e '+c+' da 10 centesimi':''}. Quanti centesimi ci sono in tutto?`,a:50*a+20*b+10*c,h:`Conta prima le monete uguali tra loro.`,
+ st:[L(`Raggruppo le monete uguali.`,vCoins([[50,a],[20,b],[10,c]])),L(`${a}×50 = ${50*a}, ${b}×20 = ${20*b}${c?`, ${c}×10 = ${10*c}`:''}. Totale ${M(50*a+20*b+10*c)}.`)]}});
+G('misure',0,'orologio',()=>{const H=R(9,18),m=P([10,20,25,35,40,50]);return{t:`Sono le ${H-1}:${m}. Quanti minuti mancano alle ${H}:00?`,a:60-m,h:`Un'ora ha 60 minuti: quanti ne sono già passati?`,
+ st:[L(`Sulla linea del tempo vado dalle ${H-1}:${m} all'ora piena.`,vTime((H-1)*60+m,H*60)),L(`60 − ${m} = ${M(60-m)} minuti.`)]}});
+G('misure',1,'scala',()=>{const k=R(1,5),g=R(1,9)*50;return{t:`Quanti grammi sono ${k} kg e ${g} g?`,a:1000*k+g,h:`1 kg = 1000 g.`,
+ st:[L(`Da kg a g si fa ${M('× 1000')}.`,vChain([k+' kg',1000*k+' g'],['×1000'],null,1)),L(`${1000*k} + ${g} = ${M(1000*k+g)}.`)]}});
+G('misure',1,'orologio',()=>{const st=R(8,15)*60+P([0,10,15,20,30,40,45]),du=R(7,30)*5;return{t:`Un treno parte alle ${hm(st)} e arriva alle ${hm(st+du)}. Quanti minuti dura il viaggio?`,a:du,h:`Arriva prima all'ora piena, poi conta le ore intere, poi i minuti che restano.`,
+ st:[L(`Divido il viaggio in pezzi sulla linea del tempo.`,vTime(st,st+du)),L(`Sommo i pezzi: ${pieces(st,st+du)} = ${M(du+' minuti')}.`)]}});
+G('misure',1,'scala',()=>{const Lt=R(1,6);return{t:`Con ${Lt} litr${Lt>1?'i':'o'} di succo, quanti bicchieri da 250 ml si riempiono?`,a:4*Lt,h:`1 litro = 1000 ml.`,
+ st:[L(`Trasformo in ml e poi divido per 250.`,vChain([Lt+' L',1000*Lt+' ml',4*Lt],['×1000',': 250'],null,2)),L(`In 1 litro ci stanno 4 bicchieri: ${Lt} × 4 = ${M(4*Lt)}.`)]}});
+G('misure',1,'scala',()=>{const e=R(1,9),c=R(5,95);return{t:`Quanti centesimi sono ${e} euro e ${c} centesimi?`,a:100*e+c,h:`1 euro = 100 centesimi.`,
+ st:[L(`Da euro a centesimi: ${M('× 100')}.`,vChain([e+' €',100*e+' c'],['×100'],null,1)),L(`${100*e} + ${c} = ${M(100*e+c)}.`)]}});
+G('misure',2,'velocita',()=>{const v=P([40,50,60,80,90,100]),t=P([[3,'1 ora e mezza'],[5,'2 ore e mezza'],[1,'mezz\'ora'],[6,'3 ore']]);return{t:`Un'auto va sempre a ${v} km all'ora. Quanti km percorre in ${t[1]}?`,a:v*t[0]/2,h:`Quanti km fa in mezz'ora? Quante mezz'ore ci sono?`,
+ st:[L(`In mezz'ora fa metà strada: ${v} : 2 = ${M(v/2)} km.`),L(`${t[1]} = ${t[0]} mezz'ore.`,vRoad(v,t[0])),L(`${t[0]} × ${v/2} = ${M(v*t[0]/2+' km')}.`)]}});
+G('misure',2,'gruppi',()=>{const r=R(3,9),m=R(5,15);return{t:`Un rubinetto versa ${r} litri d'acqua al minuto. In quanti minuti riempie una vasca da ${r*m} litri?`,a:m,h:`Ogni minuto entrano ${r} litri: quanti "pezzi" da ${r} ci sono in ${r*m}?`,
+ st:[L(`Ogni pezzo è un minuto con ${r} litri.`,vBars([{l:'vasca',s:[...Array(m)].map((_,i)=>[r,r,i%2?C.lemF:C.fill])}])),L(`${r*m} : ${r} = ${M(m)} minuti.`)]}});
+G('misure',2,'scala',()=>{const d=R(2,6),h=R(1,23);return{t:`Quante ore ci sono in ${d} giorni e ${h} ore?`,a:24*d+h,h:`Un giorno ha 24 ore.`,
+ st:[L(`Ogni giorno è un blocco da 24 ore.`,vBars([{l:'ore',s:[...Array(d)].map(()=>[24,'24']).concat([[h,h,C.lemF]])}])),L(`${d} × 24 + ${h} = ${M(24*d+h)}.`)]}});
+G('misure',2,'mesi',()=>{const a=R(5,28),b=R(2,20);return{t:`Quanti giorni ci sono dal ${a} marzo al ${b} aprile, contando sia il primo sia l'ultimo giorno?`,a:32-a+b,h:`Marzo ha 31 giorni. Conta i giorni di marzo e poi quelli di aprile.`,
+ st:[L(`Dal ${a} al 31 marzo, compresi: 31 − ${a} + 1 = ${M(32-a)}.`),L(`Poi da 1 a ${b} aprile: ${M(b)}.`,vBars([{l:'marzo',s:[[32-a,32-a]],n:`dal ${a} al 31`},{l:'aprile',s:[[b,b,C.lemF]],n:`dal 1 al ${b}`}],40)),L(`${32-a} + ${b} = ${M(32-a+b)}.`)]}});
+G('misure',2,'orologio',()=>{const st=R(14,20)*60+P([5,15,25,35,45,50]),du=R(9,26)*5,e=st+du,o=new Set([hm(e)]);for(const d of[-10,10,-60,60,20,-20])if(o.size<4)o.add(hm(e+d));return{t:`Un film inizia alle ${hm(st)} e dura ${du} minuti. A che ora finisce?`,ch:[...o].sort(),a:hm(e),h:`Trasforma ${du} minuti in ore e minuti.`,
+ st:[L(`${du} minuti = ${Math.floor(du/60)} h e ${du%60} min.`),L(`Avanzo sulla linea del tempo dalle ${hm(st)}.`,vTime(st,e)),L(`Il film finisce alle ${M(hm(e))}.`)]}});
+
+/* ================= strategie (lezioni) ================= */
+const TOP={calcolo:'Calcolo',problemi:'Problemi',sequenze:'Sequenze',geometria:'Geometria',logica:'Logica e conteggio',numeri:'Numeri',misure:'Misure e tempo'};
+const TDESC={calcolo:'operazioni, espressioni, numero mancante',problemi:'soldi, età, divisioni, zampe e teste',sequenze:'regolarità e successioni',geometria:'perimetri, aree, figure, angoli',logica:'combinazioni, calendario, file, cifre',numeri:'valore posizionale, multipli, frazioni',misure:'orari, durate, lunghezze, pesi, soldi'};
+const LES=[
+['salti','calcolo','Somme e sottrazioni a salti','Spezza il numero: prima le decine, poi le unità.','Sulla linea dei numeri fai un salto grande (le decine) e poi uno piccolo (le unità). Due conti facili sono meglio di uno difficile.'],
+['gruppi','calcolo','Moltiplicare e dividere con i gruppi','× vuol dire gruppi uguali. : vuol dire distribuire in gruppi uguali.','3 × 4 sono 3 file da 4 pallini. 12 : 3 è distribuire 12 caramelle a 3 bambini, una a testa, finché finiscono. Se ne avanzano, quello è il resto.'],
+['pezzi','calcolo','Moltiplicazioni (e divisioni) a pezzi','Spezza in decine e unità, fai i conti a pezzi, poi somma.','Pensa alla moltiplicazione come a un rettangolo: lo tagli in pezzi facili, calcoli ogni pezzo e li rimetti insieme.'],
+['ordine','calcolo','Chi va prima nelle espressioni','Prima le parentesi, poi × e :, infine + e −.','Le operazioni hanno una "fila" come alla mensa: le moltiplicazioni e le divisioni passano davanti alle addizioni e sottrazioni. Le parentesi passano davanti a tutti.'],
+['coppie','calcolo','Le coppie amiche','25 × 4 = 100, come 4 monete da 25 centesimi fanno 1 euro. 5 × 2 = 10.','Nelle moltiplicazioni puoi cambiare l\'ordine dei numeri: cerca subito le coppie che fanno 10 o 100 e il conto diventa facilissimo.'],
+['inverso','calcolo','Il numero nascosto: torna indietro','Per tornare indietro parti dalla fine e fai l\'operazione opposta: + diventa −, × diventa :.','Disegna la catena delle operazioni. Poi ripercorrila al contrario, come quando torni a casa rifacendo la strada all\'indietro.'],
+['catena','problemi','Una cosa alla volta','Leggi la storia a pezzi e fai un calcolo per ogni pezzo.','Un problema lungo è fatto di tanti problemini corti. Segui la storia con il dito e scrivi un risultato dopo ogni frase.'],
+['barre','problemi','Il metodo delle barre','Disegna i numeri come barre: quello che non sai diventa un pezzo di barra.','Quando ci sono "in più", "il doppio", "il triplo" o "in tutto", disegna barre affiancate. Guardando il disegno capisci subito cosa togliere o dividere.'],
+['galline','problemi','Galline e conigli','Fai finta che siano tutte galline: le zampe in più sono dei conigli, 2 per ciascuno.','Dai a ogni testa 2 zampe. Le zampe che avanzano appartengono ai conigli, che ne hanno 2 in più delle galline.'],
+['scatole','problemi','Una scatola in più','Se avanza anche solo un uovo, serve un\'altra scatola.','Nella divisione col resto chiediti cosa succede a quello che avanza: a volte si butta via, a volte serve un posto in più.'],
+['bottiglia','problemi','Confronta le due situazioni','Cosa cambia tra le due situazioni? Quella differenza è la chiave.','Se due cose si assomigliano tranne per un pezzo, la differenza ti dice quanto vale quel pezzo.'],
+['pali','problemi','Pali e spazi','In una fila dritta i pali sono uno in più degli spazi.','Pensa alle dita della mano: 5 dita, 4 spazi tra le dita. Conta gli spazi e aggiungi 1.'],
+['salti_seq','sequenze','Guarda i salti','Scrivi sopra ogni coppia di numeri di quanto cambia.','Il segreto di una sequenza sta quasi sempre nei salti tra un numero e l\'altro. A volte sono uguali, a volte si alternano, a volte crescono.'],
+['moltiplica','sequenze','Quando i salti crescono in fretta','Se i numeri crescono molto, prova ×2, ×3 o i quadrati (1, 4, 9, 16, 25…).','Se i salti diventano sempre più grandi, forse non si aggiunge: si moltiplica.'],
+['ennesimo','sequenze','Il numero lontano','Per arrivare al 20° numero fai 19 salti: uno in meno.','Non serve scrivere tutti i numeri. Conta quanti salti ci sono e moltiplica.'],
+['fibonacci','sequenze','La somma dei due prima','Ogni numero nasce dai due che lo precedono.','È la sequenza di Fibonacci, che si trova anche nei girasoli e nelle pigne.'],
+['figure','geometria','Conta i lati','Triangolo 3, quadrato 4, pentagono 5, esagono 6.','Il nome della figura ti dice quanti lati ha: tri = 3, quadri = 4, penta = 5, esa = 6.'],
+['perimetro','geometria','Il perimetro è il giro','Una formica fa il giro della figura: somma tutti i lati.','Nel rettangolo i lati sono uguali a due a due, quindi il perimetro è (base + altezza) × 2. Metà del perimetro è base + altezza.'],
+['area','geometria','L\'area sono le piastrelle','Rettangolo: righe × quadretti in ogni riga = base × altezza.','L\'area dice quante piastrelle da 1 cm² servono per coprire la figura. Contarle a file è più veloce che contarle una a una.'],
+['forma_l','geometria','Figure a L','Area: grande meno il pezzo tolto. Perimetro: spingi fuori i lati rientrati, è come il rettangolo intero.','Una figura a L è un rettangolo con un angolo tagliato. Per l\'area togli il pezzo. Per il perimetro, sorpresa: non cambia.'],
+['quadrati','geometria','I quadrati nascosti','Conta per grandezza: piccoli, medi, grandi… poi somma.','In una griglia ci sono più quadrati di quelli che vedi subito. Cercali una grandezza alla volta.'],
+['angoli','geometria','Gli angoli del triangolo','Strappa i tre angoli e mettili vicini: fanno mezzo giro, 180°.','Questo vale per tutti i triangoli, grandi o piccoli, stretti o larghi.'],
+['combinazioni','logica','La tabella dei vestiti','Ogni scelta si moltiplica: magliette × pantaloni × scarpe.','Fai una tabella: ogni casella è una combinazione. Le caselle sono righe × colonne.'],
+['calendario','logica','La ruota dei giorni','Ogni 7 giorni si torna allo stesso giorno: conta solo il resto.','La settimana è una ruota. Togli tutti i giri completi (gruppi da 7) e conta solo i passi che restano.'],
+['fila','logica','Il bambino contato due volte','In una fila: da sinistra + da destra − 1.','Quando conti da una parte e dall\'altra, la persona in mezzo la conti in tutti e due i conteggi.'],
+['strette','logica','Tutti salutano tutti','Ognuno stringe la mano agli altri, poi dividi per 2.','Ogni stretta di mano coinvolge due persone, quindi contando "per persona" ogni stretta viene contata due volte.'],
+['cifre','logica','Contare le cifre a blocchi','1–9: 1 cifra. 10–99: 2 cifre. 100–999: 3 cifre.','Dividi i numeri in blocchi con lo stesso numero di cifre, conta ogni blocco e somma.'],
+['multipli','logica','Contare i multipli','I multipli di k fino a B sono B : k (il resto non conta).','I multipli di 3 sono uno ogni 3 numeri. Per contarli in un intervallo, conta fino alla fine e togli quelli prima dell\'inizio.'],
+['elenco','logica','L\'elenco ordinato','Quando i casi sono pochi, scrivili tutti in ordine così non ne perdi nessuno.','Partire dal più piccolo e andare avanti con ordine è il modo più sicuro per non saltarne o ripeterne nessuno.'],
+['abaco','numeri','L\'abaco: ogni cifra ha il suo posto','Centinaia × 100, decine × 10, unità × 1.','La stessa cifra vale di più se sta più a sinistra. In 1 centinaio ci sono 10 decine.'],
+['cifre_max','numeri','Il numero più grande','Metti a sinistra la cifra più grande: lì vale di più.','Per il più grande ordina le cifre dalla più grande alla più piccola. Per il più piccolo fai il contrario.'],
+['frazioni','numeri','Le frazioni con la barretta','Dividi per il numero sotto, moltiplica per quello sopra.','3/4 di 20: taglia 20 in 4 parti uguali (5 ciascuna) e prendine 3: 15.'],
+['divisori','numeri','L\'arcobaleno dei divisori','I divisori vanno in coppia: 1 × 36, 2 × 18, 3 × 12…','Cerca le coppie partendo da 1. Quando i numeri della coppia si incontrano hai finito: li hai trovati tutti.'],
+['mcm','numeri','Salti che si incontrano','Cerca nei multipli del numero più grande quelli che vanno bene anche per l\'altro.','Una rana salta di 4 in 4, un\'altra di 6 in 6: si incontrano su 12, 24, 36… i multipli comuni.'],
+['gauss','numeri','Il trucco di Gauss','Primo + ultimo, secondo + penultimo… tutte le coppie danno lo stesso numero.','Il piccolo Gauss sommò i numeri da 1 a 100 in pochi secondi: 50 coppie da 101 fanno 5050.'],
+['scala','misure','La scala delle misure','m → cm × 100. kg → g × 1000. ore → minuti × 60. giorni → ore × 24. € → centesimi × 100.','Quando passi da un\'unità grande a una piccola, il numero diventa più grande: si moltiplica.'],
+['orologio','misure','Arriva all\'ora piena','Conta i minuti fino all\'ora piena, poi le ore intere, poi i minuti che restano.','Sulla linea del tempo l\'ora piena è una tappa comoda: spezza il viaggio in pezzi facili.'],
+['monete','misure','Raggruppa le monete','Conta prima le monete uguali: 3 da 20 = 60.','Metti in fila le monete uguali e moltiplica. Alla fine somma i gruppi.'],
+['velocita','misure','Velocità a pezzi','Se in 1 ora fa 60 km, in mezz\'ora ne fa 30: spezza il tempo.','"60 km all\'ora" vuol dire 60 km ogni ora. Per tempi con la mezz\'ora conta le mezz\'ore.'],
+['mesi','misure','Contare i giorni tra due date','Finisci il primo mese, poi aggiungi i giorni del mese dopo.','Dal 10 al 31 contando entrambi: 31 − 10 + 1 = 22. Il +1 serve perché anche il primo giorno conta.']
+].map(([id,k,ti,ric,idea])=>({id,k,ti,ric,idea}));
+const LBY=Object.fromEntries(LES.map(l=>[l.id,l]));
+
+/* ================= stato ================= */
+const TK=Object.keys(TOP),LV=['Facile','Medio','Difficile'];
+const GARA={3:{n:10,min:60,cat:'P3'},4:{n:15,min:90,cat:'P4'},5:{n:20,min:120,cat:'P5'}};
+const store={get(k,d){try{const v=localStorage.getItem('gmm-'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('gmm-'+k,JSON.stringify(v))}catch(e){}}};
+let cls=store.get('cls',3),mode=store.get('mode','all'),timed=true,qty=store.get('qty',10);
+let sel=store.get('sel',null)||{};TK.forEach(k=>{if(!sel[k])sel[k]={on:true,lv:null}});
+let stats=store.get('stats',{}),seen=store.get('seen',{});
+let Q=[],cur=0,streak=0,tEnd=0,tStart=0,tick=null,gara=false,lastPlan=null,curLes=null,lesFromQuiz=false,exQ=null,exShown=0,lFilter='tutti';
+const $=id=>document.getElementById(id);
+const VIEWS=['home','learn','lesson','quiz','res'];
+const show=id=>{VIEWS.forEach(s=>$(s).classList.toggle('hide',s!==id));document.body.classList.toggle('playing',id==='quiz'||id==='lesson');window.scrollTo(0,0)};
+const lvFor=k=>sel[k].lv??(cls-3);
+const nearest=(list,lv)=>{const d=Math.min(...list.map(g=>Math.abs(g.lv-lv)));return list.filter(g=>Math.abs(g.lv-lv)===d)};
+const stepsHtml=q=>`<ol class="steps">${q.st.map(([t,f])=>`<li>${t}${f?`<div class="fig">${f}</div>`:''}</li>`).join('')}</ol>`;
+
+/* ================= home ================= */
+function renderHome(){
+ $('classi').innerHTML=[3,4,5].map(c=>`<button class="big ${c===cls?'sel':''}" data-c="${c}">Classe ${c}ª</button>`).join('');
+ const g=GARA[cls];
+ $('modes').innerHTML=`<button class="mode ${mode==='all'?'sel':''}" data-m="all"><h3>Allenamento</h3><span>Scegli argomenti e difficoltà. Aiutini e spiegazioni con disegni dopo ogni risposta.</span></button>
+ <button class="mode ${mode==='gara'?'sel':''}" data-m="gara"><h3>Simulazione finale</h3><span>Categoria ${g.cat}: ${g.n} quesiti misti in ${g.min} minuti, correzione alla fine.</span></button>`;
+ $('setGara').classList.toggle('hide',mode!=='gara');$('setAll').classList.toggle('hide',mode!=='all');
+ $('garaInfo').textContent=`Come nella finale d'istituto: ${g.n} quesiti in ${g.min} minuti, livello classe ${cls}ª, tutti gli argomenti mescolati. Niente aiutini, come in gara.`;
+ $('tOn').classList.toggle('sel',timed);$('tOff').classList.toggle('sel',!timed);
+ $('topics').innerHTML=TK.map(k=>`<div class="topic ${sel[k].on?'':'off'}"><label><input type="checkbox" data-t="${k}" ${sel[k].on?'checked':''}><span>${TOP[k]}<small>${TDESC[k]}</small></span></label>
+  <div class="seg">${LV.map((l,i)=>`<button data-k="${k}" data-l="${i}" class="${lvFor(k)===i?'sel':''}">${l}</button>`).join('')}</div></div>`).join('')+
+  `<p class="note" style="margin:10px 0 0">La difficoltà parte da quella della classe ${cls}ª; puoi cambiarla per ogni argomento. <button class="ghost small" id="resetLv">Ripristina</button></p>`;
+ $('quanti').innerHTML=[5,10,15,20].map(n=>`<button class="big ${n===qty?'sel':''}" data-q="${n}">${n}</button>`).join('');
+ const rows=TK.filter(k=>stats[k]&&stats[k][1]);
+ $('progressi').innerHTML=`<h3 style="margin-bottom:8px">I tuoi progressi</h3>`+(rows.length?rows.map(k=>{const[o,t]=stats[k],p=Math.round(o/t*100);return`<div class="stat"><span>${TOP[k]}</span><div class="bar"><i style="width:${p}%"></i></div><b>${o}/${t}</b></div>`}).join('')+`<button class="ghost small" id="resetSt" style="margin-top:10px">Azzera progressi</button>`:`<p class="note" style="margin:0">Qui vedrai quante risposte giuste dai per ogni argomento.</p>`);
+}
+$('home').addEventListener('click',e=>{const b=e.target.closest('button,input');if(!b)return;$('warn').classList.add('hide');
+ if(b.dataset.c){cls=+b.dataset.c;store.set('cls',cls)}
+ else if(b.dataset.m){mode=b.dataset.m;store.set('mode',mode)}
+ else if(b.id==='tOn')timed=true;else if(b.id==='tOff')timed=false;
+ else if(b.dataset.t){sel[b.dataset.t].on=b.checked;store.set('sel',sel)}
+ else if(b.dataset.l){sel[b.dataset.k].lv=+b.dataset.l;store.set('sel',sel)}
+ else if(b.dataset.q){qty=+b.dataset.q;store.set('qty',qty)}
+ else if(b.id==='resetLv'){TK.forEach(k=>sel[k].lv=null);store.set('sel',sel)}
+ else if(b.id==='resetSt'){stats={};store.set('stats',stats)}
+ else if(b.id==='start'){startFromHome();return}
+ else if(b.id==='goLearn'){renderLearn();show('learn');return}
+ else return;
+ renderHome()});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-back]');if(!b)return;clearInterval(tick);renderHome();show(b.dataset.back)});
+
+/* ================= strategie ================= */
+function renderLearn(){
+ $('lchips').innerHTML=[['tutti','Tutte'],...TK.map(k=>[k,TOP[k]])].map(([k,n])=>`<button class="${lFilter===k?'sel':''}" data-f="${k}">${n}</button>`).join('');
+ $('lgrid').innerHTML=LES.filter(l=>lFilter==='tutti'||l.k===lFilter).map(l=>`<button class="lcard ${seen[l.id]?'seen':''}" data-les="${l.id}"><i>${TOP[l.k]}${seen[l.id]?' · vista':''}</i><b>${l.ti}</b><small>${l.ric}</small></button>`).join('');
+}
+$('learn').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.f){lFilter=b.dataset.f;renderLearn()}else if(b.dataset.les)openLesson(b.dataset.les,false)});
+function openLesson(id,fromQuiz){curLes=LBY[id];lesFromQuiz=fromQuiz;seen[id]=1;store.set('seen',seen);
+ $('lToQuiz').classList.toggle('hide',!fromQuiz);
+ $('lTopic').textContent=TOP[curLes.k];$('lTitle').textContent=curLes.ti;
+ $('lRic').innerHTML=`<small>Ricorda</small>${curLes.ric}`;$('lIdea').textContent=curLes.idea;
+ newExample();show('lesson')}
+function newExample(){const gs=nearest(GENS.filter(g=>g.id===curLes.id),cls-3);const g=P(gs);exQ=g.fn();exShown=1;renderExample()}
+function renderExample(){$('exQ').innerHTML=exQ.t;$('exF').innerHTML=exQ.f||'';
+ $('exSteps').innerHTML=exQ.st.slice(0,exShown).map(([t,f])=>`<li class="pop">${t}${f?`<div class="fig">${f}</div>`:''}</li>`).join('');
+ const done=exShown>=exQ.st.length;$('exNext').disabled=done;$('exAll').disabled=done;$('exNext').textContent=done?'Fatto!':'Mostra il passo successivo';
+ $('exAns').innerHTML=done?`Risposta: <b>${exQ.a}</b>`:`Passo ${exShown} di ${exQ.st.length}. Prova a pensare al passo successivo prima di guardarlo!`}
+$('exNext').addEventListener('click',()=>{exShown++;renderExample()});
+$('exAll').addEventListener('click',()=>{exShown=exQ.st.length;renderExample()});
+$('exNew').addEventListener('click',newExample);
+$('exTry').addEventListener('click',()=>{const gs=nearest(GENS.filter(g=>g.id===curLes.id),cls-3);startPlan([...Array(5)].map(()=>P(gs)),false)});
+$('lBack').addEventListener('click',()=>{renderLearn();show('learn')});
+$('lToQuiz').addEventListener('click',()=>{show('quiz');renderQ()});
+
+/* ================= prova ================= */
+function startFromHome(){
+ if(mode==='gara'){const ks=[...TK].sort(()=>Math.random()-.5),plan=[];for(let i=0;i<GARA[cls].n;i++){const k=ks[i%ks.length];plan.push(P(GENS.filter(g=>g.k===k&&g.lv===cls-3)))}startPlan(plan,true)}
+ else{const ks=TK.filter(k=>sel[k].on);if(!ks.length){$('warn').classList.remove('hide');return}
+  startPlan([...Array(qty)].map((_,i)=>{const k=ks[i%ks.length];return P(GENS.filter(g=>g.k===k&&g.lv===lvFor(k)))}),false)}}
+function startPlan(plan,isGara){gara=isGara;const orig=plan;lastPlan=()=>startPlan(orig,isGara);
+ plan=[...plan].sort(()=>Math.random()-.5);const used=new Set();
+ Q=plan.map(g=>{let q,t=0;do{q=g.fn();t++}while(used.has(q.t)&&t<30);used.add(q.t);Object.assign(q,{k:g.k,lv:g.lv,id:g.id,user:null,done:false,hint:false});return q});
+ cur=0;streak=0;tStart=Date.now();clearInterval(tick);
+ if(gara&&timed){tEnd=tStart+GARA[cls].min*60000;tick=setInterval(updTimer,1000)}else tEnd=0;
+ show('quiz');renderQ();updTimer()}
+function updTimer(){const el=$('timer');if(!tEnd){el.textContent='';return}
+ const r=Math.max(0,tEnd-Date.now()),m=Math.floor(r/60000),s=Math.floor(r/1000)%60;
+ el.textContent=`${m}:${String(s).padStart(2,'0')}`;el.classList.toggle('low',r<5*60000);if(r<=0){clearInterval(tick);finish()}}
+
+function renderQ(){const q=Q[cur];
+ $('qcard').classList.remove('pop');void $('qcard').offsetWidth;$('qcard').classList.add('pop');
+ $('qnum').textContent=`Quesito ${cur+1} di ${Q.length}`;$('qtopic').textContent=`${TOP[q.k]} · ${LV[q.lv]}`;
+ $('streak').textContent=!gara&&streak>1?`${streak} di fila!`:'';
+ $('qtext').innerHTML=q.t;$('qfig').innerHTML=q.f||'';
+ const locked=!gara&&q.done;
+ $('ansForm').classList.toggle('hide',!!q.ch);
+ $('ansIn').value=q.user??'';$('ansIn').disabled=locked;$('ansBtn').disabled=locked;$('ansBtn').textContent=gara?'Salva risposta':'Controlla';
+ $('choices').innerHTML=q.ch?q.ch.map(c=>`<button data-ch="${c}" class="${q.user===c?'sel':''}" ${locked?'disabled':''}>${c}</button>`).join(''):'';
+ $('hintBtn').classList.toggle('hide',gara||q.done||q.hint);
+ $('hint').innerHTML=!gara&&q.hint&&!q.done?`<div class="hint pop"><b>Aiutino:</b> ${q.h}<br><span class="note">Strategia: ${LBY[q.id].ric}</span></div>`:'';
+ $('fb').innerHTML=locked?fbHtml(q):'';
+ $('prev').classList.toggle('hide',!gara||cur===0);
+ $('next').textContent=cur===Q.length-1?(gara?'Vai alla consegna':'Vedi il risultato'):'Avanti ›';
+ $('next').classList.toggle('hide',!gara&&!q.done);
+ $('consegna').classList.toggle('hide',!gara);$('navgrid').classList.toggle('hide',!gara);
+ if(gara)$('navgrid').innerHTML=Q.map((x,i)=>`<button data-n="${i}" class="${x.user!=null&&x.user!==''?'done':''} ${i===cur?'cur':''}">${i+1}</button>`).join('');
+ if(!q.ch&&!locked)setTimeout(()=>$('ansIn').focus({preventScroll:true}),50)}
+const isOk=q=>q.user!=null&&q.user!==''&&(typeof q.a==='number'?Number(String(q.user).replace(',','.').trim())===q.a:q.user===q.a);
+function fbHtml(q){const ok=isOk(q),l=LBY[q.id];return`<div class="fb ${ok?'ok':'ko'} pop"><strong>${ok?P(['Esatto!','Bravissimo!','Perfetto!','Giusto!']):'Non proprio…'}</strong>${ok?'Ecco il ragionamento:':`La risposta giusta è <b>${q.a}</b>. Vediamo insieme come si ragiona:`}${stepsHtml(q)}
+ <button class="small" data-les="${l.id}" style="margin-top:6px">Rivedi la strategia: ${l.ti}</button></div>`}
+function answer(v){const q=Q[cur];if(v===''||v==null)return;q.user=v;
+ if(gara){if(cur<Q.length-1)cur++;renderQ();return}
+ q.done=true;const ok=isOk(q);streak=ok?streak+1:0;const s=stats[q.k]||[0,0];s[1]++;if(ok)s[0]++;stats[q.k]=s;store.set('stats',stats);
+ renderQ();if(!ok)$('fb').scrollIntoView({behavior:'smooth',block:'start'})}
+$('ansForm').addEventListener('submit',e=>{e.preventDefault();answer($('ansIn').value.trim())});
+$('quiz').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+ if(b.dataset.ch!=null&&!b.disabled)answer(b.dataset.ch);
+ else if(b.dataset.les)openLesson(b.dataset.les,true);
+ else if(b.id==='hintBtn'){Q[cur].hint=true;renderQ()}
+ else if(b.dataset.n!=null){saveTyped();cur=+b.dataset.n;renderQ()}
+ else if(b.id==='next'){saveTyped();if(cur<Q.length-1){cur++;renderQ()}else if(gara)$('consegna').scrollIntoView({behavior:'smooth'});else finish()}
+ else if(b.id==='prev'){saveTyped();cur--;renderQ()}
+ else if(b.id==='consegna'){saveTyped();finish()}
+ else if(b.id==='stop'){clearInterval(tick);renderHome();show('home')}});
+function saveTyped(){const q=Q[cur];if(gara&&!q.ch){const v=$('ansIn').value.trim();q.user=v===''?null:v}}
+
+/* ================= risultati ================= */
+function finish(){clearInterval(tick);
+ if(gara)Q.forEach(q=>{const s=stats[q.k]||[0,0];s[1]++;if(isOk(q))s[0]++;stats[q.k]=s});store.set('stats',stats);
+ const ok=Q.filter(isOk).length,n=Q.length,p=ok/n;
+ $('resTitle').textContent=gara?`Simulazione ${GARA[cls].cat} · classe ${cls}ª`:'Allenamento';
+ $('resNum').textContent=`${ok}/${n}`;
+ $('resMsg').textContent=p===1?'Punteggio pieno, campione!':p>=.8?'Ottimo lavoro!':p>=.5?'Bene, continua ad allenarti!':'Riprova: ogni errore insegna qualcosa.';
+ const sec=Math.round((Date.now()-tStart)/1000);
+ $('resTime').textContent=`Tempo impiegato: ${Math.floor(sec/60)} min ${sec%60} s`+(gara?` su ${GARA[cls].min} min disponibili`:'');
+ $('review').innerHTML=Q.map((q,i)=>{const o=isOk(q),l=LBY[q.id];return`<div class="rev"><span class="tag ${o?'r':'w'}">${i+1}. ${o?'Giusta':(q.user==null||q.user===''?'Non risposta':'Sbagliata')}</span> <span class="note">· ${TOP[q.k]}</span>
+  <p>${q.t}</p>${q.f?`<div class="fig">${q.f}</div>`:''}<p>Tua risposta: <b>${q.user??'—'}</b> · Risposta giusta: <b>${q.a}</b></p>
+  ${o?`<details><summary class="note">Vedi il ragionamento</summary>${stepsHtml(q)}</details>`:stepsHtml(q)}<button class="ghost small" data-les="${l.id}">Strategia: ${l.ti}</button></div>`}).join('');
+ show('res')}
+$('res').addEventListener('click',e=>{const b=e.target.closest('[data-les]');if(b)openLesson(b.dataset.les,false)});
+$('again').addEventListener('click',()=>lastPlan&&lastPlan());
+
+renderHome();show('home');
+}
+</script>
+</body>
+</html>
