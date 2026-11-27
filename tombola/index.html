@@ -1247,7 +1247,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   // Il dispositivo del maestro (host) decide tutto: estrae, distribuisce le cartelle e verifica i premi.
   // I giocatori si collegano con il codice stanza; nessun server di gioco.
   // Versione dell'app (da aggiornare a ogni modifica): compare in alto e in fondo alla pagina, anche sui telefoni dei giocatori.
-  const VERSION = '26.11.2026-n';
+  const VERSION = '26.11.2026-o';
   $('verHead').textContent = 'versione ' + VERSION; $('ver').textContent = 'versione ' + VERSION;
   const PREFIX = 'tombola-clm-';
   const PEER_OPTS = {};
@@ -1273,6 +1273,9 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   function sendTo(token, msg) { const c = conns[token]; if (c && c.open) { try { c.send(msg); } catch (e) {} } }
   function broadcast() { if (state.room) Object.keys(conns).forEach(t => sendTo(t, snapshot(t))); }
   function broadcastMsg(msg) { Object.keys(conns).forEach(t => sendTo(t, msg)); }
+  // Un segnale a intervalli regolari: i telefoni capiscono se il collegamento è caduto (es. schermo spento) e si ricollegano da soli.
+  const PING_MS = +Q.get('pingms') || 10000;
+  setInterval(() => { if (!isPlayer && state.room) broadcastMsg({ t: 'ping' }); }, PING_MS);
 
   function createRoom() {
     TombolaStats.track('stanza-creata');
@@ -1324,6 +1327,8 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       claim(c.token, +m.prize, +m.card);
     } else if (m.t === 'cards' && c.token) {
       setCards(c.token, +m.n);
+    } else if (m.t === 'sync' && c.token) {
+      sendTo(c.token, snapshot(c.token));   // il telefono è tornato in primo piano: gli rimando lo stato aggiornato
     }
   }
   // Il giocatore sceglie quante cartelle prendere (1..massimo), di norma prima che la partita inizi.
@@ -1462,11 +1467,12 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
 
   // ----- giocatore -----
   function send(m) { if (hostConn && hostConn.open) { try { hostConn.send(m); } catch (e) {} } }
+  let lastRx = 0, pingSeen = false;
   function playerRetry(msg) {
     setStatus('🔴 ' + msg); clearTimeout(retryT); retryT = setTimeout(playerConnect, 4000);
   }
   function playerConnect() {
-    clearTimeout(retryT);
+    clearTimeout(retryT); lastRx = Date.now();
     if (typeof Peer === 'undefined') { setStatus('🔴 Libreria di rete non caricata'); return; }
     setStatus('Connessione…');
     if (peer) { try { peer.destroy(); } catch (e) {} }
@@ -1481,8 +1487,23 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       playerRetry(e.type === 'peer-unavailable' ? 'Stanza non trovata: il maestro l\'ha aperta?' : 'Problema di rete, riprovo…');
     });
   }
+  // Controllo del collegamento: se il conduttore non si fa sentire da un po' (o il telefono torna in primo piano) ci si ricollega.
+  setInterval(() => {
+    if (isPlayer && pingSeen && !document.hidden && Date.now() - lastRx > PING_MS * 2.8) { lastRx = Date.now(); playerRetry('Connessione persa, riprovo…'); }
+  }, Math.max(500, PING_MS / 2));
+  function playerResync() {
+    if (!isPlayer) return;
+    if (!hostConn || !hostConn.open) { playerConnect(); return; }
+    const prima = lastRx; send({ t: 'sync' });
+    setTimeout(() => { if (lastRx === prima) playerConnect(); }, 3500);
+  }
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) playerResync(); });
+  window.addEventListener('online', playerResync);
+  window.addEventListener('pageshow', e => { if (e.persisted) playerResync(); });
   function playerMsg(m) {
-    if (!m) return;
+    if (!m || window.__dropRx) return;
+    lastRx = Date.now();
+    if (m.t === 'ping') { pingSeen = true; return; }
     if (m.t === 'state') {
       if (!playerTracked) { playerTracked = true; TombolaStats.track('giocatore-collegato'); }
       if (m.ct) TombolaTemi.register({ [m.ct.key]: m.ct });
