@@ -39,6 +39,7 @@ button.big{font-family:var(--B);font-size:22px;flex:1 1 90px;padding:10px}
 .go{background:var(--lemon);border-color:#e0b100;color:#2a2100;font-size:19px;width:100%;min-height:56px;box-shadow:0 4px 0 #c99d00}
 .go:active{transform:translateY(2px);box-shadow:0 2px 0 #c99d00}
 .ghost{background:transparent}
+.skill{font-size:15px;min-height:44px;text-align:left}.skill small{display:block;font-weight:700;font-size:12px;color:var(--ok)}.skill.no{border-color:var(--ko);border-style:dashed;color:var(--soft)}.skill.no small{color:var(--ko)}
 .small{min-height:40px;font-size:15px;padding:4px 12px}
 .modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
 .mode{text-align:left;padding:16px;border-radius:16px;display:block;width:100%}
@@ -119,6 +120,11 @@ mark{background:#ffe680;color:#2a2100;border-radius:4px;padding:0 3px}
     <div class="card">
       <p class="label">1 · In che classe sei?</p>
       <div class="row" id="classi"></div>
+    </div>
+    <div class="card">
+      <p class="label">Argomenti fatti in classe</p>
+      <p class="note" style="margin:0 0 10px">Tocca quelli che la classe non ha ancora fatto: non usciranno né nell'allenamento né nella simulazione.</p>
+      <div class="row" id="excl"></div>
     </div>
     <button class="learnBtn" id="goLearn">
       <svg width="62" height="62" viewBox="0 0 62 62" aria-hidden="true"><rect x="6" y="8" width="50" height="46" rx="4" fill="#fff" stroke="#2a2100" stroke-width="2.5"/><path d="M14 20h34M14 30h34M14 40h20" stroke="#1565c0" stroke-width="3" stroke-linecap="round"/><circle cx="46" cy="42" r="9" fill="#ffd23f" stroke="#2a2100" stroke-width="2.5"/><path d="M42 42l3 3 5-6" stroke="#2a2100" stroke-width="2.5" fill="none"/></svg>
@@ -647,7 +653,11 @@ const GARA={3:{n:10,min:60,cat:'P3'},4:{n:15,min:90,cat:'P4'},5:{n:20,min:120,ca
 const store={get(k,d){try{const v=localStorage.getItem('gmm-'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('gmm-'+k,JSON.stringify(v))}catch(e){}}};
 let cls=store.get('cls',3),mode=store.get('mode','all'),timed=true,qty=store.get('qty',10);
 let sel=store.get('sel',null)||{};TK.forEach(k=>{if(!sel[k])sel[k]={on:true,lv:null}});
-let stats=store.get('stats',{}),seen=store.get('seen',{});
+let stats=store.get('stats',{}),seen=store.get('seen',{}),excl=store.get('excl',{});
+const SKILLS={area:'Area in cm²',frazioni:'Frazioni',decimali:'Numeri decimali',negativi:'Numeri sotto lo zero',angoli:'Angoli in gradi'};
+GENS.forEach(g=>{g.sk={area:'area',frazioni:'frazioni',decimali:'decimali',termometro:'negativi',angoli:'angoli'}[g.id]||(g.id==='forma_l'&&g.fn.toString().includes("cm²'")?'area':null)});
+const avail=g=>!(g.sk&&excl[g.sk]);
+const pickGen=(k,lv)=>{let l=GENS.filter(g=>g.k===k&&g.lv===lv&&avail(g));if(!l.length)l=nearest(GENS.filter(g=>g.k===k&&avail(g)),lv);if(!l.length)l=nearest(GENS.filter(avail),lv);return P(l)};
 let Q=[],cur=0,streak=0,tEnd=0,tStart=0,tick=null,gara=false,lastPlan=null,curLes=null,lesFromQuiz=false,exQ=null,exShown=0,lFilter='tutti';
 const $=id=>document.getElementById(id);
 const VIEWS=['home','learn','lesson','quiz','res'];
@@ -658,6 +668,7 @@ const stepsHtml=q=>`<ol class="steps">${q.st.map(([t,f])=>`<li>${t}${f?`<div cla
 
 /* ================= home ================= */
 function renderHome(){
+ $('excl').innerHTML=Object.entries(SKILLS).map(([k,n])=>`<button class="skill ${excl[k]?'no':''}" data-sk="${k}">${n}<small>${excl[k]?'non ancora: escluso':'già fatto'}</small></button>`).join('');
  $('classi').innerHTML=[3,4,5].map(c=>`<button class="big ${c===cls?'sel':''}" data-c="${c}">Classe ${c}ª</button>`).join('');
  const g=GARA[cls];
  $('modes').innerHTML=`<button class="mode ${mode==='all'?'sel':''}" data-m="all"><h3>Allenamento</h3><span>Scegli argomenti e difficoltà. Aiutini e spiegazioni con disegni dopo ogni risposta.</span></button>
@@ -673,7 +684,8 @@ function renderHome(){
  $('progressi').innerHTML=`<h3 style="margin-bottom:8px">I tuoi progressi</h3>`+(rows.length?rows.map(k=>{const[o,t]=stats[k],p=Math.round(o/t*100);return`<div class="stat"><span>${TOP[k]}</span><div class="bar"><i style="width:${p}%"></i></div><b>${o}/${t}</b></div>`}).join('')+`<button class="ghost small" id="resetSt" style="margin-top:10px">Azzera progressi</button>`:`<p class="note" style="margin:0">Qui vedrai quante risposte giuste dai per ogni argomento.</p>`);
 }
 $('home').addEventListener('click',e=>{const b=e.target.closest('button,input');if(!b)return;$('warn').classList.add('hide');
- if(b.dataset.c){cls=+b.dataset.c;store.set('cls',cls)}
+ if(b.dataset.sk){excl[b.dataset.sk]=!excl[b.dataset.sk];store.set('excl',excl)}
+ else if(b.dataset.c){cls=+b.dataset.c;store.set('cls',cls)}
  else if(b.dataset.m){mode=b.dataset.m;store.set('mode',mode)}
  else if(b.id==='tOn')timed=true;else if(b.id==='tOff')timed=false;
  else if(b.dataset.t){sel[b.dataset.t].on=b.checked;store.set('sel',sel)}
@@ -718,9 +730,9 @@ function toMC(q,generic){if(q.ch)return q;let ds=q.d;if(!ds){if(!generic||typeof
  for(let t=1;vals.length<5;t++){const v=r2(q.a+(t%2?1:-1)*Math.ceil(t/2)*(q.fmt?0.1:1));if(v>=0&&!vals.some(w=>Math.abs(w-v)<1e-9))vals.push(v)}
  vals.sort((a,b)=>a-b);q.ch=vals.map((v,i)=>`${'ABCDE'[i]}) ${f(v)}${u}`);q.a=q.ch[vals.findIndex(v=>Math.abs(v-q.a)<1e-9)];return q}
 function startFromHome(){
- if(mode==='gara'){const plan=[],pick=lv=>{const k=Math.random()<.45?'problemi':P(TK);return P(GENS.filter(g=>g.k===k&&g.lv===lv))};for(let lv=0;lv<=cls-3;lv++)for(let i=0;i<(lv?5:10);i++)plan.push(pick(lv));startPlan(plan,true)}
+ if(mode==='gara'){const plan=[],pick=lv=>pickGen(Math.random()<.45?'problemi':P(TK),lv);for(let lv=0;lv<=cls-3;lv++)for(let i=0;i<(lv?5:10);i++)plan.push(pick(lv));startPlan(plan,true)}
  else{const ks=TK.filter(k=>sel[k].on);if(!ks.length){$('warn').classList.remove('hide');return}
-  startPlan([...Array(qty)].map((_,i)=>{const k=ks[i%ks.length];return P(GENS.filter(g=>g.k===k&&g.lv===lvFor(k)))}),false)}}
+  startPlan([...Array(qty)].map((_,i)=>{const k=ks[i%ks.length];return pickGen(k,lvFor(k))}),false)}}
 function startPlan(plan,isGara){gara=isGara;const orig=plan;lastPlan=()=>startPlan(orig,isGara);
  if(!isGara)plan=[...plan].sort(()=>Math.random()-.5);const used=new Set();
  Q=plan.map(g=>{let q,t=0;do{q=g.fn();t++}while(used.has(q.t)&&t<30);used.add(q.t);q=toMC(q,isGara&&Math.random()<.6);Object.assign(q,{k:g.k,lv:g.lv,id:g.id,user:null,done:false,hint:false});return q});
