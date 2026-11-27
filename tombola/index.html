@@ -480,7 +480,7 @@ details summary { cursor: pointer; font-weight: 600; }
         <label class="host-only">Estrae
           <select id="drawerSel"></select>
         </label>
-        <label class="opt-auto"><input type="checkbox" id="autoMark"> Segna da solo</label>
+        <label class="opt-auto"><input type="checkbox" id="autoMark"> Segna numeri automaticamente</label>
         <label class="host-only">Ritmo
           <select id="speed" title="Pausa tra un numero e l'altro: il numero successivo aspetta comunque che la voce abbia finito di leggere">
             <option value="2500">Veloce</option>
@@ -672,7 +672,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   const LIM_VIEW = isPlayer && Q.get('lim') === '1';   // schermo LIM collegato alla stanza (solo spettatore)
   const KEY = LIM_VIEW ? 'tombola-lim-' + ROOM_CODE : isPlayer ? 'tombola-player-' + ROOM_CODE : 'tombola-proto-v2';
   const $ = id => document.getElementById(id);
-  let state = { mode: 'classic', max: 90, drawn: [], cards: [], marks: [], won: {}, autoMark: false, gen: 0, room: null, token: '', pname: '', play: 'screen', cols: 3, theme: 'auto', source: 'app', level: '1', themeMode: 'auto', sTheme: '', kidSmorfia: 'tema', adultMode: 'ginosa', defGinosa: true, aTheme: '', hostPlays: false, hostName: '', sezioni: false, serie: 0, gestore: '', custom: [], drawAnim: false, drawer: 'maestra', pmap: null };
+  let state = { mode: 'classic', max: 90, drawn: [], cards: [], marks: [], won: {}, autoMark: false, amChosen: false, gen: 0, room: null, token: '', pname: '', play: 'screen', cols: 3, theme: 'auto', source: 'app', level: '1', themeMode: 'auto', sTheme: '', kidSmorfia: 'tema', adultMode: 'ginosa', defGinosa: true, aTheme: '', hostPlays: false, hostName: '', sezioni: false, serie: 0, gestore: '', custom: [], drawAnim: false, drawer: 'maestra', pmap: null };
   let timer = null, limOn = false, drawing = false, playerTracked = false;
   const kids = () => state.mode === 'kids';
   const prizesFor = (m, cols) => TombolaCards.prizes(m, cols);
@@ -1211,7 +1211,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     state.mode = m;
     state.max = m === 'kids' ? levelInfo(state.level).max : 90;
     state.drawAnim = m === 'kids';   // con i bambini l'animazione parte attiva
-    state.autoMark = false;
+    state.autoMark = false; state.amChosen = false;
     $('nCards').value = 2;
     reset();
   }
@@ -1233,8 +1233,8 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if (state.drawn.length && !confirm('Cambiando l\'intervallo inizia una nuova partita. Continuare?')) { $('maxSel').value = state.max; return; }
     state.max = +$('maxSel').value; reset();
   };
-  $('autoMark').onchange = () => { state.autoMark = $('autoMark').checked; checkPrizes(); save(); render(); };
-  $('autoMark').title = 'Segna da solo i numeri estratti';
+  $('autoMark').onchange = () => { state.autoMark = $('autoMark').checked; state.amChosen = true; checkPrizes(); save(); render(); };
+  $('autoMark').title = 'Se è spuntato, i numeri estratti si segnano da soli sulle cartelle; altrimenti li tocchi tu';
   document.addEventListener('keydown', e => {
     if (!isPlayer && state.source === 'app' && e.code === 'Space' && !/SELECT|INPUT|BUTTON/.test(e.target.tagName)) { e.preventDefault(); draw(); }
     if (e.key === 'Escape' && limOn) setLim(false);
@@ -1247,7 +1247,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   // Il dispositivo del maestro (host) decide tutto: estrae, distribuisce le cartelle e verifica i premi.
   // I giocatori si collegano con il codice stanza; nessun server di gioco.
   // Versione dell'app (da aggiornare a ogni modifica): compare in alto e in fondo alla pagina, anche sui telefoni dei giocatori.
-  const VERSION = '26.11.2026-l';
+  const VERSION = '26.11.2026-n';
   $('verHead').textContent = 'versione ' + VERSION; $('ver').textContent = 'versione ' + VERSION;
   const PREFIX = 'tombola-clm-';
   const PEER_OPTS = {};
@@ -1276,7 +1276,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
 
   function createRoom() {
     TombolaStats.track('stanza-creata');
-    state.room = { code: newCode(), maxCards: 4, lateCards: false, players: {} };
+    state.room = { code: newCode(), maxCards: 4, lateCards: false, autoPrizes: true, players: {} };   // con soli dispositivi i premi si assegnano da soli (si può togliere)
     openRoom(state.room.code, 0); save();
   }
   function openRoom(code, tries) {
@@ -1435,7 +1435,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     row.append(cp, lab, lab2, cl); right.append(row);
     const hp = el('div', 'row');
     const hc = el('input'); hc.type = 'checkbox'; hc.checked = !!state.hostPlays;
-    hc.onchange = () => { state.hostPlays = hc.checked; save(); render(); };
+    hc.onchange = () => { state.hostPlays = hc.checked; if (hc.checked && !state.amChosen) state.autoMark = !kids(); save(); render(); };
     const hl = el('label', 'hint'); hl.style.cssText = 'display:flex;gap:6px;align-items:center'; hl.append(hc, "🎟️ Gioco anch'io (le mie cartelle compaiono sotto il tabellone)");
     const hn = el('input'); hn.type = 'text'; hn.maxLength = 20; hn.size = 14; hn.placeholder = 'Il mio nome'; hn.value = state.hostName || '';
     hn.oninput = () => { state.hostName = hn.value; save(); };
@@ -1491,6 +1491,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       else state.marks = m.cards.map((_, i) => state.marks[i] || []);
       Object.assign(state, { pmap: m.pm || null, autoPrizes: !!m.auto, mode: m.mode, max: m.max, cols: m.cols || 3, theme: m.theme || 'auto', level: m.level || '1', sTheme: m.sTheme || '', kidSmorfia: m.kidSmorfia || 'tema', aTheme: m.aTheme || '', maxCards: m.maxCards || 4, late: !!m.late, drawn: m.drawn, won: m.won, gen: m.gen, cards: m.cards });
       state.marks = state.marks.map(a => a.filter(n => state.drawn.includes(n)));
+      if (!state.amChosen) state.autoMark = state.mode === 'classic';   // tombola classica: i numeri si segnano da soli (il giocatore può togliere la spunta)
       if (!state.drawn.length) { logLines.length = 0; log('Nuova partita. Buona fortuna!'); }
       save(); setStatus(`🟢 Stanza ${ROOM_CODE} · ${state.pname} ·`);
       const fresh = m.drawn.length === prev + 1;
@@ -1579,9 +1580,9 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       ["Da sapere", "Controlla con la stessa modalità e gli stessi numeri per riga con cui hai stampato: se non coincidono, l'app ti avvisa."],
       ["Se si interrompe", "I numeri usciti sono salvati solo in questo browser (si perdono con i dati del sito o in navigazione privata). Tieni un tabellone stampato su cui segnarli: è la tua copia di sicurezza."] ],
     devices: [
-      ["Come funziona", "Apri una stanza e mostri il codice o il QR. Ogni giocatore entra dal proprio telefono o tablet, sceglie quante cartelle prendere e tocca i numeri quando escono. Per chiamare un premio preme «📣» e l'app lo controlla."],
+      ["Come funziona", "Apri una stanza e mostri il codice o il QR. Ogni giocatore entra dal proprio telefono o tablet e sceglie quante cartelle prendere. Nella tombola classica i numeri estratti si segnano da soli sulle cartelle (con i bambini si toccano a mano, per esercizio) e i premi vengono assegnati da soli."],
       ["Cosa serve", "Un dispositivo per ogni giocatore, con internet. Sulla Wi-Fi di una scuola la connessione tra dispositivi può essere bloccata: provala prima."],
-      ["I premi", "Chiamati dai giocatori e controllati in automatico: il primo premio valido vince, chi sbaglia riceve «Falso allarme!». I premi si chiamano in ordine: prima l'Ambo, poi il Terno e così via. Se preferisci, attiva «🤖 Premi automatici» nel pannello Multiplayer: il gioco li assegna da solo."],
+      ["I premi", "Assegnati in automatico, in ordine: prima l'Ambo, poi il Terno e così via; a pari merito vincono tutti. Se preferisci che li chiamino i giocatori con «📣», togli la spunta a «🤖 Premi automatici» nel pannello Multiplayer: il gioco controlla comunque ogni chiamata e chi sbaglia riceve «Falso allarme!»."],
       ["Da sapere", "Puoi giocare anche tu con «Gioco anch'io» (nel pannello Multiplayer). Fino a 40 giocatori."],
       ["Se si interrompe", "Se chi estrae chiude la pagina o perde internet, la stanza si riapre con lo stesso codice e i giocatori si ricollegano da soli. Se i dati del browser vanno persi (dati del sito cancellati, navigazione privata), la stanza va ricreata e i giocatori rientrano con nuove cartelle."] ],
     mixed: [
