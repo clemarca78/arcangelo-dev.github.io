@@ -122,8 +122,8 @@ mark{background:#ffe680;color:#2a2100;border-radius:4px;padding:0 3px}
       <div class="row" id="classi"></div>
     </div>
     <div class="card">
-      <p class="label">Argomenti fatti in classe</p>
-      <p class="note" style="margin:0 0 10px">Tocca quelli che la classe non ha ancora fatto: non usciranno né nell'allenamento né nella simulazione.</p>
+      <p class="label" id="exclLbl">Argomenti fatti in classe</p>
+      <p class="note" style="margin:0 0 10px">Ogni classe ha la sua scelta. Tocca gli argomenti che la classe non ha ancora fatto: non usciranno né nell'allenamento né nella simulazione.</p>
       <div class="row" id="excl"></div>
     </div>
     <button class="learnBtn" id="goLearn">
@@ -653,10 +653,11 @@ const GARA={3:{n:10,min:60,cat:'P3'},4:{n:15,min:90,cat:'P4'},5:{n:20,min:120,ca
 const store={get(k,d){try{const v=localStorage.getItem('gmm-'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('gmm-'+k,JSON.stringify(v))}catch(e){}}};
 let cls=store.get('cls',3),mode=store.get('mode','all'),timed=true,qty=store.get('qty',10);
 let sel=store.get('sel',null)||{};TK.forEach(k=>{if(!sel[k])sel[k]={on:true,lv:null}});
-let stats=store.get('stats',{}),seen=store.get('seen',{}),excl=store.get('excl',{});
+let stats=store.get('stats',{}),seen=store.get('seen',{}),exclAll=store.get('excl2',null)||{3:{area:1,frazioni:1,decimali:1,negativi:1,angoli:1},4:{negativi:1,angoli:1},5:{}};
+const ex=()=>exclAll[cls]||(exclAll[cls]={});
 const SKILLS={area:'Area in cm²',frazioni:'Frazioni',decimali:'Numeri decimali',negativi:'Numeri sotto lo zero',angoli:'Angoli in gradi'};
 GENS.forEach(g=>{g.sk={area:'area',frazioni:'frazioni',decimali:'decimali',termometro:'negativi',angoli:'angoli'}[g.id]||(g.id==='forma_l'&&g.fn.toString().includes("cm²'")?'area':null)});
-const avail=g=>!(g.sk&&excl[g.sk]);
+const avail=g=>!(g.sk&&ex()[g.sk]);
 const pickGen=(k,lv)=>{let l=GENS.filter(g=>g.k===k&&g.lv===lv&&avail(g));if(!l.length)l=nearest(GENS.filter(g=>g.k===k&&avail(g)),lv);if(!l.length)l=nearest(GENS.filter(avail),lv);return P(l)};
 let Q=[],cur=0,streak=0,tEnd=0,tStart=0,tick=null,gara=false,lastPlan=null,curLes=null,lesFromQuiz=false,exQ=null,exShown=0,lFilter='tutti';
 const $=id=>document.getElementById(id);
@@ -668,7 +669,7 @@ const stepsHtml=q=>`<ol class="steps">${q.st.map(([t,f])=>`<li>${t}${f?`<div cla
 
 /* ================= home ================= */
 function renderHome(){
- $('excl').innerHTML=Object.entries(SKILLS).map(([k,n])=>`<button class="skill ${excl[k]?'no':''}" data-sk="${k}">${n}<small>${excl[k]?'non ancora: escluso':'già fatto'}</small></button>`).join('');
+ $('exclLbl').textContent=`Argomenti fatti in classe ${cls}ª`;$('excl').innerHTML=Object.entries(SKILLS).map(([k,n])=>`<button class="skill ${ex()[k]?'no':''}" data-sk="${k}">${n}<small>${ex()[k]?'non ancora: escluso':'già fatto'}</small></button>`).join('');
  $('classi').innerHTML=[3,4,5].map(c=>`<button class="big ${c===cls?'sel':''}" data-c="${c}">Classe ${c}ª</button>`).join('');
  const g=GARA[cls];
  $('modes').innerHTML=`<button class="mode ${mode==='all'?'sel':''}" data-m="all"><h3>Allenamento</h3><span>Scegli argomenti e difficoltà. Aiutini e spiegazioni con disegni dopo ogni risposta.</span></button>
@@ -684,7 +685,7 @@ function renderHome(){
  $('progressi').innerHTML=`<h3 style="margin-bottom:8px">I tuoi progressi</h3>`+(rows.length?rows.map(k=>{const[o,t]=stats[k],p=Math.round(o/t*100);return`<div class="stat"><span>${TOP[k]}</span><div class="bar"><i style="width:${p}%"></i></div><b>${o}/${t}</b></div>`}).join('')+`<button class="ghost small" id="resetSt" style="margin-top:10px">Azzera progressi</button>`:`<p class="note" style="margin:0">Qui vedrai quante risposte giuste dai per ogni argomento.</p>`);
 }
 $('home').addEventListener('click',e=>{const b=e.target.closest('button,input');if(!b)return;$('warn').classList.add('hide');
- if(b.dataset.sk){excl[b.dataset.sk]=!excl[b.dataset.sk];store.set('excl',excl)}
+ if(b.dataset.sk){const e=ex();e[b.dataset.sk]=e[b.dataset.sk]?0:1;store.set('excl2',exclAll)}
  else if(b.dataset.c){cls=+b.dataset.c;store.set('cls',cls)}
  else if(b.dataset.m){mode=b.dataset.m;store.set('mode',mode)}
  else if(b.id==='tOn')timed=true;else if(b.id==='tOff')timed=false;
