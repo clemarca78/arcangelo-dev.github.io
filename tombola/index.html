@@ -428,7 +428,7 @@ details summary { cursor: pointer; font-weight: 600; }
 
   <section class="panel host-only" id="paperPanel">
     <h2>Cartelle di carta</h2>
-    <p class="hint" style="text-align:left;margin-bottom:10px">A scuola senza dispositivi? Stampa le cartelle, i bambini segnano i numeri a mano. Quando qualcuno chiama un premio, digita il codice scritto sulla sua cartella e controlla.</p>
+    <p class="hint" style="text-align:left;margin-bottom:10px">A scuola senza dispositivi? Stampa le cartelle, i bambini segnano i numeri a mano o con dei segnaposto. Quando qualcuno chiama un premio, digita il codice scritto sulla sua cartella e controlla.</p>
     <div class="row" style="margin-top:0">
       <button id="printBtn" class="primary" style="font-size:1rem;padding:10px 18px">🖨️ Stampa cartelle</button>
     </div>
@@ -1256,7 +1256,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   // Il dispositivo del maestro (host) decide tutto: estrae, distribuisce le cartelle e verifica i premi.
   // I giocatori si collegano con il codice stanza; nessun server di gioco.
   // Versione dell'app (da aggiornare a ogni modifica): compare in alto e in fondo alla pagina, anche sui telefoni dei giocatori.
-  const VERSION = '26.11.2026-w';
+  const VERSION = '26.11.2026-x';
   $('verHead').textContent = 'versione ' + VERSION; $('ver').textContent = 'versione ' + VERSION;
   const PREFIX = 'tombola-clm-';
   const PEER_OPTS = {};
@@ -1624,7 +1624,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       ["Da sapere", "Giochi con le tue cartelle (da 1 a 6). Se vuoi far giocare altre persone, ognuna con la propria cartella, scegli Carta, Dispositivi o Mista."],
       ["Se si interrompe", "La partita è salvata solo in questo browser: se chiudi la pagina riparte da dove era, ma si perde se cancelli i dati del sito o giochi in navigazione privata."] ],
     paper: [
-      ["Come funziona", "Stampi le cartelle dal pulsante «Stampa cartelle»: ognuna ha un codice e un QR code. I giocatori segnano i numeri a mano. Quando qualcuno chiama un premio, premi «📷 Scansiona QR» e inquadra il QR sulla sua cartella (oppure digita il codice): l'app mostra la cartella con i numeri usciti e ti dice se il premio è valido."],
+      ["Come funziona", "Stampi le cartelle dal pulsante «Stampa cartelle»: ognuna ha un codice e un QR code. I giocatori segnano i numeri a mano o con dei segnaposto. Quando qualcuno chiama un premio, premi «📷 Scansiona QR» e inquadra il QR sulla sua cartella (oppure digita il codice): l'app mostra la cartella con i numeri usciti e ti dice se il premio è valido."],
       ["Cosa serve", "Una stampante e un dispositivo per chi estrae (meglio se collegato a una LIM o a un proiettore). Per scansionare i QR serve la fotocamera di quel dispositivo e il gioco aperto da internet. I giocatori non hanno bisogno di alcun dispositivo."],
       ["I premi", "Li assegni tu, dopo il controllo, con «Assegna». Oppure tocchi il premio nel riquadro Premi per segnarlo a mano. I premi si assegnano in ordine: prima l'Ambo, poi il Terno e così via."],
       ["Da sapere", "Controlla con la stessa modalità e gli stessi numeri per riga con cui hai stampato: se non coincidono, l'app ti avvisa."],
