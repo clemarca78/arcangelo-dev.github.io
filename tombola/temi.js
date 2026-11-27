@@ -1219,6 +1219,8 @@
 
   // Proverbi e modi di dire in dialetto ginosino (Ginosa, Puglia), nella grafia in cui sono stati scritti.
   // Il tema è «da scegliere a mano» (non entra nei mix né nella scelta a sorpresa); con più di 90 frasi, in una partita non se ne ripete nessuna.
+  // ATTENZIONE: l'ordine delle frasi di questo tema è fisso. Il numero (posizione nell'elenco, da 001) identifica la registrazione audio
+  // della frase: le nuove frasi si aggiungono sempre in fondo e le esistenti non si spostano né si cancellano.
   const GINOSA = {
     'ginosa': { name: "Proverbi e modi di dire ginosini", icon: '🗣️', levels: ['adulti'], optIn: true, credit: "Con i proverbi di Vincenzo D'Angelo e della pagina Ginosa Proverbi", items: [
       ["🔥", "LA CAPA TORT L'AMMATUR LA CORT, LA LION TORT L'ADDRIZZ U FUOC."],
