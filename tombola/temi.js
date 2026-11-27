@@ -1470,6 +1470,67 @@
     items: GINOSA.ginosa.items.filter(it => !SOLO_ADULTI.test(senzaAccenti(it.slice(1).join(' ')))) };
   Object.keys(GINOSA).forEach(k => { GINOSA[k].key = k; ALL[k] = GINOSA[k]; });
 
+  // ---------- mnemotecniche: trucchi per ricordare e «smorfia della memoria» (sistema fonetico) ----------
+  const MEMORIA = {
+    'mnemotecniche': { name: "Mnemotecniche: trucchi per ricordare", icon: '🧠', levels: ['3', '4', '5', 'adulti'], items: [
+      ["🧠", "«Mnemotecnica» viene dal greco «mnéme», che vuol dire memoria"], ["👸", "Mnemosine era la dea greca della memoria e la madre delle nove Muse"], ["🏛️", "Il metodo dei loci, o «palazzo della memoria», lega ciò che vuoi ricordare a luoghi che conosci bene"],
+      ["🏚️", "Secondo la tradizione, il poeta greco Simonide di Ceo inventò il metodo dei loci dopo il crollo di una sala da banchetto"], ["📜", "Cicerone racconta la storia di Simonide nel suo libro «De oratore»"], ["💭", "Giordano Bruno scrisse libri sull'arte della memoria"],
+      ["🇨🇳", "Il gesuita italiano Matteo Ricci insegnò il palazzo della memoria in Cina"], ["🔤", "Un acrostico è una frase fatta con le iniziali delle cose da ricordare"], ["🔡", "Un acronimo è una sigla fatta con le iniziali: per esempio ONU"],
+      ["🧩", "Il «chunking» consiste nel raggruppare le informazioni in blocchi più piccoli"], ["📞", "Un numero di telefono si ricorda meglio a gruppi di due o tre cifre"], ["7️⃣", "Negli anni Cinquanta lo psicologo George Miller mostrò che la memoria a breve termine tiene circa 7 elementi, più o meno 2"],
+      ["📉", "La curva dell'oblio di Hermann Ebbinghaus, del 1885, mostra che si dimentica in fretta se non si ripassa"], ["🔁", "Ripassare a intervalli sempre più lunghi aiuta a ricordare a lungo: si chiama ripetizione dilazionata"], ["🗣️", "Spiegare a voce alta ciò che hai studiato aiuta a ricordarlo"],
+      ["😴", "Dormire dopo aver studiato aiuta il cervello a fissare i ricordi"], ["🤪", "Le immagini strane e buffe si ricordano più facilmente di quelle normali"], ["🔗", "Collegare una cosa nuova a una che già conosci è la base di quasi tutte le mnemotecniche"],
+      ["🎵", "Le rime e le filastrocche si ricordano più facilmente delle frasi normali"], ["🗺️", "In una mappa mentale l'idea principale sta al centro e i collegamenti partono come rami"], ["🌳", "Tony Buzan ha reso famose le mappe mentali"],
+      ["🔢", "Il sistema fonetico trasforma i numeri in consonanti e poi in parole"], ["🅰️", "Nel sistema fonetico le vocali non contano: servono solo a formare le parole"], ["🧲", "Nel sistema fonetico il 1 è T o D, il 2 è N e il 3 è M"],
+      ["🃏", "Negli sport della memoria si impara a mente l'ordine di un mazzo di carte in pochi minuti"], ["🏆", "Dominic O'Brien ha vinto otto volte il campionato del mondo della memoria"], ["🌍", "Il campionato del mondo della memoria esiste dal 1991"],
+      ["📖", "Il neuropsicologo Aleksandr Lurija studiò un uomo, Solomon Shereshevsky, che ricordava quasi tutto"], ["🎬", "Kim Peek, che ispirò il film «Rain Man», imparò a memoria migliaia di libri"], ["🥧", "Per ricordare le cifre del pi greco si usano frasi in cui il numero di lettere di ogni parola è una cifra"],
+      ["✊", "Il trucco dei pugni: le nocche sono i mesi di 31 giorni, gli spazi tra le nocche i mesi più corti"], ["📅", "«Trenta dì conta novembre, con april, giugno e settembre; di ventotto ce n'è uno, tutti gli altri ne han trentuno»"], ["🌈", "I colori dell'arcobaleno sono sette: rosso, arancione, giallo, verde, azzurro, blu e viola"],
+      ["🪐", "I pianeti, dal Sole in poi, sono Mercurio, Venere, Terra, Marte, Giove, Saturno, Urano e Nettuno"], ["🎼", "Guido d'Arezzo usò le prime sillabe di un inno a San Giovanni per dare il nome alle note"], ["🖐️", "La «mano guidoniana» usava le dita della mano per ricordare le note"],
+      ["🎶", "In inglese «Every Good Boy Deserves Fruit» ricorda le note sulle righe del pentagramma"], ["🔮", "La smorfia napoletana lega ogni numero a un'immagine: è anch'essa una mnemotecnica"], ["💀", "Nella smorfia il 47 è «il morto» e il 90 è «la paura»"],
+      ["📚", "Il sistema fonetico moderno risale al Seicento ed è stato perfezionato da vari studiosi"], ["🚶", "Il tragitto da casa a scuola può diventare un percorso della memoria, con un oggetto da ricordare in ogni punto"], ["🛒", "Per ricordare la lista della spesa, immagina ogni prodotto in una stanza di casa tua"],
+      ["📖", "Inventare una storia che unisce le cose da ricordare è la tecnica della storia concatenata"], ["🇬🇧", "Il metodo delle parole chiave associa una parola straniera a un suono simile in italiano"], ["🧑‍🤝‍🧑", "Per ricordare un nome nuovo, ripetilo subito e collegalo a un'immagine"],
+      ["📌", "Nel «peg system» ogni numero è legato a un oggetto con una rima, e ci si appendono le cose da ricordare"], ["🧪", "Secondo un modello del 1968, la memoria si divide in sensoriale, a breve e a lungo termine"], ["🦛", "L'ippocampo è la zona del cervello importante per formare i ricordi nuovi"],
+      ["❤️", "Ciò che ti emoziona si ricorda meglio"], ["🥇", "Di una lista si ricordano meglio le prime e le ultime parole"], ["🍪", "Per Marcel Proust, il sapore di una madeleine inzuppata nel tè riportava a galla un ricordo d'infanzia"],
+      ["🏋️", "Nessuna tecnica funziona senza esercizio"], ["🖐️", "Per la tabellina del 9 puoi usare le dita: piega il dito corrispondente, a sinistra ci sono le decine e a destra le unità"], ["9️⃣", "Nei multipli del 9 fino a 90 la somma delle cifre fa sempre 9"],
+      ["👢", "L'Italia a forma di stivale aiuta a ricordare la forma del Paese"], ["✍️", "Per distinguere la destra dalla sinistra si può pensare alla mano con cui scrivi"], ["🌙", "«Gobba a levante luna calante, gobba a ponente luna crescente»"],
+      ["🌅", "«Rosso di sera bel tempo si spera»"], ["☀️", "Il Sole sorge a est e tramonta a ovest"], ["🕳️", "La stalattite pende dal tetto, la stalagmite cresce dal pavimento"],
+      ["🔤", "Per ricordare quando scrivere l'acca: «ho, hai, ha, hanno» ce l'hanno tutti"], ["🪢", "Fare un nodo al fazzoletto serve a ricordarsi di qualcosa"], ["🐘", "«L'elefante non dimentica mai» è un modo di dire sulla grande memoria degli elefanti"],
+      ["📓", "Per imparare una poesia, dividila in strofe e impara una strofa per volta"], ["🍅", "La tecnica del pomodoro, 25 minuti di studio e 5 di pausa, è stata inventata dall'italiano Francesco Cirillo"], ["🧑‍🏫", "La tecnica di Feynman dice: spiega l'argomento con parole semplici, come a un bambino"],
+      ["🗃️", "Le schede con domanda e risposta si possono mettere in scatole: è il sistema ideato da Sebastian Leitner"], ["💬", "Cicerone chiamava la memoria «tesoro di tutte le cose»"], ["❤️‍🔥", "«Ricordare» viene dal latino «cor», cuore: vuol dire riportare al cuore"],
+      ["🔤", "In molte lingue l'alfabeto si impara con una canzoncina"], ["🎤", "Una canzone si ricorda più facilmente di un testo parlato"], ["🔌", "I colori dei resistori elettrici, dal nero al bianco, corrispondono alle cifre da 0 a 9"],
+      ["🚥", "La bandiera italiana ha, da sinistra, verde, bianco e rosso"], ["⭕", "I cinque anelli olimpici sono blu, giallo, nero, verde e rosso"], ["🕵️", "Nella serie «Sherlock» il detective usa un «palazzo mentale»"],
+      ["🎬", "Nel film «Memento» il protagonista non forma nuovi ricordi e usa foto e tatuaggi"], ["🐠", "In «Alla ricerca di Dory» la pesciolina Dory ha problemi di memoria a breve termine"], ["📱", "Il 112 è il numero unico di emergenza europeo: più è breve un numero, più è facile da ricordare"],
+      ["🔟", "Il 10 si ricorda con «tazza» nel sistema fonetico: 1 = T, 0 = Z"], ["🧩", "Ricordare in blocchi: «1-1-2» è più facile di «112»"], ["⛪", "Tommaso d'Aquino consigliava di aiutarsi con le immagini per ricordare"],
+      ["🔊", "Ripetere ad alta voce aiuta a ricordare meglio che leggere in silenzio"], ["✏️", "Riscrivere con parole tue ciò che hai letto aiuta a ricordarlo"], ["📆", "Un po' di studio ogni giorno funziona meglio di tanto studio in una volta sola"],
+      ["💧", "Anche bere acqua e fare movimento aiutano la concentrazione"], ["🍎", "Per ricordare «un'arancia, un libro, una chiave» immagina l'arancia che legge il libro e apre una porta con la chiave"], ["👀", "Guardare ciò che vuoi ricordare con molta attenzione è il primo passo: se non lo noti, non lo ricordi"],
+      ["📆", "I giorni della settimana ricordano i pianeti: lunedì la Luna, martedì Marte, mercoledì Mercurio, giovedì Giove, venerdì Venere"], ["🅿️", "Per ricordare dove hai parcheggiato, fai caso al piano e a un punto di riferimento"],
+      ["🏰", "Il palazzo della memoria funziona anche con luoghi immaginari, come un castello che inventi tu"], ["📜", "Gli antichi cantori ricordavano poemi lunghissimi come l'Iliade grazie al ritmo dei versi"],
+      ["📵", "Oggi i numeri li ricorda lo smartphone, ma esercitare la memoria resta utile"] ] },
+    'smorfia-memoria': { name: "La smorfia della memoria (sistema fonetico)", icon: '🔢', levels: ['3', '4', '5', 'adulti'], f: null }
+  };
+  // Sistema fonetico: a ogni cifra uno o più suoni di consonante; con due consonanti si forma una parola (le vocali non contano).
+  const MS_SUONI = ['S o Z', 'T o D', 'N', 'M', 'R', 'L', 'C o G dolce, o SC', 'C o G dura, o Q', 'F o V', 'P o B'];
+  const MS_LETTERE = ['S/Z', 'T/D', 'N', 'M', 'R', 'L', 'C-G dolci/SC', 'C-G dure/Q', 'F/V', 'P/B'];
+  const MS_PARLATO = ['esse o zeta', 'ti o di', 'enne', 'emme', 'erre', 'elle', 'ci o gi dolce, oppure sci', 'ci o gi dura, oppure qu', 'effe o vu', 'pi o bi'];
+  const MS_PAROLE = {
+    1: ['dea', '👸'], 2: ['Noè', '🚢'], 3: ['amo', '🎣'], 4: ['ora', '⏰'], 5: ['ala', '🪽'], 6: ['uscio', '🚪'], 7: ['oca', '🦆'], 8: ['uva', '🍇'], 9: ['ape', '🐝'],
+    10: ['tazza', '☕'], 11: ['dado', '🎲'], 12: ['tana', '🕳️'], 13: ['dama', '♟️'], 14: ['toro', '🐂'], 15: ['tela', '🧵'], 16: ['doccia', '🚿'], 17: ['tacco', '👠'], 18: ['tuffo', '🏊'], 19: ['topo', '🐭'],
+    20: ['naso', '👃'], 21: ['nido', '🐦'], 22: ['nonna', '👵'], 23: ['nome', '🏷️'], 24: ['nuora', '👩'], 25: ['Nilo', '🏞️'], 26: ['noce', '🌰'], 27: ['nocca', '✊'], 28: ['neve', '❄️'], 29: ['nebbia', '🌫️'],
+    30: ['mese', '📅'], 31: ['moto', '🏍️'], 32: ['mano', '✋'], 33: ['mamma', '👩‍👧'], 34: ['mare', '🌊'], 35: ['mela', '🍎'], 36: ['magia', '🪄'], 37: ['mago', '🧙'], 38: ['muffa', '🍞'], 39: ['mappa', '🗺️'],
+    40: ['rosa', '🌹'], 41: ['rete', '🥅'], 42: ['rana', '🐸'], 43: ['remo', '🚣'], 44: ['arare', '🚜'], 45: ['rullo', '🎨'], 46: ['roccia', '🪨'], 47: ['orco', '👹'], 48: ['riva', '🏖️'], 49: ['rapa', '🥬'],
+    50: ['lesso', '🍲'], 51: ['lido', '⛱️'], 52: ['luna', '🌙'], 53: ['lima', '💅'], 54: ['lira', '💶'], 55: ['lillà', '💜'], 56: ['luce', '💡'], 57: ['lago', '🏞️'], 58: ['lava', '🌋'], 59: ['lupo', '🐺'],
+    60: ['gesso', '✏️'], 61: ['gita', '🚌'], 62: ['scena', '🎭'], 63: ['gemma', '💎'], 64: ['cera', '🕯️'], 65: ['gelo', '🧊'], 66: ['ceci', '🫘'], 67: ['cieco', '🦯'], 68: ['Giove', '🪐'], 69: ['giubba', '🧥'],
+    70: ['casa', '🏠'], 71: ['gatto', '🐈'], 72: ['cane', '🐕'], 73: ['gomma', '🛞'], 74: ['cuore', '❤️'], 75: ['culla', '🍼'], 76: ['caccia', '🏹'], 77: ['cacao', '🍫'], 78: ['gufo', '🦉'], 79: ['cubo', '🧱'],
+    80: ['vaso', '🏺'], 81: ['foto', '📷'], 82: ['fune', '🪢'], 83: ['fame', '🍽️'], 84: ['faro', '🏮'], 85: ['vela', '⛵'], 86: ['foce', '🌊'], 87: ['fuoco', '🔥'], 88: ['fava', '🌱'], 89: ['fiaba', '📖'], 90: ['pizza', '🍕']
+  };
+  MEMORIA['smorfia-memoria'].f = n => {
+    const cifre = String(n).split('').map(Number), p = MS_PAROLE[n]; if (!p) return null;
+    const legenda = [...new Set(cifre)].map(c => `${c} = ${MS_LETTERE[c]}`).join(', ');
+    const lettere = cifre.map(c => MS_LETTERE[c]).join(' + ');
+    const parlato = [...new Set(cifre)].map(c => `${c === 0 ? 'zero' : ['', 'uno', 'due', 'tre', 'quattro', 'cinque', 'sei', 'sette', 'otto', 'nove'][c]} è ${MS_PARLATO[c]}`).join('; ');
+    return { e: p[1], t: `${n} → ${lettere} → «${p[0]}» (${legenda})`, sp: `La parola è ${p[0]}: ${parlato}` };
+  };
+  Object.keys(MEMORIA).forEach(k => { MEMORIA[k].key = k; ALL[k] = MEMORIA[k]; });
+
   // Categorie per ordinare i menu (un tema sta in una sola categoria).
   const C = { mix: '🎲 Mix di temi', scuola: '📚 Scuola', cartoni: '📺 Cartoni, giochi e supereroi', animali: '🐾 Animali', regioni: "🇮🇹 Regioni d'Italia",
               feste: '🎉 Feste e tradizioni', fede: '✝️ Santi, Chiesa e Vangelo', divertente: '😂 Divertente', cultura: '🎵 Cultura e passioni', mate: '📐 Matematica e statistica', mestieri: '🧑‍⚕️ Mestieri e salute', mio: '✏️ I miei temi' };
@@ -1478,7 +1539,7 @@
     [C.animali]: ['animali-versi', 'animali-classi', 'animali-curiosita', 'cuccioli', 'animali-habitat', 'dinosauri-tema', 'animali-modi-di-dire'],
     [C.cartoni]: ['cartoni', 'disney', 'cartoni-oggi', 'cartoni-80-90', 'ghibli', 'anime-classici', 'anime-oggi', 'super-mario', 'roblox', 'one-piece', 'minecraft', 'supereroi',
                   'videogiochi-classici', 'videogiochi-oggi', 'console', 'pokemon', 'conta-cartoni', 'problemi-piccoli', 'problemi-grandi', 'alfabeto-cartoni', 'colori-cartoni', 'cartoni-nel-mondo', 'inglese-cartoni', 'simpson'],
-    [C.mate]: ['matematica'], [C.mestieri]: ['medicina', 'corpo-umano-grandi', 'parrucchieri-barbieri'], [C.feste]: ['feste'], [C.fede]: ['santi', 'chiesa', 'gesu'], [C.divertente]: ['verita', 'mamma', 'proverbi', 'modi-di-dire', 'murphy', 'chuck-norris'], [C.cultura]: ['musica', 'sport', 'cinema', 'sapori', 'capitali', 'cultura', 'toto', 'alberto-sordi', 'ritorno-al-futuro']
+    [C.mate]: ['matematica'], [C.mestieri]: ['medicina', 'corpo-umano-grandi', 'parrucchieri-barbieri'], [C.feste]: ['feste'], [C.fede]: ['santi', 'chiesa', 'gesu'], [C.divertente]: ['verita', 'mamma', 'proverbi', 'modi-di-dire', 'murphy', 'chuck-norris'], [C.cultura]: ['musica', 'sport', 'cinema', 'sapori', 'capitali', 'cultura', 'toto', 'alberto-sordi', 'ritorno-al-futuro', 'mnemotecniche', 'smorfia-memoria']
   };
   function catOf(key) {
     if (key.startsWith('mix-')) return C.mix;
