@@ -1087,7 +1087,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     const si = $('sezInfo'); si.innerHTML = ''; si.hidden = !sez;
     if (sez) sezioni().forEach((g, i) => {
       const hits = g.flat().filter(n => out.has(n)).length;
-      const sp = document.createElement('span'); sp.textContent = `Sezione ${i + 1}: ${hits}/${g.flat().length}`; sp.className = 'sc' + (i % 6) + (vinteS.has(i) ? ' vinta' : ''); si.appendChild(sp);
+      const sp = document.createElement('span'); sp.textContent = `Sezione ${i + 1}: ${hits} su ${g.flat().length}`; sp.className = 'sc' + (i % 6) + (vinteS.has(i) ? ' vinta' : ''); si.appendChild(sp);
     });
     // premio raggiunto da una sezione del gestore ma non ancora assegnato (carta/misto o urna): proposta di assegnazione
     const gw = $('gwin'); gw.hidden = true; gw.innerHTML = '';
@@ -1125,7 +1125,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       const m = marked(i);
       const hits = g.flat().filter(n => n && m.has(n)).length;
       const c = document.createElement('div'); c.className = 'card';
-      c.innerHTML = `<h3>Cartella ${i + 1}<em>${hits}/${size}</em></h3>`;
+      c.innerHTML = `<h3>Cartella ${i + 1}<em title="Numeri già segnati su questa cartella">${hits} su ${size} segnati</em></h3>`;
       const art = TombolaCards.artEl(g.flat().join(','), state.theme, kids() ? '1.5rem' : '1.2rem', i);
       if (art) { const h3 = c.querySelector('h3'); h3.insertBefore(art, h3.firstChild); }
       const gr = document.createElement('div'); gr.className = 'grid' + (kids() && state.cols > 3 ? ' dense' : '');
@@ -1250,7 +1250,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   // Il dispositivo del maestro (host) decide tutto: estrae, distribuisce le cartelle e verifica i premi.
   // I giocatori si collegano con il codice stanza; nessun server di gioco.
   // Versione dell'app (da aggiornare a ogni modifica): compare in alto e in fondo alla pagina, anche sui telefoni dei giocatori.
-  const VERSION = '26.11.2026-p';
+  const VERSION = '26.11.2026-q';
   $('verHead').textContent = 'versione ' + VERSION; $('ver').textContent = 'versione ' + VERSION;
   const PREFIX = 'tombola-clm-';
   const PEER_OPTS = {};
