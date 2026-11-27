@@ -701,6 +701,8 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
         // Anche per i bambini il tema predefinito è «Proverbi ginosini (per bambini)»: applicato una sola volta ai salvataggi già esistenti.
         if (!s.defGinosaK && !isPlayer && !LIM_VIEW) { state.themeMode = 'ginosa-bambini'; state.sTheme = ''; }
         state.defGinosaK = true;
+        // Ogni volta che si riapre il gioco senza una partita in corso, il tema torna ai proverbi ginosini.
+        if (!isPlayer && !LIM_VIEW && !state.drawn.length) { state.adultMode = 'ginosa'; state.aTheme = ''; state.themeMode = 'ginosa-bambini'; state.sTheme = ''; }
       }
     } catch (e) {}
   };
@@ -1211,6 +1213,8 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     stopAuto();
     stopVoice();
     state.drawn = []; state.won = {}; state.pmap = null; state.gen = (state.gen || 0) + 1; logLines.length = 0;
+    // Ogni nuova partita riparte dal tema predefinito: i proverbi ginosini.
+    if (!isPlayer) { state.adultMode = 'ginosa'; state.aTheme = ''; state.themeMode = 'ginosa-bambini'; state.sTheme = ''; }
     if (kids()) newKidTheme(); else newAdultTheme();
     log(msg || 'Nuova partita. Buona fortuna!');
     makeCards(); dealAll(); save(); render(); broadcast();
@@ -1257,7 +1261,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   // Il dispositivo del maestro (host) decide tutto: estrae, distribuisce le cartelle e verifica i premi.
   // I giocatori si collegano con il codice stanza; nessun server di gioco.
   // Versione dell'app (da aggiornare a ogni modifica): compare in alto e in fondo alla pagina, anche sui telefoni dei giocatori.
-  const VERSION = '26.11.2026-aa';
+  const VERSION = '26.11.2026-ab';
   $('verHead').textContent = 'versione ' + VERSION; $('ver').textContent = 'versione ' + VERSION;
   const PREFIX = 'tombola-clm-';
   const PEER_OPTS = {};
