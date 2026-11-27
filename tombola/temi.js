@@ -1220,7 +1220,7 @@
   // Proverbi e modi di dire in dialetto ginosino (Ginosa, Puglia), nella grafia in cui sono stati scritti.
   // Il tema è «da scegliere a mano» (non entra nei mix né nella scelta a sorpresa); con più di 90 frasi, in una partita non se ne ripete nessuna.
   const GINOSA = {
-    'ginosa': { name: "Proverbi e modi di dire ginosini", icon: '🗣️', levels: ['adulti'], optIn: true, items: [
+    'ginosa': { name: "Proverbi e modi di dire ginosini", icon: '🗣️', levels: ['adulti'], optIn: true, credit: "Con i proverbi di Vincenzo D'Angelo e della pagina Ginosa Proverbi", items: [
       ["🔥", "LA CAPA TORT L'AMMATUR LA CORT, LA LION TORT L'ADDRIZZ U FUOC."],
       ["🐖", "PUORC E 'NNAMURAT NA VOLD VOLN IESS PURTAT."],
       ["🎣", "A MAR AVANDAT NON GE SCENN A PESCÀ."],
@@ -1557,5 +1557,5 @@
       .replace(/\s{2,}/g, ' ').replace(/\s+,/g, ',');
   }
 
-  g.TombolaTemi = { LEVELS, CATEGORIES, register, unregister, size, speakable, themesFor, entry, pick, name: k => ALL[k] ? ALL[k].icon + ' ' + ALL[k].name : '' };
+  g.TombolaTemi = { credit: k => (ALL[k] && ALL[k].credit) || '', LEVELS, CATEGORIES, register, unregister, size, speakable, themesFor, entry, pick, name: k => ALL[k] ? ALL[k].icon + ' ' + ALL[k].name : '' };
 })(window);
