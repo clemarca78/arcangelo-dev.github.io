@@ -1462,6 +1462,12 @@
       ["🌧️", "Jàrche a punénde de matìne l'acque jé vecìne", "Arcobaleno a ponente di mattina, la pioggia è vicina"]
     ] }
   };
+  GINOSA.ginosa.items.forEach((it, i) => { it.id = i + 1; });   // numero della frase (identifica la registrazione audio), anche nella versione per bambini
+  // Versione per bambini: stesse frasi, senza quelle volgari o troppo da adulti (parolacce, corna, ernia, «fesso»…).
+  const SOLO_ADULTI = /scorreggi|merd|vaffa|culo|cornut|\bcorna\b|\bfess|\bernia\b|partorient|defunt|putt|prostitut|cuzzet|sgravat/;
+  const senzaAccenti = x => String(x).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  GINOSA['ginosa-bambini'] = { name: "Proverbi ginosini (per bambini)", icon: '🗣️', levels: ['asilo', '1', '2', '3', '4', '5'], optIn: true, credit: GINOSA.ginosa.credit,
+    items: GINOSA.ginosa.items.filter(it => !SOLO_ADULTI.test(senzaAccenti(it.slice(1).join(' ')))) };
   Object.keys(GINOSA).forEach(k => { GINOSA[k].key = k; ALL[k] = GINOSA[k]; });
 
   // Categorie per ordinare i menu (un tema sta in una sola categoria).
@@ -1477,7 +1483,7 @@
   function catOf(key) {
     if (key.startsWith('mix-')) return C.mix;
     if (key.startsWith('mio-')) return C.mio;
-    if (key === 'puglia' || key === 'ginosa' || key === 'regioni' || key.startsWith('reg-')) return C.regioni;
+    if (key === 'puglia' || key === 'ginosa' || key === 'ginosa-bambini' || key === 'regioni' || key.startsWith('reg-')) return C.regioni;
     for (const c in CAT_KEYS) if (CAT_KEYS[c].includes(key)) return c;
     return C.scuola;   // tutto il resto è materia di scuola
   }
@@ -1515,8 +1521,8 @@
     if (j >= S) { const r = dn[j - S](n, ctx); if (r) return r; }   // frase viva; se non si può calcolare, una frase fissa
     const it = th.items[j % S];
     // voce a tre elementi: [emoji, frase in dialetto, traduzione in italiano] → si mostra «dialetto — italiano» e la voce legge l'italiano
-    if (it[2]) return { e: it[0], d: it[1], t: it[2], sp: it[2] };
-    return { e: it[0], t: it[1] };
+    if (it[2]) return { e: it[0], d: it[1], t: it[2], sp: it[2], id: it.id };
+    return { e: it[0], t: it[1], id: it.id };
   }
   // Quante frasi ha un tema a elenco (0 per i temi generati dal numero, che sono già tutti diversi).
   const size = key => { const t = ALL[key]; return t && t.items ? t.items.length + (t.dyn ? t.dyn.length : 0) : 0; };
