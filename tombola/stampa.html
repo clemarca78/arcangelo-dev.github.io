@@ -136,13 +136,19 @@ button.sec { background: #e2e8f0; color: #1e293b; }
       sel.appendChild(g);
     });
     if ([...sel.options].some(o => o.value === Q.get('phrase'))) sel.value = Q.get('phrase');
+    // Predefinito: i proverbi ginosini (versione per bambini con le cartelle dei bambini), finché non si sceglie altro.
+    const predefinita = () => $('mode').value === 'kids' ? 'ginosa-bambini' : 'ginosa';
+    let scelta = [...sel.options].some(o => o.value === Q.get('phrase'));
+    if (!scelta && [...sel.options].some(o => o.value === predefinita())) sel.value = predefinita();
+    sel.addEventListener('change', () => { scelta = true; });
+    $('mode').addEventListener('input', () => { if (!scelta && [...sel.options].some(o => o.value === predefinita())) sel.value = predefinita(); });
   })();
   // La frase dipende solo dalla serie e dalla posizione: ristampando le stesse cartelle si ottengono le stesse frasi.
   function phraseFor(serie, i) {
     const v = $('phrase').value; if (v === 'none') return null;
     const n = serie * 6 + i, key = v === 'auto' ? POOL[n % POOL.length] : v;
     const t = TombolaTemi.size(key) ? TombolaTemi.entry(key, 1, n) : TombolaTemi.entry(key, (n * 11) % 90 + 1);
-    return t ? { e: t.e, t: t.t } : null;
+    return t ? { e: t.e, t: t.d ? t.d + ' — ' + t.t : t.t } : null;   // con la traduzione: dialetto e italiano
   }
 
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
