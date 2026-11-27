@@ -49,6 +49,8 @@ header { display: flex; justify-content: space-between; align-items: center; fle
 .info { min-height: 74px; margin-bottom: 12px; }
 .themecredit { margin: -4px 0 10px; font-size: .78rem; color: var(--muted); }
 .themecredit[hidden] { display: none; }
+.rejoin { margin-bottom: 12px; padding: 12px 14px; border-radius: 14px; background: rgba(251,191,36,.16); border: 1px solid var(--gold); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: .95rem; }
+.rejoin[hidden] { display: none; }
 .info .words { font-size: 1.5rem; font-weight: 800; color: var(--gold); }
 .info .dec { font-size: .95rem; color: var(--accent); margin: 2px 0 6px; }
 .info .smorf { font-size: 1.05rem; }
@@ -316,6 +318,7 @@ details summary { cursor: pointer; font-weight: 600; }
 <button id="limExit" class="host-only">✕ Esci dalla vista LIM</button>
 <button id="limAudio">🔇 Attiva audio</button>
 <main>
+  <div class="rejoin" id="rejoin" hidden></div>
   <header>
     <h1>🎱 <span>Tombola</span><small class="ver" id="verHead" title="Versione dell'app. Se è diversa da quella degli altri giocatori, ricarica la pagina"></small></h1>
     <div class="modes host-only">
@@ -1247,7 +1250,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
   // Il dispositivo del maestro (host) decide tutto: estrae, distribuisce le cartelle e verifica i premi.
   // I giocatori si collegano con il codice stanza; nessun server di gioco.
   // Versione dell'app (da aggiornare a ogni modifica): compare in alto e in fondo alla pagina, anche sui telefoni dei giocatori.
-  const VERSION = '26.11.2026-o';
+  const VERSION = '26.11.2026-p';
   $('verHead').textContent = 'versione ' + VERSION; $('ver').textContent = 'versione ' + VERSION;
   const PREFIX = 'tombola-clm-';
   const PEER_OPTS = {};
@@ -1410,7 +1413,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     }
     const R = state.room, players = Object.entries(R.players);
     const online = players.filter(([t]) => conns[t] && conns[t].open).length;
-    setStatus(`Stanza ${R.code} · ${online}/${players.length} giocatori online ·`);
+    setStatus(`🎙️ Conduttore · Stanza ${R.code} · ${online}/${players.length} giocatori online ·`);
     const wrap = el('div', 'room');
     const left = el('div'); const qr = el('div', 'qr');
     try { const q = qrcode(0, 'M'); q.addData(roomLink()); q.make(); qr.innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); } catch (e) {}
@@ -1506,6 +1509,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     if (m.t === 'ping') { pingSeen = true; return; }
     if (m.t === 'state') {
       if (!playerTracked) { playerTracked = true; TombolaStats.track('giocatore-collegato'); }
+      if (!LIM_VIEW) { try { localStorage.setItem('tombola-ultima-stanza', JSON.stringify({ code: ROOM_CODE, name: state.pname, t: Date.now() })); } catch (e) {} }
       if (m.ct) TombolaTemi.register({ [m.ct.key]: m.ct });
       const prev = state.drawn.length;
       if (m.gen !== state.gen) state.marks = m.cards.map(() => []);
@@ -1514,7 +1518,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
       state.marks = state.marks.map(a => a.filter(n => state.drawn.includes(n)));
       if (!state.amChosen) state.autoMark = state.mode === 'classic';   // tombola classica: i numeri si segnano da soli (il giocatore può togliere la spunta)
       if (!state.drawn.length) { logLines.length = 0; log('Nuova partita. Buona fortuna!'); }
-      save(); setStatus(`🟢 Stanza ${ROOM_CODE} · ${state.pname} ·`);
+      save(); setStatus(`👤 Giocatore · 🟢 Stanza ${ROOM_CODE} · ${state.pname} ·`);
       const fresh = m.drawn.length === prev + 1;
       render(fresh);
       if (fresh) say(m.drawn[m.drawn.length - 1]);
@@ -1522,6 +1526,25 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     else if (m.t === 'toast') { toast(m.text); log(m.text, true); }
     else if (m.t === 'closed') { setStatus('⚪ La stanza è stata chiusa'); clearTimeout(retryT); hostConn = null; }
     else if (m.t === 'full') { setStatus('La stanza è piena'); }
+  }
+  // Se poco fa questo dispositivo era in una stanza come giocatore ma ora si è aperta la pagina normale (tasto Home, preferiti…),
+  // si avvisa: quella che si vede è una partita a parte, condotta da questo dispositivo.
+  function showRejoin() {
+    if (isPlayer || state.room) return;
+    let u = null; try { u = JSON.parse(localStorage.getItem('tombola-ultima-stanza')); } catch (e) {}
+    if (!u || !u.code || Date.now() - u.t > 12 * 3600 * 1000) return;
+    const box = $('rejoin'); box.hidden = false; box.innerHTML = '';
+    const t = document.createElement('span');
+    t.textContent = `🔗 Poco fa eri nella stanza ${u.code}${u.name ? ' come «' + u.name + '»' : ''}. Questa pagina invece è una tua partita a parte, con i comandi del conduttore.`;
+    const b1 = document.createElement('button'); b1.className = 'primary'; b1.textContent = 'Rientra nella stanza';
+    b1.onclick = () => {
+      let link = location.pathname + '?stanza=' + u.code;
+      ['peerhost', 'peerport', 'peersecure'].forEach(k => { if (Q.get(k)) link += `&${k}=${encodeURIComponent(Q.get(k))}`; });
+      location.href = link;
+    };
+    const b2 = document.createElement('button'); b2.textContent = 'Resto qui';
+    b2.onclick = () => { try { localStorage.removeItem('tombola-ultima-stanza'); } catch (e) {} box.hidden = true; };
+    box.append(t, b1, b2);
   }
   function startPlayer() {
     document.body.classList.add('player');
@@ -2043,6 +2066,7 @@ L'aneme 'o priatorio|le anime del purgatorio|🕯️|le stelle|⭐
     render();
     renderRoom();
     if (state.room) openRoom(state.room.code, 0);
+    showRejoin();
   }
   // Link dal QR di una cartella (?v=CODICE) aperto sul dispositivo di chi estrae: controlla subito i premi
   if (!isPlayer && Q.get('v')) {
