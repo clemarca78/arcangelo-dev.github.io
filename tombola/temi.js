@@ -1222,7 +1222,7 @@
   // ATTENZIONE: l'ordine delle frasi di questo tema è fisso. Il numero (posizione nell'elenco, da 001) identifica la registrazione audio
   // della frase: le nuove frasi si aggiungono sempre in fondo e le esistenti non si spostano né si cancellano.
   const GINOSA = {
-    'ginosa': { name: "Proverbi e modi di dire ginosini", icon: '🗣️', levels: ['adulti'], optIn: true, credit: "Con i proverbi di Vincenzo D'Angelo e della pagina Ginosa Proverbi", items: [
+    'ginosa': { name: "Proverbi e modi di dire Ginosini", icon: '🗣️', levels: ['adulti'], optIn: true, credit: "Con i proverbi di Vincenzo D'Angelo e della pagina Ginosa Proverbi", items: [
       ["🔥", "La capa tort l'ammatur la cort, la lion tort l'addrizz u fuoc"],
       ["🐖", "Puorc e 'nnamurat na vold voln iess purtat"],
       ["🎣", "A mar avandat non ge scenn a pescà"],
@@ -1466,7 +1466,7 @@
   // Versione per bambini: stesse frasi, senza quelle volgari o troppo da adulti (parolacce, corna, ernia, «fesso»…).
   const SOLO_ADULTI = /scorreggi|merd|vaffa|culo|cornut|\bcorna\b|\bfess|\bernia\b|partorient|defunt|putt|prostitut|cuzzet|sgravat/;
   const senzaAccenti = x => String(x).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-  GINOSA['ginosa-bambini'] = { name: "Proverbi ginosini (per bambini)", icon: '🗣️', levels: ['asilo', '1', '2', '3', '4', '5'], optIn: true, credit: GINOSA.ginosa.credit,
+  GINOSA['ginosa-bambini'] = { name: "Proverbi Ginosini (per bambini)", icon: '🗣️', levels: ['asilo', '1', '2', '3', '4', '5'], optIn: true, credit: GINOSA.ginosa.credit,
     items: GINOSA.ginosa.items.filter(it => !SOLO_ADULTI.test(senzaAccenti(it.slice(1).join(' ')))) };
   Object.keys(GINOSA).forEach(k => { GINOSA[k].key = k; ALL[k] = GINOSA[k]; });
 
